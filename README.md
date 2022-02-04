@@ -1,14 +1,14 @@
-# %namespace%
+# Router
 
 > 🔔 Subscribe to the [newsletter](https://newsletter.chevereto.com/subscription?f=gTmksA6763vPCG763763kYCOTgWu6Kx4BPohVDY97aHddrqis6B763cHay8dhtmMKlI6r3vUfGREZmSvDNNGj3MlrRJV7A) to don't miss any update regarding Chevere.
 
 ![Chevere](LOGO.svg)
 
-![Code size](https://img.shields.io/github/languages/code-size/chevere/%repoName%?style=flat-square) [![Apache-2.0](https://img.shields.io/github/license/chevere/%repoName%?style=flat-square)](LICENSE) [![Build](https://img.shields.io/github/workflow/status/chevere/%repoName%/Test?style=flat-square)](https://github.com/chevere/%repoName%/actions)
+![Code size](https://img.shields.io/github/languages/code-size/chevere/router?style=flat-square) [![Apache-2.0](https://img.shields.io/github/license/chevere/router?style=flat-square)](LICENSE) [![Build](https://img.shields.io/github/workflow/status/chevere/router/Test?style=flat-square)](https://github.com/chevere/router/actions)
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=chevere_%repoName%&metric=alert_status)](https://sonarcloud.io/dashboard?id=chevere_%repoName%) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=chevere_%repoName%&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=chevere_%repoName%) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=chevere_%repoName%&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=chevere_%repoName%) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=chevere_%repoName%&metric=security_rating)](https://sonarcloud.io/dashboard?id=chevere_%repoName%) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=chevere_%repoName%&metric=coverage)](https://sonarcloud.io/dashboard?id=chevere_%repoName%) [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=chevere_%repoName%&metric=sqale_index)](https://sonarcloud.io/dashboard?id=chevere_%repoName%) [![CodeFactor](https://www.codefactor.io/repository/github/chevere/%repoName%/badge)](https://www.codefactor.io/repository/github/chevere/%repoName%) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/b956754f8ff04aaa9ca24a6e4cc21661)](https://www.codacy.com/gh/chevere/%repoName%/dashboard)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=chevere_router&metric=alert_status)](https://sonarcloud.io/dashboard?id=chevere_router) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=chevere_router&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=chevere_router) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=chevere_router&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=chevere_router) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=chevere_router&metric=security_rating)](https://sonarcloud.io/dashboard?id=chevere_router) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=chevere_router&metric=coverage)](https://sonarcloud.io/dashboard?id=chevere_router) [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=chevere_router&metric=sqale_index)](https://sonarcloud.io/dashboard?id=chevere_router) [![CodeFactor](https://www.codefactor.io/repository/github/chevere/router/badge)](https://www.codefactor.io/repository/github/chevere/router) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/51b15c6606be44adb1068761bfa2ff04)](https://www.codacy.com/gh/chevere/router/dashboard)
 
-The chevere %repoName% component.
+The chevere router component.
 
 ## Documentation
 
