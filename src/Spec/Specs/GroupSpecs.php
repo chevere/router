@@ -54,7 +54,7 @@ final class GroupSpecs implements GroupSpecsInterface
         catch (\OutOfBoundsException $e) {
             throw new OutOfBoundsException(
                 (new Message('Group name %name% not found'))
-                    ->code('%name%', $name)
+                    ->withCode('%name%', $name)
             );
         }
     }

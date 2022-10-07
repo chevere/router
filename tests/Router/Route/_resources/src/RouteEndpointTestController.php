@@ -14,28 +14,16 @@ declare(strict_types=1);
 namespace Chevere\Tests\Router\Route\_resources\src;
 
 use Chevere\Controller\Controller;
-use Chevere\Parameter\Interfaces\ArgumentsInterface;
-use Chevere\Parameter\Interfaces\ParametersInterface;
-use Chevere\Parameter\Parameters;
-use Chevere\Parameter\StringParameter;
-use Chevere\Regex\Regex;
-use Chevere\Response\Interfaces\ResponseInterface;
+use Chevere\Parameter\Attributes\ParameterAttribute;
 
 final class RouteEndpointTestController extends Controller
 {
-    public function getParameters(): ParametersInterface
-    {
-        return new Parameters(
-            name: (new StringParameter())
-                ->withRegex(new Regex('/^[\w]+$/'))
-                ->withAddedAttribute('attr'),
-            id: (new StringParameter())
-                ->withRegex(new Regex('/^[0-9]+$/')),
-        );
-    }
-
-    public function run(ArgumentsInterface $arguments): ResponseInterface
-    {
-        return $this->getResponse();
+    public function run(
+        #[ParameterAttribute(regex: '/^[\w]+$/')]
+        string $name,
+        #[ParameterAttribute(regex: '/^[0-9]+$/')]
+        string $id
+    ): array {
+        return [];
     }
 }

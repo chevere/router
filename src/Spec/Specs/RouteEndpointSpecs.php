@@ -55,7 +55,7 @@ final class RouteEndpointSpecs implements RouteEndpointSpecsInterface
         catch (\OutOfBoundsException $e) {
             throw new OutOfBoundsException(
                 (new Message('Method name %methodName% not found'))
-                    ->code('%methodName%', $methodName)
+                    ->withCode('%methodName%', $methodName)
             );
         }
     }

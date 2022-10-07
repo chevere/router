@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\Spec\Specs;
 
-use function Chevere\Filesystem\dirForPath;
+use function Chevere\Filesystem\directoryForPath;
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Router\Route\Route;
 use Chevere\Router\Route\RouteEndpoint;
@@ -28,7 +28,7 @@ final class IndexSpecTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $spec = new IndexSpec(dirForPath('/spec/'));
+        $spec = new IndexSpec(directoryForPath('/spec/'));
         $this->assertSame([
             'repositories' => [],
         ], $spec->toArray());
@@ -37,7 +37,7 @@ final class IndexSpecTest extends TestCase
     public function testWithAddedGroup(): void
     {
         $routePath = new RoutePath('/route/path');
-        $specDir = dirForPath('/spec/');
+        $specDir = directoryForPath('/spec/');
         $repository = 'repo';
         $route = (new Route('test', $routePath))
             ->withAddedEndpoint(

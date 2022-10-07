@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\Spec;
 
-use function Chevere\Filesystem\dirForPath;
+use function Chevere\Filesystem\directoryForPath;
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Router\Route\RouteEndpoint;
 use Chevere\Spec\SpecEndpoints;
@@ -40,7 +40,7 @@ final class SpecEndpointsTest extends TestCase
             $method,
             new TestController()
         );
-        $specDir = dirForPath('/path/');
+        $specDir = directoryForPath('/path/');
         $routeEndpointSpec = new RouteEndpointSpec(
             $specDir,
             $routeEndpoint

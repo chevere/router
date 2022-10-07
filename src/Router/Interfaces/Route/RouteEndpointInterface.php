@@ -70,7 +70,7 @@ interface RouteEndpointInterface extends DescriptionInterface
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified `$description`.
      */
-    public function withDescription(string $description): self;
+    public function withDescription(string $description): static;
 
     /**
      * Return an instance with the specified `$parameter` removed.

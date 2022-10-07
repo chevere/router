@@ -11,14 +11,14 @@ The [SpecMaker](../reference/Chevere/Components/Spec/SpecMaker.md) is in charge 
 ```php
 use Chevere\Spec\SpecMaker;
 use Chevere\Router\Router;
-use function Chevere\Filesystem\dirForPath;
+use function Chevere\Filesystem\directoryForPath;
 
 /**
  * @var Router $router
  */
 new SpecMaker(
-    specDir: dirForPath('/spec/'),
-    outputDir: dirForPath('/var/public/spec/'),
+    specDir: directoryForPath('/spec/'),
+    outputDir: directoryForPath('/var/public/spec/'),
     router: $router
 );
 ```

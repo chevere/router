@@ -61,8 +61,8 @@ final class SpecIndex implements SpecIndexInterface
         } catch (\OutOfBoundsException $e) {
             throw new OutOfBoundsException(
                 (new Message('Method name %methodName% not found for route name %routeName%'))
-                    ->code('%methodName%', $methodName)
-                    ->code('%routeName%', $routeName)
+                    ->withCode('%methodName%', $methodName)
+                    ->withCode('%routeName%', $routeName)
             );
         }
     }

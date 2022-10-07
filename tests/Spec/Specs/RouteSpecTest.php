@@ -13,14 +13,14 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\Spec\Specs;
 
-use function Chevere\Filesystem\dirForPath;
+use function Chevere\Filesystem\directoryForPath;
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Router\Route\Route;
 use Chevere\Router\Route\RouteEndpoint;
 use Chevere\Router\Route\RouteLocator;
 use Chevere\Router\Route\RoutePath;
-use Chevere\Spec\Specs\RouteSpec;
 use Chevere\Spec\Specs\RouteEndpointSpec;
+use Chevere\Spec\Specs\RouteSpec;
 use Chevere\Tests\Spec\_resources\src\TestController;
 use PHPUnit\Framework\TestCase;
 
@@ -31,7 +31,7 @@ final class RouteSpecTest extends TestCase
         $repository = 'repo';
         $routeLocator = new RouteLocator($repository, '/route/path');
         $routePath = new RoutePath('/route/path');
-        $specDir = dirForPath("/spec/${repository}/");
+        $specDir = directoryForPath("/spec/${repository}/");
         $routeSpecPath = $specDir
             ->getChild(ltrim($routeLocator->path(), '/') . '/')
             ->path()

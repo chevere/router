@@ -49,7 +49,7 @@ final class RoutePath implements RoutePathInterface
             throw new LogicException(
                 previous: $e,
                 message: (new Message('Unable to add route %path%'))
-                    ->code('%path%', $this->route),
+                    ->withCode('%path%', $this->route),
             );
         }
         // @codeCoverageIgnoreEnd

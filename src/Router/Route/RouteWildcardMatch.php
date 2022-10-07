@@ -16,7 +16,7 @@ namespace Chevere\Router\Route;
 use Chevere\Message\Message;
 use Chevere\Regex\Regex;
 use Chevere\Router\Interfaces\Route\RouteWildcardMatchInterface;
-use Chevere\Str\StrBool;
+use Chevere\String\ValidateString;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\UnexpectedValueException;
 
@@ -47,25 +47,25 @@ final class RouteWildcardMatch implements RouteWildcardMatchInterface
         if (strpos($regex, '(') !== false || strpos($regex, ')') !== false) {
             throw new UnexpectedValueException(
                 (new Message('Provided expression %match% contains capture groups'))
-                    ->code('%match%', $string)
+                    ->withCode('%match%', $string)
             );
         }
     }
 
     private function assertFormat(): void
     {
-        if ((new StrBool($this->string))->startsWith('^')) {
+        if ((new ValidateString($this->string))->isStartingWith('^')) {
             throw new InvalidArgumentException(
                 (new Message('String %string% must omit the starting anchor %char%'))
-                    ->code('%string%', $this->string)
-                    ->code('%char%', '^')
+                    ->withCode('%string%', $this->string)
+                    ->withCode('%char%', '^')
             );
         }
-        if ((new StrBool($this->string))->endsWith('$')) {
+        if ((new ValidateString($this->string))->isEndingWith('$')) {
             throw new InvalidArgumentException(
                 (new Message('String %string% must omit the ending anchor %char%'))
-                    ->code('%string%', $this->string)
-                    ->code('%char%', '$')
+                    ->withCode('%string%', $this->string)
+                    ->withCode('%char%', '$')
             );
         }
     }

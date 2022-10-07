@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Spec\Interfaces\Specs;
 
-use Chevere\Filesystem\Interfaces\DirInterface;
+use Chevere\Filesystem\Interfaces\DirectoryInterface;
 use Chevere\Spec\Interfaces\SpecInterface;
 
 /**
@@ -21,7 +21,7 @@ use Chevere\Spec\Interfaces\SpecInterface;
  */
 interface IndexSpecInterface extends SpecInterface
 {
-    public function __construct(DirInterface $specDir);
+    public function __construct(DirectoryInterface $specDir);
 
     /**
      * Return an instance with the specified `$groupSpec`.

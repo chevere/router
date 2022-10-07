@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\Spec\Specs;
 
-use function Chevere\Filesystem\dirForPath;
+use function Chevere\Filesystem\directoryForPath;
 use Chevere\Http\Methods\PatchMethod;
 use Chevere\Router\Route\RouteEndpoint;
 use Chevere\Spec\Specs\RouteEndpointSpec;
@@ -38,7 +38,7 @@ final class RouteEndpointSpecsTest extends TestCase
     {
         $immutable = new RouteEndpointSpecs();
         $spec = new RouteEndpointSpec(
-            dirForPath('/spec/'),
+            directoryForPath('/spec/'),
             new RouteEndpoint(
                 new PatchMethod(),
                 new TestController()

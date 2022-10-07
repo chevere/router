@@ -78,13 +78,13 @@ The [RoutingDescriptorsMaker](../reference/Chevere/Components/Router/Routing/Rou
 
 ```php
 use Chevere\Router\Routing\RoutingDescriptorsMaker;
-use function Chevere\Filesystem\dirForPath;
+use function Chevere\Filesystem\directoryForPath;
 
 $routingDescriptorsMaker = new RoutingDescriptorsMaker(
     repository: 'app-routes'
 );
 $routingDescriptors = $routingDescriptorsMaker
-    ->withDescriptorsFor(dir: dirForPath('/var/routing/'))
+    ->withDescriptorsFor(dir: directoryForPath('/var/routing/'))
     ->descriptors();
 ```
 

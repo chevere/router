@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Spec\Interfaces;
 
 use Chevere\Filesystem\Exceptions\FilesystemException;
-use Chevere\Filesystem\Interfaces\DirInterface;
+use Chevere\Filesystem\Interfaces\DirectoryInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Ds\Map;
@@ -25,15 +25,15 @@ use Ds\Map;
 interface SpecMakerInterface
 {
     /**
-     * @param DirInterface $specDir Directory to reference `/spec/`
-     * @param DirInterface $outputDir Directory to output `/var/public/spec/`
+     * @param DirectoryInterface $specDir Directory to reference `/spec/`
+     * @param DirectoryInterface $outputDir Directory to output `/var/public/spec/`
      *
      * @throws FilesystemException
      * @throws InvalidArgumentException
      */
     public function __construct(
-        DirInterface $specDir,
-        DirInterface $outputDir,
+        DirectoryInterface $specDir,
+        DirectoryInterface $outputDir,
         RouterInterface $router
     );
 

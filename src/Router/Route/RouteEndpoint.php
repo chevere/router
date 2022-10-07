@@ -41,16 +41,12 @@ final class RouteEndpoint implements RouteEndpointInterface
          * @var StringParameterInterface $parameter
          */
         foreach ($controller->parameters()->getIterator() as $name => $parameter) {
-            $attributes = $parameter->attributes()->toArray();
             $array = [
                 'name' => $name,
                 'regex' => $parameter->regex()->__toString(),
                 'description' => $parameter->description(),
                 'isRequired' => $controller->parameters()->isRequired($name),
             ];
-            if ($attributes !== []) {
-                $array['attributes'] = implode('|', $attributes);
-            }
             $this->parameters[$name] = $array;
         }
     }
@@ -65,7 +61,7 @@ final class RouteEndpoint implements RouteEndpointInterface
         return $this->controller;
     }
 
-    public function withDescription(string $description): RouteEndpointInterface
+    public function withDescription(string $description): static
     {
         $new = clone $this;
         $new->description = $description;
@@ -83,7 +79,7 @@ final class RouteEndpoint implements RouteEndpointInterface
         if (!array_key_exists($parameter, $this->parameters)) {
             throw new OutOfBoundsException(
                 (new Message("Parameter %parameter% doesn't exists"))
-                    ->code('%parameter%', $parameter)
+                    ->withCode('%parameter%', $parameter)
             );
         }
         $new = clone $this;

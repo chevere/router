@@ -55,7 +55,7 @@ final class RoutableSpecs implements RoutableSpecsInterface
         catch (\OutOfBoundsException $e) {
             throw new OutOfBoundsException(
                 (new Message('Route name %routeName% not found'))
-                    ->code('%routeName%', $routeName)
+                    ->withCode('%routeName%', $routeName)
             );
         }
     }

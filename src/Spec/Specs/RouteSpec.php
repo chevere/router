@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 namespace Chevere\Spec\Specs;
 
-use Chevere\Filesystem\Interfaces\DirInterface;
+use Chevere\Filesystem\Interfaces\DirectoryInterface;
 use Chevere\Router\Interfaces\Route\RouteInterface;
 use Chevere\Router\Interfaces\Route\RouteWildcardInterface;
 use Chevere\Spec\Interfaces\Specs\RouteEndpointSpecsInterface;
 use Chevere\Spec\Interfaces\Specs\RouteSpecInterface;
 use Chevere\Spec\Specs\Traits\SpecsTrait;
-use function Chevere\VarSupport\deepCopy;
+use function Chevere\VariableSupport\deepCopy;
 
 final class RouteSpec implements RouteSpecInterface
 {
@@ -35,7 +35,7 @@ final class RouteSpec implements RouteSpecInterface
 
     private array $wildcards;
 
-    public function __construct(DirInterface $specDir, RouteInterface $route, string $repository)
+    public function __construct(DirectoryInterface $specDir, RouteInterface $route, string $repository)
     {
         $path = $route->path();
         $this->path = $path->name();

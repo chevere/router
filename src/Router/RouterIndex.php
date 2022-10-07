@@ -58,8 +58,8 @@ final class RouterIndex implements RouterIndexInterface
 
             throw new OverflowException(
                 (new Message('Route name %routeName% is already bound to group %groupName%'))
-                    ->code('%routeName%', $routeName)
-                    ->code('%groupName%', $groupName)
+                    ->withCode('%routeName%', $routeName)
+                    ->withCode('%groupName%', $groupName)
             );
         }
         $groupKey = $group;
@@ -101,7 +101,7 @@ final class RouterIndex implements RouterIndexInterface
         catch (\OutOfBoundsException $e) {
             throw new OutOfBoundsException(
                 (new Message('Route name %routeName% not found'))
-                    ->code('%routeName%', $name)
+                    ->withCode('%routeName%', $name)
             );
         }
     }
@@ -129,7 +129,7 @@ final class RouterIndex implements RouterIndexInterface
         catch (\OutOfBoundsException $e) {
             throw new OutOfBoundsException(
                 (new Message('Group %group% not found'))
-                    ->code('%group%', $group)
+                    ->withCode('%group%', $group)
             );
         }
     }
@@ -152,7 +152,7 @@ final class RouterIndex implements RouterIndexInterface
         catch (\OutOfBoundsException $e) {
             throw new OutOfBoundsException(
                 (new Message('Group %group% not found'))
-                    ->code('%group%', $group)
+                    ->withCode('%group%', $group)
             );
         }
     }

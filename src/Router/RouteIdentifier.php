@@ -15,7 +15,7 @@ namespace Chevere\Router;
 
 use Chevere\Message\Message;
 use Chevere\Router\Interfaces\RouteIdentifierInterface;
-use Chevere\Str\StrAssert;
+use Chevere\String\AssertString;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Throwable;
 
@@ -53,13 +53,13 @@ final class RouteIdentifier implements RouteIdentifierInterface
     private function assertString(string $argumentName): void
     {
         try {
-            (new StrAssert($this->{$argumentName}))
+            (new AssertString($this->{$argumentName}))
                 ->notEmpty()
                 ->notCtypeSpace();
         } catch (Throwable $e) {
             throw new InvalidArgumentException(
                 (new Message('Argument %argumentName% must not be empty neither ctype-space.'))
-                    ->code('%argumentName%', '$' . $argumentName)
+                    ->withCode('%argumentName%', '$' . $argumentName)
             );
         }
     }

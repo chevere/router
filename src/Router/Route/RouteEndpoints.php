@@ -47,7 +47,7 @@ final class RouteEndpoints implements RouteEndpointsInterface
         } catch (\OutOfBoundsException $e) {
             throw new OutOfBoundsException(
                 (new Message('Key %key% not found'))
-                    ->code('%key%', $key)
+                    ->withCode('%key%', $key)
             );
         }
 

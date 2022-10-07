@@ -17,7 +17,7 @@ use Chevere\Message\Message;
 use Chevere\Router\Exceptions\Route\RouteWildcardInvalidException;
 use Chevere\Router\Interfaces\Route\RouteWildcardInterface;
 use Chevere\Router\Interfaces\Route\RouteWildcardMatchInterface;
-use Chevere\Str\StrBool;
+use Chevere\String\ValidateString;
 
 final class RouteWildcard implements RouteWildcardInterface
 {
@@ -40,16 +40,16 @@ final class RouteWildcard implements RouteWildcardInterface
 
     private function assertName(): void
     {
-        if ((new StrBool($this->name))->startsWithCtypeDigit()) {
+        if ((new ValidateString($this->name))->isStartingWithCtypeDigit()) {
             throw new RouteWildcardInvalidException(
                 (new Message('String %string% must not start with a numeric value'))
-                    ->code('%string%', $this->name)
+                    ->withCode('%string%', $this->name)
             );
         }
         if (!preg_match(RouteWildcardInterface::ACCEPT_CHARS_REGEX, $this->name)) {
             throw new RouteWildcardInvalidException(
                 (new Message('String %string% must contain only alphanumeric and underscore characters'))
-                    ->code('%string%', $this->name)
+                    ->withCode('%string%', $this->name)
             );
         }
     }

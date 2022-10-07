@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\Spec\Specs;
 
-use function Chevere\Filesystem\dirForPath;
+use function Chevere\Filesystem\directoryForPath;
 use Chevere\Http\Methods\PatchMethod;
 use Chevere\Router\Route\Route;
 use Chevere\Router\Route\RouteEndpoint;
 use Chevere\Router\Route\RoutePath;
-use Chevere\Spec\Specs\RouteSpec;
 use Chevere\Spec\Specs\RoutableSpecs;
+use Chevere\Spec\Specs\RouteSpec;
 use Chevere\Tests\Spec\_resources\src\TestController;
 use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
@@ -41,7 +41,7 @@ final class RouteSpecsTest extends TestCase
         $repository = 'repo';
         $specs = new RoutableSpecs();
         $spec = new RouteSpec(
-            dirForPath("/spec/${repository}/"),
+            directoryForPath("/spec/${repository}/"),
             (new Route(
                 path: new RoutePath('/path'),
                 name: 'test',

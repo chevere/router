@@ -15,7 +15,7 @@ namespace Chevere\Spec;
 
 use Chevere\Filesystem\Exceptions\FilesystemException;
 use Chevere\Filesystem\File;
-use Chevere\Filesystem\Interfaces\DirInterface;
+use Chevere\Filesystem\Interfaces\DirectoryInterface;
 use Chevere\Filesystem\Interfaces\PathInterface;
 use Chevere\Message\Message;
 use Chevere\Router\Interfaces\RouterInterface;
@@ -26,7 +26,7 @@ use Chevere\Spec\Interfaces\Specs\IndexSpecInterface;
 use Chevere\Spec\Specs\GroupSpec;
 use Chevere\Spec\Specs\IndexSpec;
 use Chevere\Spec\Specs\RouteSpec;
-use Chevere\Str\Str;
+use Chevere\String\ModifyString;
 use Chevere\Throwable\Exception;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Ds\Map;
@@ -41,8 +41,8 @@ final class SpecMaker implements SpecMakerInterface
     private Map $files;
 
     public function __construct(
-        private DirInterface $specDir,
-        private DirInterface $outputDir,
+        private DirectoryInterface $specDir,
+        private DirectoryInterface $outputDir,
         private RouterInterface $router
     ) {
         $this->assertDir();
@@ -106,7 +106,7 @@ final class SpecMaker implements SpecMakerInterface
             if (!$this->outputDir->path()->isWritable()) {
                 throw new Exception(
                     (new Message('Directory %pathName% is not writable'))
-                        ->code('%pathName%', $this->outputDir->path()->__toString())
+                        ->withCode('%pathName%', $this->outputDir->path()->__toString())
                 );
             }
             $this->outputDir->removeContents();
@@ -120,7 +120,7 @@ final class SpecMaker implements SpecMakerInterface
         if (count($this->router->routes()) === 0) {
             throw new InvalidArgumentException(
                 (new Message('Instance of %interfaceName% does not contain any routable.'))
-                    ->code('%interfaceName%', RouterInterface::class)
+                    ->withCode('%interfaceName%', RouterInterface::class)
             );
         }
     }
@@ -145,7 +145,7 @@ final class SpecMaker implements SpecMakerInterface
             throw new FilesystemException(
                 previous: $e,
                 message: (new Message('Unable to make file %filename%'))
-                    ->code('%filename%', $filePath->__toString()),
+                    ->withCode('%filename%', $filePath->__toString()),
             );
         }
         // @codeCoverageIgnoreEnd
@@ -155,7 +155,7 @@ final class SpecMaker implements SpecMakerInterface
     {
         try {
             $dirPath = $this->outputDir->path();
-            $child = (new Str($jsonPath))
+            $child = (new ModifyString($jsonPath))
                 ->withReplaceFirst($this->specDir->path()->__toString(), '')
                 ->__toString();
             $child = ltrim($child, '/');
@@ -167,7 +167,7 @@ final class SpecMaker implements SpecMakerInterface
             throw new FilesystemException(
                 previous: $e,
                 message: (new Message('Unable to retrieve path for %argument%'))
-                    ->code('%argument%', $jsonPath),
+                    ->withCode('%argument%', $jsonPath),
             );
         }
         // @codeCoverageIgnoreEnd

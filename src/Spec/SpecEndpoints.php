@@ -58,7 +58,7 @@ final class SpecEndpoints implements SpecEndpointsInterface
         catch (\OutOfBoundsException $e) {
             throw new OutOfBoundsException(
                 (new Message('Method name %methodName% not found'))
-                    ->code('%methodName%', $methodName)
+                    ->withCode('%methodName%', $methodName)
             );
         }
     }

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\Spec\Specs;
 
-use function Chevere\Filesystem\dirForPath;
+use function Chevere\Filesystem\directoryForPath;
 use Chevere\Spec\Specs\GroupSpec;
 use Chevere\Spec\Specs\GroupSpecs;
 use OutOfBoundsException;
@@ -35,7 +35,7 @@ final class GroupsSpecsTest extends TestCase
     {
         $specs = new GroupSpecs();
         $spec = new GroupSpec(
-            dirForPath('/spec/'),
+            directoryForPath('/spec/'),
             'repo'
         );
         $specs = $specs->withPut($spec);

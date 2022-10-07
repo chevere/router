@@ -38,14 +38,14 @@ final class RouterDispatcher implements RouterDispatcherInterface
             Dispatcher::NOT_FOUND =>
                 throw new RouteNotFoundException(
                     (new Message('No route found for %uri%'))
-                        ->code('%uri%', $uri)
+                        ->withCode('%uri%', $uri)
                 ),
             Dispatcher::FOUND => new Routed(new ControllerName($info[1]), $info[2]),
             Dispatcher::METHOD_NOT_ALLOWED =>
                 throw new HttpMethodNotAllowedException(
                     (new Message('Method %method% is not in the list of allowed methods: %allowed%'))
-                        ->code('%method%', $httpMethod)
-                        ->code('%allowed%', implode(', ', $info[1]))
+                        ->withCode('%method%', $httpMethod)
+                        ->withCode('%allowed%', implode(', ', $info[1]))
                 )
         };
     }

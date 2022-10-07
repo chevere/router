@@ -41,8 +41,8 @@ final class StrictStd extends Std
         if ($matches === []) {
             throw new InvalidArgumentException(
                 (new Message("Route %provided% doesn't match regex %regex%"))
-                    ->code('%provided%', $route)
-                    ->code('%regex%', self::REGEX_PATH)
+                    ->withCode('%provided%', $route)
+                    ->withCode('%regex%', self::REGEX_PATH)
             );
         }
 
@@ -55,14 +55,14 @@ final class StrictStd extends Std
             throw new InvalidArgumentException(
                 previous: $e,
                 message: (new Message('Unable to parse route %route%'))
-                    ->code('%route%', $route),
+                    ->withCode('%route%', $route),
             );
         }
         // @codeCoverageIgnoreEnd
         if (count($datas) > 1) {
             throw new InvalidArgumentException(
                 (new Message('Optional routing at route %route% is forbidden'))
-                    ->code('%route%', $route)
+                    ->withCode('%route%', $route)
             );
         }
 

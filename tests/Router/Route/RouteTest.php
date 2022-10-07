@@ -16,12 +16,7 @@ namespace Chevere\Tests\Router\Route;
 use Chevere\Controller\Controller;
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Http\Methods\PostMethod;
-use Chevere\Parameter\Interfaces\ArgumentsInterface;
-use Chevere\Parameter\Interfaces\ParametersInterface;
-use Chevere\Parameter\Parameters;
-use Chevere\Parameter\StringParameter;
-use Chevere\Regex\Regex;
-use Chevere\Response\Interfaces\ResponseInterface;
+use Chevere\Parameter\Attributes\ParameterAttribute;
 use Chevere\Router\Exceptions\Route\RouteEndpointConflictException;
 use Chevere\Router\Exceptions\Route\RouteWildcardConflictException;
 use Chevere\Router\Route\Route;
@@ -124,40 +119,28 @@ final class RouteTest extends TestCase
 
 final class RouteTestController extends Controller
 {
-    public function getParameters(): ParametersInterface
-    {
-        return new Parameters(
-            id: (new StringParameter())
-                ->withRegex(new Regex('/^[0-9]+$/'))
-        );
-    }
-
-    public function run(ArgumentsInterface $arguments): ResponseInterface
-    {
-        return $this->getResponse();
+    public function run(
+        #[ParameterAttribute(regex: '/^[0-9]+$/')]
+        string $id
+    ): array {
+        return [];
     }
 }
 
 final class RouteTestControllerNoParams extends Controller
 {
-    public function run(ArgumentsInterface $arguments): ResponseInterface
+    public function run(): array
     {
-        return $this->getResponse();
+        return [];
     }
 }
 
 final class RouteTestControllerRegexConflict extends Controller
 {
-    public function getParameters(): ParametersInterface
-    {
-        return new Parameters(
-            id: (new StringParameter())
-                ->withRegex(new Regex('/^\W+$/'))
-        );
-    }
-
-    public function run(ArgumentsInterface $arguments): ResponseInterface
-    {
-        return $this->getResponse();
+    public function run(
+        #[ParameterAttribute(regex: '/^\W+$/')]
+        string $id
+    ): array {
+        return [];
     }
 }

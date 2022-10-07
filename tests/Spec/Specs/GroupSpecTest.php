@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\Spec\Specs;
 
-use function Chevere\Filesystem\dirForPath;
+use function Chevere\Filesystem\directoryForPath;
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Router\Route\Route;
 use Chevere\Router\Route\RouteEndpoint;
@@ -28,7 +28,7 @@ final class GroupSpecTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $specDir = dirForPath('/spec/');
+        $specDir = directoryForPath('/spec/');
         $repository = 'repo';
         $specGroupPathJson = $specDir
             ->getChild("${repository}/")
@@ -50,7 +50,7 @@ final class GroupSpecTest extends TestCase
     {
         $repository = 'repo';
         $routeLocator = new RouteLocator($repository, '/path');
-        $specDir = dirForPath('/spec/');
+        $specDir = directoryForPath('/spec/');
         $repository = 'repo';
         $groupSpecDir = $specDir->getChild("${repository}/");
         $routesSpecPathJson = $groupSpecDir->path()->__toString() . 'routes.json';

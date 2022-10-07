@@ -60,8 +60,8 @@ function route(string $path, ?string $name = null, ControllerInterface ...$httpC
         if (is_null($method)) {
             throw new HttpMethodNotAllowedException(
                 message: (new Message('Unknown HTTP method `%httpMethod%` provided for %controller% controller.'))
-                    ->code('%httpMethod%', $httpMethod)
-                    ->code('%controller%', $controller::class)
+                    ->withCode('%httpMethod%', $httpMethod)
+                    ->withCode('%controller%', $controller::class)
             );
         }
         /** @var MethodInterface $method */

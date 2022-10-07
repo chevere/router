@@ -12,12 +12,13 @@
         }
     ],
     "require": {
-        "chevere/chevere": "^0.4.x-dev",
+        "chevere/chevere": "^1.0",
         "nikic/fast-route": "^1.3"
     },
     "require-dev": {
+        "chevere/var-dump": "^0.6.0",
         "phpunit/phpunit": "^9.5",
-        "symplify/easy-coding-standard": "^9.4"
+        "symplify/easy-coding-standard": "^10.3"
     },
     "autoload": {
         "files": [
@@ -38,7 +39,7 @@
         "sort-packages": true
     },
     "scripts": {
-        "update-cs": "curl --create-dirs -O --output-dir .ecs https://raw.githubusercontent.com/chevere/code-style/main/.ecs/ecs-chevere.php"
+        "update-cs": "mkdir -p .ecs && cd .ecs && curl -O https://raw.githubusercontent.com/chevere/code-style/main/.ecs/ecs-chevere.php"
     },
     "scripts-descriptions": {
         "update-cs": "Update Chevere code style definition"

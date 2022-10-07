@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Spec\Specs;
 
-use Chevere\Filesystem\Interfaces\DirInterface;
+use Chevere\Filesystem\Interfaces\DirectoryInterface;
 use Chevere\Spec\Interfaces\Specs\GroupSpecInterface;
 use Chevere\Spec\Interfaces\Specs\RoutableSpecsInterface;
 use Chevere\Spec\Interfaces\Specs\RouteSpecInterface;
@@ -25,7 +25,7 @@ final class GroupSpec implements GroupSpecInterface
 
     private RoutableSpecsInterface $routableSpecs;
 
-    public function __construct(DirInterface $specDir, string $groupName)
+    public function __construct(DirectoryInterface $specDir, string $groupName)
     {
         $this->jsonPath = $specDir
             ->getChild("${groupName}/")

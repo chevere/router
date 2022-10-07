@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\Spec;
 
-use function Chevere\Filesystem\dirForPath;
-use Chevere\Filesystem\Interfaces\DirInterface;
+use function Chevere\Filesystem\directoryForPath;
+use Chevere\Filesystem\Interfaces\DirectoryInterface;
 use Chevere\Filesystem\Interfaces\PathInterface;
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Http\Methods\PutMethod;
@@ -33,7 +33,7 @@ final class SpecMakerTest extends TestCase
 {
     private DirHelper $dirHelper;
 
-    private DirInterface $buildDir;
+    private DirectoryInterface $buildDir;
 
     protected function setUp(): void
     {
@@ -45,7 +45,7 @@ final class SpecMakerTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         new SpecMaker(
-            dirForPath('/spec/'),
+            directoryForPath('/spec/'),
             $this->buildDir->getChild('spec/'),
             new Router()
         );
@@ -69,7 +69,7 @@ final class SpecMakerTest extends TestCase
         $router = (new Router())
             ->withAddedRoute(group: 'repo', route: $route);
         $specMaker = new SpecMaker(
-            dirForPath('/spec/'),
+            directoryForPath('/spec/'),
             $this->buildDir->getChild('spec/'),
             $router
         );

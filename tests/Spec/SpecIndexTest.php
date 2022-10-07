@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\Spec;
 
-use function Chevere\Filesystem\dirForPath;
+use function Chevere\Filesystem\directoryForPath;
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Http\Methods\PutMethod;
 use Chevere\Router\Route\RouteEndpoint;
@@ -41,7 +41,7 @@ final class SpecIndexTest extends TestCase
         $routeLocator = new RouteLocator('repo', '/path');
         $getMethod = new GetMethod();
         $routeEndpoint = new RouteEndpoint($getMethod, new TestController());
-        $specDir = dirForPath('/spec/group/route/');
+        $specDir = directoryForPath('/spec/group/route/');
         $routeEndpointSpec = new RouteEndpointSpec($specDir, $routeEndpoint);
         $specIndex = (new SpecIndex())->withAddedRoute(
             $routeLocator->__toString(),

@@ -66,7 +66,7 @@ final class Routes implements RoutesInterface
         catch (\OutOfBoundsException $e) {
             throw new OutOfBoundsException(
                 (new Message('Path %path% not found'))
-                    ->code('%path%', $path)
+                    ->withCode('%path%', $path)
             );
         }
     }
@@ -77,14 +77,14 @@ final class Routes implements RoutesInterface
             throw new OverflowException(
                 code: static::EXCEPTION_CODE_TAKEN_NAME,
                 message: (new Message('Named route %name% has been already taken.'))
-                    ->code('%name%', $route->name())
+                    ->withCode('%name%', $route->name())
             );
         }
         if ($this->map->has($path)) {
             throw new OverflowException(
                 code: static::EXCEPTION_CODE_TAKEN_PATH,
                 message: (new Message('Route path %path% has been already taken.'))
-                    ->code('%path%', $route->name())
+                    ->withCode('%path%', $route->name())
             );
         }
     }

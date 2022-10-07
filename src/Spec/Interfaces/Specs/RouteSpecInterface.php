@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Spec\Interfaces\Specs;
 
-use Chevere\Filesystem\Interfaces\DirInterface;
+use Chevere\Filesystem\Interfaces\DirectoryInterface;
 use Chevere\Router\Interfaces\Route\RouteInterface;
 use Chevere\Spec\Interfaces\SpecInterface;
 use Chevere\Spec\Specs\RouteEndpointSpecs;
@@ -24,7 +24,7 @@ use Chevere\Spec\Specs\RouteEndpointSpecs;
 interface RouteSpecInterface extends SpecInterface
 {
     public function __construct(
-        DirInterface $specDir,
+        DirectoryInterface $specDir,
         RouteInterface $route,
         string $repository
     );

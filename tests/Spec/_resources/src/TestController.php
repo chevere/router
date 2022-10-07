@@ -14,36 +14,19 @@ declare(strict_types=1);
 namespace Chevere\Tests\Spec\_resources\src;
 
 use Chevere\Controller\Controller;
-use Chevere\Parameter\Interfaces\ArgumentsInterface;
-use Chevere\Parameter\Interfaces\ParametersInterface;
-use Chevere\Parameter\Parameters;
-use Chevere\Parameter\StringParameter;
-use Chevere\Regex\Regex;
-use Chevere\Response\Interfaces\ResponseInterface;
-use Chevere\Response\Response;
+use Chevere\Parameter\Attributes\ParameterAttribute;
 
 class TestController extends Controller
 {
-    protected array $_data;
-
-    public function getParameters(): ParametersInterface
-    {
-        return new Parameters(
-            name: (new StringParameter())
-                ->withRegex(new Regex('/^[\w]+$/')),
-            id: (new StringParameter())
-                ->withRegex(new Regex('/^[0-9]+$/'))
-        );
-    }
-
-    public function run(ArgumentsInterface $arguments): ResponseInterface
-    {
-        $response = new Response();
-        $data = [
-            'userName' => $arguments->get('name'),
-            'userId' => $arguments->get('id'),
+    public function run(
+        #[ParameterAttribute(regex: '/^[\w]+$/')]
+        string $name,
+        #[ParameterAttribute(regex: '/^[0-9]+$/')]
+        string $id
+    ): array {
+        return [
+            'userName' => $name,
+            'userId' => $id,
         ];
-
-        return $response->withData(...$data);
     }
 }

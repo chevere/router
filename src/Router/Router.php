@@ -21,7 +21,7 @@ use Chevere\Router\Interfaces\RouterIndexInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use Chevere\Router\Parsers\StrictStd;
-use Chevere\VarSupport\VarStorable;
+use Chevere\VariableSupport\StorableVariable;
 use FastRoute\DataGenerator\GroupCountBased;
 use FastRoute\RouteCollector;
 use Throwable;
@@ -76,15 +76,15 @@ final class Router implements RouterInterface
     private function assertRoute(RouteInterface $route): void
     {
         try {
-            $varStorable = new VarStorable($route);
-            $varStorable->toExport();
+            $storable = new StorableVariable($route);
+            $storable->toExport();
         } catch (Throwable $e) {
             throw new RouteNotRoutableException(previous: $e);
         }
         if ($route->endpoints()->count() === 0) {
             throw new RouteWithoutEndpointsException(
                 (new Message("Argument of type %className% doesn't contain any endpoint."))
-                ->code('%className%', $route::class)
+                ->withCode('%className%', $route::class)
             );
         }
     }
