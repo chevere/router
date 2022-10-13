@@ -49,15 +49,20 @@ function routes(RouteInterface ...$namedRoutes): RoutesInterface
  * @param string $path The route path.
  * @param ControllerInterface ...$httpControllers Named arguments for httpMethod: ControllerName as `POST: PostController`.
  */
-function route(string $path, ?string $name = null, ControllerInterface ...$httpControllers): RouteInterface
-{
+function route(
+    string $path,
+    ?string $name = null,
+    ?string $view = null,
+    ControllerInterface ...$httpControllers
+): RouteInterface {
     $route = new Route(
         $name ?? $path,
-        new RoutePath($path)
+        new RoutePath($path),
+        $view ?? ''
     );
     foreach ($httpControllers as $httpMethod => $controller) {
         $method = RouteEndpointInterface::KNOWN_METHODS[$httpMethod] ?? null;
-        if (is_null($method)) {
+        if ($method === null) {
             throw new HttpMethodNotAllowedException(
                 message: (new Message('Unknown HTTP method `%httpMethod%` provided for %controller% controller.'))
                     ->withCode('%httpMethod%', $httpMethod)
@@ -75,7 +80,6 @@ function route(string $path, ?string $name = null, ControllerInterface ...$httpC
 }
 
 /**
- *
  * @throws RouteNotRoutableException
  * @throws RouteWithoutEndpointsException
  * @throws InvalidArgumentException

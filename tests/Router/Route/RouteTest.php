@@ -19,6 +19,7 @@ use Chevere\Http\Methods\PostMethod;
 use Chevere\Parameter\Attributes\ParameterAttribute;
 use Chevere\Router\Exceptions\Route\RouteEndpointConflictException;
 use Chevere\Router\Exceptions\Route\RouteWildcardConflictException;
+use function Chevere\Router\route;
 use Chevere\Router\Route\Route;
 use Chevere\Router\Route\RouteEndpoint;
 use Chevere\Router\Route\RoutePath;
@@ -31,17 +32,15 @@ final class RouteTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $routePath = new RoutePath('/test');
+        $path = '/test';
+        $routePath = new RoutePath($path);
         $route = new Route('test', $routePath);
-        $line = __LINE__ - 1;
         $this->assertSame($routePath, $route->path());
-        $this->assertSame([
-            'file' => __FILE__,
-            'line' => $line,
-            'function' => '__construct',
-            'class' => Route::class,
-            'type' => '->',
-        ], $route->maker());
+        $this->assertSame('', $route->view());
+        $route = route($path, 'name', 'view');
+        $this->assertSame('name', $route->name());
+        $this->assertEquals($routePath, $route->path());
+        $this->assertSame('view', $route->view());
     }
 
     public function testWithAddedEndpoint(): void

@@ -29,11 +29,6 @@ use Chevere\Throwable\Exceptions\OverflowException;
 final class Route implements RouteInterface
 {
     /**
-     * @var array details about the instance maker
-     */
-    private array $maker;
-
-    /**
      * @var array [wildcardName =>]
      */
     private array $wildcards;
@@ -44,9 +39,9 @@ final class Route implements RouteInterface
 
     public function __construct(
         private string $name,
-        private RoutePathInterface $path
+        private RoutePathInterface $path,
+        private string $view = '',
     ) {
-        $this->maker = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[0];
         $this->endpoints = new RouteEndpoints();
     }
 
@@ -60,9 +55,9 @@ final class Route implements RouteInterface
         return $this->path;
     }
 
-    public function maker(): array
+    public function view(): string
     {
-        return $this->maker;
+        return $this->view;
     }
 
     public function withAddedEndpoint(RouteEndpointInterface $endpoint): RouteInterface
@@ -76,7 +71,7 @@ final class Route implements RouteInterface
             /** @var StringParameterInterface $controllerParamMatch */
             $controllerParamMatch = $endpoint->controller()->parameters()->get($wildcard->__toString());
             $controllerParamMatch = $controllerParamMatch->regex()->toNoDelimitersNoAnchors();
-            if (!isset($knownWildcardMatch)) {
+            if (! isset($knownWildcardMatch)) {
                 if ($controllerParamMatch !== $wildcard->match()->__toString()) {
                     throw new RouteWildcardConflictException(
                         (new Message('Wildcard %parameter% matches against %match% which is incompatible with the match %controllerMatch% defined for %controller%'))
@@ -113,7 +108,7 @@ final class Route implements RouteInterface
 
     private function assertNoConflict(RouteEndpointInterface $endpoint): void
     {
-        if (!isset($this->firstEndpoint)) {
+        if (! isset($this->firstEndpoint)) {
             $this->firstEndpoint = $endpoint;
         } else {
             foreach ($this->firstEndpoint->parameters() as $name => $parameter) {
@@ -137,7 +132,7 @@ final class Route implements RouteInterface
                     ->withCode('%wildcard%', $wildcard->__toString())
             );
         }
-        if (!array_key_exists($wildcard->__toString(), $endpoint->parameters())) {
+        if (! array_key_exists($wildcard->__toString(), $endpoint->parameters())) {
             $parameters = array_keys($endpoint->parameters());
 
             throw new OutOfBoundsException(

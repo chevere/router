@@ -34,9 +34,9 @@ interface RouteInterface
     public function path(): RoutePathInterface;
 
     /**
-     * Provides access to the file maker.
+     * Provides access to view.
      */
-    public function maker(): array;
+    public function view(): string;
 
     /**
      * Return an instance with the specified added `$routeEndpoint`.
