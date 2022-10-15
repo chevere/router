@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
-use Chevere\Controller\ControllerName;
 use Chevere\Http\Exceptions\HttpMethodNotAllowedException;
 use Chevere\Message\Message;
 use Chevere\Router\Exceptions\NotFoundException;
@@ -36,7 +35,7 @@ final class Dispatcher implements DispatcherInterface
             ->dispatch($httpMethod, $uri);
 
         return match ($info[0]) {
-            GroupCountBased::FOUND => new Routed(new ControllerName($info[1]), $info[2]),
+            GroupCountBased::FOUND => new Routed($info[1], $info[2]),
             GroupCountBased::NOT_FOUND =>
                 throw new NotFoundException(
                     (new Message('No route found for %uri%'))

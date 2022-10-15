@@ -44,7 +44,7 @@ function routes(RouteInterface ...$namedRoutes): RoutesInterface
 /**
  * @param ?string $name The route name, if not provided it will be same as the route path.
  * @param string $path The route path.
- * @param ControllerInterface ...$httpControllers Named arguments for httpMethod: ControllerName as `POST: PostController`.
+ * @param ControllerInterface ...$httpControllers Named arguments for httpMethod: Controller as `POST: PostController`.
  */
 function route(
     string $path,

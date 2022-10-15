@@ -34,7 +34,7 @@ final class DispatcherTest extends TestCase
     public function testFound(): void
     {
         $routeCollector = $this->getRouteCollector();
-        $routeCollector->addRoute('GET', '/', TestController::class);
+        $routeCollector->addRoute('GET', '/', new TestController());
         $routeDispatcher = new Dispatcher($routeCollector);
         $this->expectNotToPerformAssertions();
         $routeDispatcher->dispatch('GET', '/');

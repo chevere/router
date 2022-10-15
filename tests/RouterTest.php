@@ -35,12 +35,13 @@ final class RouterTest extends TestCase
 
     public function testRouter(): void
     {
-        $routePath = new Path('/🐘/{id:\d+}/{name:\w+}');
-        $route = new Route('test', $routePath);
+        $path = new Path('/🐘/{id:\d+}/{name:\w+}');
+        $controller = new TestController();
+        $route = new Route('test', $path);
         $route = $route->withAddedEndpoint(
             new Endpoint(
                 new GetMethod(),
-                new TestController()
+                $controller
             )
         );
         $router = new Router();
@@ -58,7 +59,7 @@ final class RouterTest extends TestCase
         );
         $this->assertSame(
             [
-                0 => TestController::class,
+                0 => $controller,
                 1 => [
                     'id' => 'id',
                     'name' => 'name',

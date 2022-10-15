@@ -51,7 +51,7 @@ final class Router implements RouterInterface
             $new->routeCollector->addRoute(
                 $endpoint->method()::name(),
                 $route->path()->__toString(),
-                $endpoint->controller()::class
+                $endpoint->controller()
             );
         }
 

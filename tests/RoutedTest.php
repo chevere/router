@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Tests;
 
-use Chevere\Controller\ControllerName;
-use Chevere\Controller\Interfaces\ControllerInterface;
 use Chevere\Router\Routed;
 use Chevere\Router\Tests\_resources\TestController;
 use PHPUnit\Framework\TestCase;
@@ -23,14 +21,13 @@ final class RoutedTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $controllerName = new ControllerName(TestController::class);
+        $controller = new TestController();
         $arguments = [
             'name' => 'name-value',
             'id' => 'id-value',
         ];
-        $routed = new Routed($controllerName, $arguments);
-        $this->assertSame($controllerName, $routed->controllerName());
+        $routed = new Routed($controller, $arguments);
         $this->assertSame($arguments, $routed->arguments());
-        $this->assertInstanceOf(ControllerInterface::class, $routed->getController());
+        $this->assertSame($controller, $routed->controller());
     }
 }
