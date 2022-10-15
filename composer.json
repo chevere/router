@@ -23,16 +23,15 @@
     },
     "autoload": {
         "files": [
-            "src/Router/functions.php"
+            "src/functions.php"
         ],
         "psr-4": {
-            "Chevere\\Router\\": "src/Router/",
-            "Chevere\\Spec\\": "src/Spec/"
+            "Chevere\\Router\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Chevere\\Tests\\": "tests/"
+            "Chevere\\Router\\Tests\\": "tests/"
         }
     },
     "config": {
