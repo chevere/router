@@ -27,7 +27,6 @@ use Chevere\Spec\Specs\GroupSpec;
 use Chevere\Spec\Specs\IndexSpec;
 use Chevere\Spec\Specs\RouteSpec;
 use Chevere\String\ModifyString;
-use Chevere\Throwable\Exception;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Ds\Map;
 use Throwable;
@@ -54,7 +53,7 @@ final class SpecMaker implements SpecMakerInterface
         $groups = [];
         foreach ($routes->getIterator() as $routeName => $routable) {
             $repository = $router->index()->getRouteGroup($routeName);
-            if (!isset($groups[$repository])) {
+            if (! isset($groups[$repository])) {
                 $groups[$repository] = new GroupSpec($specDir, $repository);
             }
             $routableSpec = new RouteSpec(
@@ -99,12 +98,12 @@ final class SpecMaker implements SpecMakerInterface
     private function assertDir(): void
     {
         try {
-            if (!$this->outputDir->exists()) {
+            if (! $this->outputDir->exists()) {
                 $this->outputDir->create(0755);
             }
             $this->outputDir->assertExists();
-            if (!$this->outputDir->path()->isWritable()) {
-                throw new Exception(
+            if (! $this->outputDir->path()->isWritable()) {
+                throw new FilesystemException(
                     (new Message('Directory %pathName% is not writable'))
                         ->withCode('%pathName%', $this->outputDir->path()->__toString())
                 );
