@@ -15,10 +15,10 @@ namespace Chevere\Tests\Spec\Specs;
 
 use function Chevere\Filesystem\directoryForPath;
 use Chevere\Http\Methods\GetMethod;
-use Chevere\Router\Route\Route;
-use Chevere\Router\Route\RouteEndpoint;
-use Chevere\Router\Route\RouteLocator;
-use Chevere\Router\Route\RoutePath;
+use Chevere\Router\Endpoint;
+use Chevere\Router\Locator;
+use Chevere\Router\Path;
+use Chevere\Router\Route;
 use Chevere\Spec\Specs\GroupSpec;
 use Chevere\Spec\Specs\RouteSpec;
 use Chevere\Tests\Spec\_resources\src\TestController;
@@ -49,14 +49,14 @@ final class GroupSpecTest extends TestCase
     public function testWithAddedRoutable(): void
     {
         $repository = 'repo';
-        $routeLocator = new RouteLocator($repository, '/path');
+        $routeLocator = new Locator($repository, '/path');
         $specDir = directoryForPath('/spec/');
         $repository = 'repo';
         $groupSpecDir = $specDir->getChild("${repository}/");
         $routesSpecPathJson = $groupSpecDir->path()->__toString() . 'routes.json';
-        $route = (new Route('test', new RoutePath('/route/path')))
+        $route = (new Route('test', new Path('/route/path')))
             ->withAddedEndpoint(
-                new RouteEndpoint(new GetMethod(), new TestController())
+                new Endpoint(new GetMethod(), new TestController())
             );
         $routableSpec = new RouteSpec(
             $groupSpecDir->getChild(ltrim($routeLocator->path(), '/') . '/'),

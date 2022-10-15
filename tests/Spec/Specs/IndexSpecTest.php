@@ -15,9 +15,9 @@ namespace Chevere\Tests\Spec\Specs;
 
 use function Chevere\Filesystem\directoryForPath;
 use Chevere\Http\Methods\GetMethod;
-use Chevere\Router\Route\Route;
-use Chevere\Router\Route\RouteEndpoint;
-use Chevere\Router\Route\RoutePath;
+use Chevere\Router\Endpoint;
+use Chevere\Router\Path;
+use Chevere\Router\Route;
 use Chevere\Spec\Specs\GroupSpec;
 use Chevere\Spec\Specs\IndexSpec;
 use Chevere\Tests\Spec\_resources\src\TestController;
@@ -36,12 +36,12 @@ final class IndexSpecTest extends TestCase
 
     public function testWithAddedGroup(): void
     {
-        $routePath = new RoutePath('/route/path');
+        $routePath = new Path('/route/path');
         $specDir = directoryForPath('/spec/');
         $repository = 'repo';
         $route = (new Route('test', $routePath))
             ->withAddedEndpoint(
-                new RouteEndpoint(new GetMethod(), new TestController())
+                new Endpoint(new GetMethod(), new TestController())
             );
         $objectStorage = new SplObjectStorage();
         $objectStorage->attach($route);

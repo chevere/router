@@ -24,15 +24,12 @@ use function Chevere\Filesystem\filePhpReturnForPath;
 use Chevere\Http\Exceptions\HttpMethodNotAllowedException;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Message\Message;
-use Chevere\Router\Exceptions\RouteNotRoutableException;
-use Chevere\Router\Exceptions\RouteWithoutEndpointsException;
-use Chevere\Router\Interfaces\Route\RouteEndpointInterface;
-use Chevere\Router\Interfaces\Route\RouteInterface;
+use Chevere\Router\Exceptions\NotRoutableException;
+use Chevere\Router\Exceptions\WithoutEndpointsException;
+use Chevere\Router\Interfaces\EndpointInterface;
+use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
-use Chevere\Router\Route\Route;
-use Chevere\Router\Route\RouteEndpoint;
-use Chevere\Router\Route\RoutePath;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OverflowException;
 use Chevere\Throwable\Exceptions\RuntimeException;
@@ -57,11 +54,11 @@ function route(
 ): RouteInterface {
     $route = new Route(
         $name ?? $path,
-        new RoutePath($path),
+        new Path($path),
         $view ?? ''
     );
     foreach ($httpControllers as $httpMethod => $controller) {
-        $method = RouteEndpointInterface::KNOWN_METHODS[$httpMethod] ?? null;
+        $method = EndpointInterface::KNOWN_METHODS[$httpMethod] ?? null;
         if ($method === null) {
             throw new HttpMethodNotAllowedException(
                 message: (new Message('Unknown HTTP method `%httpMethod%` provided for %controller% controller.'))
@@ -72,7 +69,7 @@ function route(
         /** @var MethodInterface $method */
         $method = new $method();
         $route = $route->withAddedEndpoint(
-            new RouteEndpoint($method, $controller)
+            new Endpoint($method, $controller)
         );
     }
 
@@ -80,8 +77,8 @@ function route(
 }
 
 /**
- * @throws RouteNotRoutableException
- * @throws RouteWithoutEndpointsException
+ * @throws NotRoutableException
+ * @throws WithoutEndpointsException
  * @throws InvalidArgumentException
  * @throws OverflowException
  *

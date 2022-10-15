@@ -16,8 +16,8 @@ namespace Chevere\Tests\Spec;
 use function Chevere\Filesystem\directoryForPath;
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Http\Methods\PutMethod;
-use Chevere\Router\Route\RouteEndpoint;
-use Chevere\Router\Route\RouteLocator;
+use Chevere\Router\Endpoint;
+use Chevere\Router\Locator;
 use Chevere\Spec\SpecIndex;
 use Chevere\Spec\Specs\RouteEndpointSpec;
 use Chevere\Tests\Spec\_resources\src\TestController;
@@ -38,9 +38,9 @@ final class SpecIndexTest extends TestCase
 
     public function testWithOffset(): void
     {
-        $routeLocator = new RouteLocator('repo', '/path');
+        $routeLocator = new Locator('repo', '/path');
         $getMethod = new GetMethod();
-        $routeEndpoint = new RouteEndpoint($getMethod, new TestController());
+        $routeEndpoint = new Endpoint($getMethod, new TestController());
         $specDir = directoryForPath('/spec/group/route/');
         $routeEndpointSpec = new RouteEndpointSpec($specDir, $routeEndpoint);
         $specIndex = (new SpecIndex())->withAddedRoute(
@@ -61,7 +61,7 @@ final class SpecIndexTest extends TestCase
             )
         );
         $method2 = new PutMethod();
-        $routeEndpoint2 = new RouteEndpoint($method2, new TestController());
+        $routeEndpoint2 = new Endpoint($method2, new TestController());
         $routeEndpointSpec2 = new RouteEndpointSpec($specDir, $routeEndpoint2);
         $specIndex = $specIndex->withAddedRoute(
             $routeLocator->__toString(),

@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Chevere\Spec\Specs;
 
 use Chevere\Filesystem\Interfaces\DirectoryInterface;
-use Chevere\Router\Interfaces\Route\RouteInterface;
-use Chevere\Router\Interfaces\Route\RouteWildcardInterface;
+use Chevere\Router\Interfaces\RouteInterface;
+use Chevere\Router\Interfaces\WildcardInterface;
 use Chevere\Spec\Interfaces\Specs\RouteEndpointSpecsInterface;
 use Chevere\Spec\Interfaces\Specs\RouteSpecInterface;
 use Chevere\Spec\Specs\Traits\SpecsTrait;
@@ -72,7 +72,7 @@ final class RouteSpec implements RouteSpecInterface
             $endpoints[$key] = $routeEndpointSpec->toArray();
         }
         $wildcardsArray = [];
-        /** @var RouteWildcardInterface $wildcard */
+        /** @var WildcardInterface $wildcard */
         foreach ($this->wildcards as $wildcard) {
             $wildcardsArray[$wildcard->__toString()] = '^' . $wildcard->match()->__toString() . '$';
         }

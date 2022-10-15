@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\Router;
 
-use Chevere\Router\Route\Route;
-use Chevere\Router\Route\RoutePath;
+use Chevere\Router\Path;
+use Chevere\Router\Route;
 use Chevere\Router\Routes;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
@@ -27,7 +27,7 @@ final class RoutesTest extends TestCase
         $name = 'test';
         $route = (new Route(
             name: $name,
-            path: new RoutePath('/some-path')
+            path: new Path('/some-path')
         ));
         $key = $route->path()->__toString();
         $routes = new Routes();
@@ -45,7 +45,7 @@ final class RoutesTest extends TestCase
         $name = 'test';
         $route = new Route(
             name: $name,
-            path: new RoutePath('/some-path')
+            path: new Path('/some-path')
         );
         $key = $route->path()->__toString();
         $routes = (new Routes())
@@ -55,14 +55,14 @@ final class RoutesTest extends TestCase
         $routes->withAdded(
             new Route(
                 name: $name,
-                path: new RoutePath('/some-alt-path')
+                path: new Path('/some-alt-path')
             )
         );
     }
 
     public function testWithAddedPathCollision(): void
     {
-        $routePath = new RoutePath('/some-path');
+        $routePath = new Path('/some-path');
         $route = new Route(
             name: 'test',
             path: $routePath

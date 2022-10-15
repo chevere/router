@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Chevere\Router\Interfaces\Route\RouteInterface;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OverflowException;
 use FastRoute\RouteCollector;
@@ -37,7 +36,7 @@ interface RouterInterface
     /**
      * Provides access to the index instance.
      */
-    public function index(): RouterIndexInterface;
+    public function index(): IndexInterface;
 
     /**
      * Provides access to the routes instance.

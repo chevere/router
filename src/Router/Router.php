@@ -14,10 +14,10 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Message\Message;
-use Chevere\Router\Exceptions\RouteNotRoutableException;
-use Chevere\Router\Exceptions\RouteWithoutEndpointsException;
-use Chevere\Router\Interfaces\Route\RouteInterface;
-use Chevere\Router\Interfaces\RouterIndexInterface;
+use Chevere\Router\Exceptions\NotRoutableException;
+use Chevere\Router\Exceptions\WithoutEndpointsException;
+use Chevere\Router\Interfaces\IndexInterface;
+use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use Chevere\Router\Parsers\StrictStd;
@@ -28,17 +28,17 @@ use Throwable;
 
 final class Router implements RouterInterface
 {
-    private RouterIndexInterface $index;
+    private IndexInterface $index;
 
     private RoutesInterface $routes;
 
-    private RouteCollector $routeCollector;
+    private RouteCollector $collector;
 
     public function __construct()
     {
         $this->routes = new Routes();
-        $this->index = new RouterIndex();
-        $this->routeCollector = new RouteCollector(new StrictStd(), new GroupCountBased());
+        $this->index = new Index();
+        $this->collector = new RouteCollector(new StrictStd(), new GroupCountBased());
     }
 
     public function withAddedRoute(string $group, RouteInterface $route): RouterInterface
@@ -48,7 +48,7 @@ final class Router implements RouterInterface
         $new->index = $new->index->withAddedRoute($route, $group);
         $new->routes = $new->routes->withAdded($route);
         foreach ($route->endpoints()->getIterator() as $endpoint) {
-            $new->routeCollector->addRoute(
+            $new->collector->addRoute(
                 $endpoint->method()::name(),
                 $route->path()->__toString(),
                 $endpoint->controller()::class
@@ -58,7 +58,7 @@ final class Router implements RouterInterface
         return $new;
     }
 
-    public function index(): RouterIndexInterface
+    public function index(): IndexInterface
     {
         return $this->index;
     }
@@ -70,7 +70,7 @@ final class Router implements RouterInterface
 
     public function routeCollector(): RouteCollector
     {
-        return $this->routeCollector;
+        return $this->collector;
     }
 
     private function assertRoute(RouteInterface $route): void
@@ -79,12 +79,12 @@ final class Router implements RouterInterface
             $storable = new StorableVariable($route);
             $storable->toExport();
         } catch (Throwable $e) {
-            throw new RouteNotRoutableException(previous: $e);
+            throw new NotRoutableException(previous: $e);
         }
         if ($route->endpoints()->count() === 0) {
-            throw new RouteWithoutEndpointsException(
+            throw new WithoutEndpointsException(
                 (new Message("Argument of type %className% doesn't contain any endpoint."))
-                ->withCode('%className%', $route::class)
+                    ->withCode('%className%', $route::class)
             );
         }
     }

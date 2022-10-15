@@ -15,10 +15,10 @@ namespace Chevere\Tests\Spec\Specs;
 
 use function Chevere\Filesystem\directoryForPath;
 use Chevere\Http\Methods\GetMethod;
-use Chevere\Router\Route\Route;
-use Chevere\Router\Route\RouteEndpoint;
-use Chevere\Router\Route\RouteLocator;
-use Chevere\Router\Route\RoutePath;
+use Chevere\Router\Endpoint;
+use Chevere\Router\Locator;
+use Chevere\Router\Path;
+use Chevere\Router\Route;
 use Chevere\Spec\Specs\RouteEndpointSpec;
 use Chevere\Spec\Specs\RouteSpec;
 use Chevere\Tests\Spec\_resources\src\TestController;
@@ -29,15 +29,15 @@ final class RouteSpecTest extends TestCase
     public function testConstruct(): void
     {
         $repository = 'repo';
-        $routeLocator = new RouteLocator($repository, '/route/path');
-        $routePath = new RoutePath('/route/path');
+        $routeLocator = new Locator($repository, '/route/path');
+        $routePath = new Path('/route/path');
         $specDir = directoryForPath("/spec/${repository}/");
         $routeSpecPath = $specDir
             ->getChild(ltrim($routeLocator->path(), '/') . '/')
             ->path()
             ->__toString() . 'route.json';
         $method = new GetMethod();
-        $routeEndpoint = (new RouteEndpoint($method, new TestController()))
+        $routeEndpoint = (new Endpoint($method, new TestController()))
             ->withDescription('Test endpoint');
         $route = (new Route('test', $routePath))
             ->withAddedEndpoint($routeEndpoint);

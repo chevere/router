@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Spec\Interfaces\Specs;
 
 use Chevere\Filesystem\Interfaces\DirectoryInterface;
-use Chevere\Router\Interfaces\Route\RouteInterface;
+use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Spec\Interfaces\SpecInterface;
 use Chevere\Spec\Specs\RouteEndpointSpecs;
 

@@ -15,10 +15,10 @@ namespace Chevere\Tests\Spec;
 
 use function Chevere\Filesystem\directoryForPath;
 use Chevere\Http\Methods\GetMethod;
-use Chevere\Router\Route\RouteEndpoint;
+use Chevere\Router\Endpoint;
 use Chevere\Spec\SpecEndpoints;
 use Chevere\Spec\Specs\RouteEndpointSpec;
-use Chevere\Tests\Router\Route\_resources\src\TestController;
+use Chevere\Tests\Router\_resources\src\TestDummyController;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 
@@ -36,9 +36,9 @@ final class SpecEndpointsTest extends TestCase
     public function testWithPut(): void
     {
         $method = new GetMethod();
-        $routeEndpoint = new RouteEndpoint(
+        $routeEndpoint = new Endpoint(
             $method,
-            new TestController()
+            new TestDummyController()
         );
         $specDir = directoryForPath('/path/');
         $routeEndpointSpec = new RouteEndpointSpec(

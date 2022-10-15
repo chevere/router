@@ -14,11 +14,11 @@ declare(strict_types=1);
 namespace Chevere\Tests\Router;
 
 use Chevere\Http\Methods\GetMethod;
-use Chevere\Router\Exceptions\RouteNotRoutableException;
-use Chevere\Router\Exceptions\RouteWithoutEndpointsException;
-use Chevere\Router\Route\Route;
-use Chevere\Router\Route\RouteEndpoint;
-use Chevere\Router\Route\RoutePath;
+use Chevere\Router\Endpoint;
+use Chevere\Router\Exceptions\NotRoutableException;
+use Chevere\Router\Exceptions\WithoutEndpointsException;
+use Chevere\Router\Path;
+use Chevere\Router\Route;
 use Chevere\Router\Router;
 use Chevere\Tests\Router\_resources\src\TestController;
 use FastRoute\RouteCollector;
@@ -35,10 +35,10 @@ final class RouterTest extends TestCase
 
     public function testRouter(): void
     {
-        $routePath = new RoutePath('/🐘/{id:\d+}/{name:\w+}');
+        $routePath = new Path('/🐘/{id:\d+}/{name:\w+}');
         $route = new Route('test', $routePath);
         $route = $route->withAddedEndpoint(
-            new RouteEndpoint(
+            new Endpoint(
                 new GetMethod(),
                 new TestController()
             )
@@ -56,17 +56,17 @@ final class RouterTest extends TestCase
 
     public function testConstructInvalidArgument(): void
     {
-        $route = new Route('test', new RoutePath('/test'));
-        $this->expectException(RouteWithoutEndpointsException::class);
+        $route = new Route('test', new Path('/test'));
+        $this->expectException(WithoutEndpointsException::class);
         (new Router())
             ->withAddedRoute(route: $route, group: 'my-group');
     }
 
     public function testNotExportable(): void
     {
-        $route = new Route('test', new RoutePath('/test'));
+        $route = new Route('test', new Path('/test'));
         $route->resource = fopen('php://output', 'r+');
-        $this->expectException(RouteNotRoutableException::class);
+        $this->expectException(NotRoutableException::class);
         (new Router())
             ->withAddedRoute(route: $route, group: 'my-group');
     }

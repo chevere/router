@@ -15,9 +15,9 @@ namespace Chevere\Tests\Spec\Specs;
 
 use function Chevere\Filesystem\directoryForPath;
 use Chevere\Http\Methods\PatchMethod;
-use Chevere\Router\Route\Route;
-use Chevere\Router\Route\RouteEndpoint;
-use Chevere\Router\Route\RoutePath;
+use Chevere\Router\Endpoint;
+use Chevere\Router\Path;
+use Chevere\Router\Route;
 use Chevere\Spec\Specs\RoutableSpecs;
 use Chevere\Spec\Specs\RouteSpec;
 use Chevere\Tests\Spec\_resources\src\TestController;
@@ -43,11 +43,11 @@ final class RouteSpecsTest extends TestCase
         $spec = new RouteSpec(
             directoryForPath("/spec/${repository}/"),
             (new Route(
-                path: new RoutePath('/path'),
+                path: new Path('/path'),
                 name: 'test',
             ))
                 ->withAddedEndpoint(
-                    new RouteEndpoint(
+                    new Endpoint(
                         new PatchMethod(),
                         new TestController()
                     )

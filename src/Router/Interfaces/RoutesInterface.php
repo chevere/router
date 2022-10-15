@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Chevere\Router\Interfaces;
 
 use Chevere\DataStructure\Interfaces\MappedInterface;
-use Chevere\Router\Interfaces\Route\RouteInterface;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Iterator;
 

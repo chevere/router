@@ -18,9 +18,9 @@ use Chevere\Filesystem\Interfaces\DirectoryInterface;
 use Chevere\Filesystem\Interfaces\PathInterface;
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Http\Methods\PutMethod;
-use Chevere\Router\Route\Route;
-use Chevere\Router\Route\RouteEndpoint;
-use Chevere\Router\Route\RoutePath;
+use Chevere\Router\Endpoint;
+use Chevere\Router\Path;
+use Chevere\Router\Route;
 use Chevere\Router\Router;
 use Chevere\Spec\SpecMaker;
 use Chevere\Tests\Spec\_resources\src\SpecMakerTestGetController;
@@ -57,14 +57,14 @@ final class SpecMakerTest extends TestCase
         $getMethod = new GetMethod();
         $route = new Route(
             'test',
-            new RoutePath('/route-path/{id:[0-9]+}')
+            new Path('/route-path/{id:[0-9]+}')
         );
         $route = $route
             ->withAddedEndpoint(
-                new RouteEndpoint($putMethod, new SpecMakerTestPutController())
+                new Endpoint($putMethod, new SpecMakerTestPutController())
             )
             ->withAddedEndpoint(
-                new RouteEndpoint($getMethod, new SpecMakerTestGetController())
+                new Endpoint($getMethod, new SpecMakerTestGetController())
             );
         $router = (new Router())
             ->withAddedRoute(group: 'repo', route: $route);
