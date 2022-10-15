@@ -17,7 +17,6 @@ use Chevere\Message\Message;
 use Chevere\Router\Exceptions\WildcardInvalidException;
 use Chevere\Router\Interfaces\WildcardInterface;
 use Chevere\Router\Interfaces\WildcardMatchInterface;
-use Chevere\String\ValidateString;
 
 final class Wildcard implements WildcardInterface
 {
@@ -40,12 +39,6 @@ final class Wildcard implements WildcardInterface
 
     private function assertName(): void
     {
-        if ((new ValidateString($this->name))->isStartingWithCtypeDigit()) {
-            throw new WildcardInvalidException(
-                (new Message('String %string% must not start with a numeric value'))
-                    ->withCode('%string%', $this->name)
-            );
-        }
         if (! preg_match(WildcardInterface::ACCEPT_CHARS_REGEX, $this->name)) {
             throw new WildcardInvalidException(
                 (new Message('String %string% must contain only alphanumeric and underscore characters'))

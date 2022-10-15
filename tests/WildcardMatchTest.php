@@ -26,7 +26,7 @@ final class WildcardMatchTest extends TestCase
         new WildcardMatch('#');
     }
 
-    public function testConstructInvalidArgument2(): void
+    public function testConstructInvalidCaptureGroup(): void
     {
         $this->expectException(UnexpectedValueException::class);
         new WildcardMatch('te(s)t');

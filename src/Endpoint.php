@@ -44,13 +44,12 @@ final class Endpoint implements EndpointInterface
          * @var StringParameterInterface $parameter
          */
         foreach ($controller->parameters()->getIterator() as $name => $parameter) {
-            $array = [
+            $this->parameters[$name] = [
                 'name' => $name,
                 'regex' => $parameter->regex()->__toString(),
                 'description' => $parameter->description(),
                 'isRequired' => $controller->parameters()->isRequired($name),
             ];
-            $this->parameters[$name] = $array;
         }
     }
 

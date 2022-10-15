@@ -15,7 +15,7 @@ namespace Chevere\Router\Tests;
 
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Router\Endpoint;
-use Chevere\Router\Tests\_resources\RouteEndpointTestController;
+use Chevere\Router\Tests\_resources\EndpointTestController;
 use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 
@@ -24,7 +24,7 @@ final class EndpointTest extends TestCase
     public function testConstruct(): void
     {
         $method = new GetMethod();
-        $controller = new RouteEndpointTestController();
+        $controller = new EndpointTestController();
         $endpoint = new Endpoint($method, $controller);
         $this->assertSame($method, $endpoint->method());
         $this->assertSame($controller, $endpoint->controller());
@@ -33,19 +33,34 @@ final class EndpointTest extends TestCase
         foreach (array_keys($endpoint->parameters()) as $name) {
             $this->assertTrue($controller->parameters()->has($name));
         }
+        $parameters = [];
+        /** @var StringParameterInterface $parameter */
+        foreach ($controller->parameters()->getIterator() as $name => $parameter) {
+            $parameters[$name] = [
+                'name' => $name,
+                'regex' => $parameter->regex()->__toString(),
+                'description' => $parameter->description(),
+                'isRequired' => $controller->parameters()->isRequired($name),
+            ];
+        }
+        $this->assertSame(
+            $parameters,
+            $endpoint->parameters()
+        );
     }
 
     public function testWithDescription(): void
     {
         $description = 'Some description';
-        $endpoint = (new Endpoint(new GetMethod(), new RouteEndpointTestController()))
-            ->withDescription($description);
-        $this->assertSame($description, $endpoint->description());
+        $endpoint = new Endpoint(new GetMethod(), new EndpointTestController());
+        $endpointWithDescription = $endpoint->withDescription($description);
+        $this->assertNotSame($endpoint, $endpointWithDescription);
+        $this->assertSame($description, $endpointWithDescription->description());
     }
 
     public function testWithoutWrongParameter(): void
     {
-        $controller = new RouteEndpointTestController();
+        $controller = new EndpointTestController();
         $this->expectException(OutOfBoundsException::class);
         (new Endpoint(new GetMethod(), $controller))
             ->withoutParameter('0x0');
@@ -53,7 +68,7 @@ final class EndpointTest extends TestCase
 
     public function testWithoutParameter(): void
     {
-        $controller = new RouteEndpointTestController();
+        $controller = new EndpointTestController();
         $iterator = $controller->parameters()->getIterator();
         $iterator->rewind();
         $key = $iterator->key() ?? 'name';

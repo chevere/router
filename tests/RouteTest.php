@@ -13,16 +13,17 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Tests;
 
-use Chevere\Controller\Controller;
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Http\Methods\PostMethod;
-use Chevere\Parameter\Attributes\ParameterAttribute;
 use Chevere\Router\Endpoint;
 use Chevere\Router\Exceptions\EndpointConflictException;
 use Chevere\Router\Exceptions\WildcardConflictException;
 use Chevere\Router\Path;
 use function Chevere\Router\route;
 use Chevere\Router\Route;
+use Chevere\Router\Tests\_resources\RouteTestController;
+use Chevere\Router\Tests\_resources\RouteTestControllerNoParams;
+use Chevere\Router\Tests\_resources\RouteTestControllerRegexConflict;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
@@ -74,9 +75,27 @@ final class RouteTest extends TestCase
         $route->withAddedEndpoint($endpoint);
     }
 
+    public function testWithAddedEndpointWildcardMissing(): void
+    {
+        $parameter = 'int';
+        $path = new Path('/test/{' . $parameter . ':[0-9]+}');
+        $endpoint = new Endpoint(
+            new GetMethod(),
+            new RouteTestController()
+        );
+        $controllerName = RouteTestController::class;
+        $route = new Route('test', $path);
+        $this->expectException(OutOfBoundsException::class);
+        $this->expectExceptionMessage(<<<PLAIN
+        Wildcard parameter {$parameter} must bind to one of the known {$controllerName} parameters
+        PLAIN);
+        $route->withAddedEndpoint($endpoint);
+    }
+
     public function testWithAddedEndpointWildcardParameter(): void
     {
-        $route = new Route('test', new Path('/test/{id:[0-9]+}'));
+        $path = new Path('/test/{id:[0-9]+}');
+        $route = new Route('test', $path);
         $method = new GetMethod();
         $controller = new RouteTestController();
         $endpoint = new Endpoint($method, $controller);
@@ -113,33 +132,5 @@ final class RouteTest extends TestCase
         $endpoint = new Endpoint(new GetMethod(), new RouteTestController());
         $this->expectException(WildcardConflictException::class);
         $route->withAddedEndpoint($endpoint);
-    }
-}
-
-final class RouteTestController extends Controller
-{
-    public function run(
-        #[ParameterAttribute(regex: '/^[0-9]+$/')]
-        string $id
-    ): array {
-        return [];
-    }
-}
-
-final class RouteTestControllerNoParams extends Controller
-{
-    public function run(): array
-    {
-        return [];
-    }
-}
-
-final class RouteTestControllerRegexConflict extends Controller
-{
-    public function run(
-        #[ParameterAttribute(regex: '/^\W+$/')]
-        string $id
-    ): array {
-        return [];
     }
 }

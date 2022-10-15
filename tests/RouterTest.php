@@ -45,12 +45,26 @@ final class RouterTest extends TestCase
         );
         $router = new Router();
         $routerWithAddedRoute = $router
-            ->withAddedRoute(route: $route, group: 'my-group');
+            ->withAddedRoute('my-group', $route);
         $this->assertNotSame($router, $routerWithAddedRoute);
         $this->assertCount(1, $routerWithAddedRoute->routes());
         $this->assertInstanceOf(
             RouteCollector::class,
             $routerWithAddedRoute->routeCollector()
+        );
+        $this->assertSame(
+            [],
+            $routerWithAddedRoute->routeCollector()->getData()[0]
+        );
+        $this->assertSame(
+            [
+                0 => TestController::class,
+                1 => [
+                    'id' => 'id',
+                    'name' => 'name',
+                ],
+            ],
+            $routerWithAddedRoute->routeCollector()->getData()[1]['GET'][0]['routeMap'][3]
         );
     }
 
@@ -59,7 +73,7 @@ final class RouterTest extends TestCase
         $route = new Route('test', new Path('/test'));
         $this->expectException(WithoutEndpointsException::class);
         (new Router())
-            ->withAddedRoute(route: $route, group: 'my-group');
+            ->withAddedRoute('my-group', $route);
     }
 
     public function testNotExportable(): void
@@ -68,6 +82,6 @@ final class RouterTest extends TestCase
         $route->resource = fopen('php://output', 'r+');
         $this->expectException(NotRoutableException::class);
         (new Router())
-            ->withAddedRoute(route: $route, group: 'my-group');
+            ->withAddedRoute('my-group', $route);
     }
 }

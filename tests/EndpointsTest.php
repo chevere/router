@@ -16,7 +16,7 @@ namespace Chevere\Router\Tests;
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Router\Endpoint;
 use Chevere\Router\Endpoints;
-use Chevere\Router\Tests\_resources\GetArticleController;
+use Chevere\Router\Tests\_resources\ArticleGetController;
 use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 
@@ -35,7 +35,7 @@ final class EndpointsTest extends TestCase
     public function testWithPut(): void
     {
         $method = new GetMethod();
-        $endpoint = new Endpoint($method, new GetArticleController());
+        $endpoint = new Endpoint($method, new ArticleGetController());
         $endpoints = new Endpoints();
         $endpointsWithPut = $endpoints
             ->withPut($endpoint);

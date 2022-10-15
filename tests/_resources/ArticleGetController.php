@@ -16,12 +16,10 @@ namespace Chevere\Router\Tests\_resources;
 use Chevere\Controller\Controller;
 use Chevere\Parameter\Attributes\ParameterAttribute;
 
-final class RouteEndpointTestController extends Controller
+final class ArticleGetController extends Controller
 {
     public function run(
-        #[ParameterAttribute(regex: '/^[\w]+$/')]
-        string $name,
-        #[ParameterAttribute(regex: '/^[0-9]+$/')]
+        #[ParameterAttribute(regex: '/^\d+$/')]
         string $id
     ): array {
         return [];

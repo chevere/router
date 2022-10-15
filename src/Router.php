@@ -32,13 +32,13 @@ final class Router implements RouterInterface
 
     private RoutesInterface $routes;
 
-    private RouteCollector $collector;
+    private RouteCollector $routeCollector;
 
     public function __construct()
     {
         $this->routes = new Routes();
         $this->index = new Index();
-        $this->collector = new RouteCollector(new StrictStd(), new GroupCountBased());
+        $this->routeCollector = new RouteCollector(new StrictStd(), new GroupCountBased());
     }
 
     public function withAddedRoute(string $group, RouteInterface $route): RouterInterface
@@ -48,7 +48,7 @@ final class Router implements RouterInterface
         $new->index = $new->index->withAddedRoute($route, $group);
         $new->routes = $new->routes->withAdded($route);
         foreach ($route->endpoints()->getIterator() as $endpoint) {
-            $new->collector->addRoute(
+            $new->routeCollector->addRoute(
                 $endpoint->method()::name(),
                 $route->path()->__toString(),
                 $endpoint->controller()::class
@@ -70,14 +70,13 @@ final class Router implements RouterInterface
 
     public function routeCollector(): RouteCollector
     {
-        return $this->collector;
+        return $this->routeCollector;
     }
 
     private function assertRoute(RouteInterface $route): void
     {
         try {
-            $storable = new StorableVariable($route);
-            $storable->toExport();
+            new StorableVariable($route);
         } catch (Throwable $e) {
             throw new NotRoutableException(previous: $e);
         }

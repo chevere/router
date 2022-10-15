@@ -36,22 +36,24 @@ final class Dispatcher implements DispatcherInterface
             ->dispatch($httpMethod, $uri);
 
         return match ($info[0]) {
+            GroupCountBased::FOUND => new Routed(new ControllerName($info[1]), $info[2]),
             GroupCountBased::NOT_FOUND =>
                 throw new NotFoundException(
                     (new Message('No route found for %uri%'))
                         ->withCode('%uri%', $uri)
                 ),
-            GroupCountBased::FOUND => new Routed(new ControllerName($info[1]), $info[2]),
             GroupCountBased::METHOD_NOT_ALLOWED =>
                 throw new HttpMethodNotAllowedException(
                     (new Message('Method %method% is not in the list of allowed methods: %allowed%'))
                         ->withCode('%method%', $httpMethod)
                         ->withCode('%allowed%', implode(', ', $info[1]))
                 ),
+            // @codeCoverageIgnoreStart
             default => throw new LogicException(
                 (new Message('Unknown route status %status%'))
                     ->withCode('%status%', $info[0])
             ),
+            // @codeCoverageIgnoreEnd
         };
     }
 }

@@ -44,4 +44,11 @@ final class PathTest extends TestCase
         );
         $this->assertSame($string, $path->__toString());
     }
+
+    public function testConstructNoWildcards(): void
+    {
+        $string = '/path';
+        $path = new Path($string);
+        $this->assertSame('/path', $path->regex()->toNoDelimiters());
+    }
 }

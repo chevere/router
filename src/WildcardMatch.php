@@ -42,12 +42,11 @@ final class WildcardMatch implements WildcardMatchInterface
         return $this->anchored;
     }
 
-    public function assertRegexNoCapture(): void
+    private function assertRegexNoCapture(): void
     {
         $regex = new Regex('#' . $this->string . '#');
         $string = $regex->__toString();
-        $regex = str_replace(['\(', '\)'], '', $string);
-        if (strpos($regex, '(') !== false || strpos($regex, ')') !== false) {
+        if (strpos($string, '(') !== false) {
             throw new UnexpectedValueException(
                 (new Message('Provided expression %match% contains capture groups'))
                     ->withCode('%match%', $string)
