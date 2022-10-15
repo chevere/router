@@ -25,6 +25,10 @@ use Throwable;
 
 final class Path implements PathInterface
 {
+    /**
+     * string|array for mixed types.
+     * @var array<int, mixed>
+     */
     private array $data;
 
     private RegexInterface $regex;

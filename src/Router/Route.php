@@ -29,7 +29,7 @@ use Chevere\Throwable\Exceptions\OverflowException;
 final class Route implements RouteInterface
 {
     /**
-     * @var array [wildcardName =>]
+     * @var array<string, string>
      */
     private array $wildcards;
 

@@ -21,8 +21,6 @@ use Chevere\Controller\Interfaces\ControllerNameInterface;
  */
 interface RoutedInterface
 {
-    public function __construct(ControllerNameInterface $controllerName, array $arguments);
-
     /**
      * Provides access to the `$controllerName` instance.
      */
@@ -36,11 +34,7 @@ interface RoutedInterface
     /**
      * Provides access to the `$arguments` instance.
      *
-     * ```php
-     * return [
-     *     'name' => 'value',
-     * ]
-     * ```
+     * @return array<string, string>
      */
     public function arguments(): array;
 }

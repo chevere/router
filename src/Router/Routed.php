@@ -19,6 +19,9 @@ use Chevere\Router\Interfaces\RoutedInterface;
 
 final class Routed implements RoutedInterface
 {
+    /**
+     * @param array<string, string> $arguments
+     */
     public function __construct(
         private ControllerNameInterface $controllerName,
         private array $arguments

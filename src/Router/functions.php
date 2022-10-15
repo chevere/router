@@ -108,5 +108,5 @@ function router(string $group, RoutesInterface $routes): RouterInterface
 function importRoutes(string $path): RoutesInterface
 {
     return filePhpReturnForPath($path)
-        ->varType(new Type(RoutesInterface::class));
+        ->variableTyped(new Type(RoutesInterface::class));
 }

@@ -55,6 +55,7 @@ interface IndexInterface extends ToArrayInterface
      * Returns an array containing the route names for the given `$group`.
      *
      * @throws OutOfBoundsException
+     * @return array<string>
      */
     public function getGroupRouteNames(string $group): array;
 

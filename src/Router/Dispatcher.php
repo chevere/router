@@ -19,6 +19,7 @@ use Chevere\Message\Message;
 use Chevere\Router\Exceptions\NotFoundException;
 use Chevere\Router\Interfaces\DispatcherInterface;
 use Chevere\Router\Interfaces\RoutedInterface;
+use Chevere\Throwable\Exceptions\LogicException;
 use FastRoute\Dispatcher\GroupCountBased;
 use FastRoute\RouteCollector;
 
@@ -46,7 +47,11 @@ final class Dispatcher implements DispatcherInterface
                     (new Message('Method %method% is not in the list of allowed methods: %allowed%'))
                         ->withCode('%method%', $httpMethod)
                         ->withCode('%allowed%', implode(', ', $info[1]))
-                )
+                ),
+            default => throw new LogicException(
+                (new Message('Unknown route status %status%'))
+                    ->withCode('%status%', $info[0])
+            ),
         };
     }
 }
