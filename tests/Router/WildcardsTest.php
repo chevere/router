@@ -17,6 +17,7 @@ use Chevere\Router\Wildcard;
 use Chevere\Router\WildcardMatch;
 use Chevere\Router\Wildcards;
 use Chevere\Tests\src\ObjectHelper;
+use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use FastRoute\RouteParser\Std;
 use PHPUnit\Framework\TestCase;
 
@@ -41,6 +42,8 @@ final class WildcardsTest extends TestCase
         $this->assertSame($wildcard, $wildcards->getPos(0));
         $this->assertTrue($wildcards->has($name));
         $this->assertSame($wildcard, $wildcards->get($name));
+        $this->expectException(OutOfBoundsException::class);
+        $wildcards->get('test2');
     }
 
     public function testClone(): void

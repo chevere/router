@@ -55,6 +55,7 @@ final class Routes implements RoutesInterface
     public function get(string $path): RouteInterface
     {
         try {
+            /** @var RouteInterface */
             return $this->map->get($path);
         }
         // @codeCoverageIgnoreStart

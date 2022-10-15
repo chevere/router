@@ -25,17 +25,20 @@ use Ds\Map;
 final class Index implements IndexInterface
 {
     /**
-     * @var Map [<string>routeName => RouteIdentifier,]
+     * [<string>routeName => IdentifierInterface,]
+     * @var Map<string, IdentifierInterface>
      */
     private Map $identifiersMap;
 
     /**
-     * @var Map [<string>routeName => <string>groupName,]
+     * [<string>routeName => <string>groupName,]
+     * @var Map<string, string>
      */
     private Map $groupsIndex;
 
     /**
-     * @var Map [<string>groupName => [<string>routeName],]
+     * [<string>groupName => [<string>routeName],]
+     * @var Map<string, string[]>
      */
     private Map $groupsMap;
 
@@ -89,7 +92,7 @@ final class Index implements IndexInterface
         }
         // @codeCoverageIgnoreStart
         // @infection-ignore-all
-        catch (\TypeError $e) {
+        catch (\TypeError $e) { // @phpstan-ignore-line
             throw new TypeError(previous: $e);
         }
         // @codeCoverageIgnoreEnd
@@ -117,7 +120,7 @@ final class Index implements IndexInterface
         }
         // @codeCoverageIgnoreStart
         // @infection-ignore-all
-        catch (\TypeError $e) {
+        catch (\TypeError $e) { // @phpstan-ignore-line
             throw new TypeError(previous: $e);
         }
         // @codeCoverageIgnoreEnd
@@ -140,7 +143,7 @@ final class Index implements IndexInterface
         }
         // @codeCoverageIgnoreStart
         // @infection-ignore-all
-        catch (\TypeError $e) {
+        catch (\TypeError $e) { // @phpstan-ignore-line
             throw new TypeError(previous: $e);
         }
         // @codeCoverageIgnoreEnd

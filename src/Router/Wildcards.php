@@ -18,7 +18,6 @@ use Chevere\DataStructure\Traits\MapToArrayTrait;
 use Chevere\DataStructure\Traits\MapTrait;
 use Chevere\Router\Interfaces\WildcardInterface;
 use Chevere\Router\Interfaces\WildcardsInterface;
-use RangeException;
 
 final class Wildcards implements WildcardsInterface
 {
@@ -53,7 +52,9 @@ final class Wildcards implements WildcardsInterface
     {
         $new = clone $this;
         if ($new->index->has($routeWildcard->__toString())) {
-            $new->pos = $new->index->get($routeWildcard->__toString());
+            /** @var int $getPos */
+            $getPos = $new->index->get($routeWildcard->__toString());
+            $new->pos = $getPos;
         } else {
             $new->pos++;
         }
@@ -73,15 +74,8 @@ final class Wildcards implements WildcardsInterface
     public function get(string $wildcardName): WildcardInterface
     {
         $posStr = strval($this->index->get($wildcardName));
-        $get = $this->map->get($posStr);
-        if ($get === null) {
-            // @codeCoverageIgnoreStart
-            // @infection-ignore-all
-            throw new RangeException();
-            // @codeCoverageIgnoreEnd
-        }
-
-        return $get;
+        /** @var WildcardInterface */
+        return $this->map->get($posStr);
     }
 
     public function hasPos(int $pos): bool
@@ -91,6 +85,7 @@ final class Wildcards implements WildcardsInterface
 
     public function getPos(int $pos): WildcardInterface
     {
+        /** @var WildcardInterface */
         return $this->map->get(strval($pos));
     }
 }

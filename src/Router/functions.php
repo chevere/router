@@ -58,6 +58,7 @@ function route(
         $view ?? ''
     );
     foreach ($httpControllers as $httpMethod => $controller) {
+        $httpMethod = strval($httpMethod);
         $method = EndpointInterface::KNOWN_METHODS[$httpMethod] ?? null;
         if ($method === null) {
             throw new HttpMethodNotAllowedException(
@@ -107,6 +108,7 @@ function router(string $group, RoutesInterface $routes): RouterInterface
  */
 function importRoutes(string $path): RoutesInterface
 {
+    /** @var RoutesInterface */
     return filePhpReturnForPath($path)
         ->variableTyped(new Type(RoutesInterface::class));
 }

@@ -70,7 +70,7 @@ final class Path implements PathInterface
                 );
         }
         $this->regex = new Regex(
-            $routerData[0]['GET'][0]['regex'] ?? '#' . $route . '#'
+            $routerData[0]['GET'][0]['regex'] ?? ('#' . $route . '#') // @phpstan-ignore-line
         );
     }
 

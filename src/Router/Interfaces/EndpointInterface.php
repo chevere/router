@@ -96,7 +96,7 @@ interface EndpointInterface extends DescriptionInterface
      * ];
      * ```
      *
-     * @return array<string, array<string, mixed>
+     * @return array<string, array<string, mixed>>
      */
     public function parameters(): array;
 }

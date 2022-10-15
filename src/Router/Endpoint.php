@@ -27,6 +27,9 @@ final class Endpoint implements EndpointInterface
 
     private string $description = '';
 
+    /**
+     * @var array<string, array<string, mixed>>
+     */
     private array $parameters = [];
 
     public function __construct(
