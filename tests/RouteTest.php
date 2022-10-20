@@ -50,7 +50,7 @@ final class RouteTest extends TestCase
         $method = new GetMethod();
         $controller = new RouteTestController();
         $endpoint = new Endpoint($method, $controller);
-        $route = $route->withAddedEndpoint($endpoint);
+        $route = $route->withEndpoint($endpoint);
         $this->assertTrue($route->endpoints()->hasKey($method->name()));
         $this->assertSame($endpoint, $route->endpoints()->get($method->name()));
     }
@@ -62,7 +62,7 @@ final class RouteTest extends TestCase
         $controller = new RouteTestController();
         $endpoint = new Endpoint($method, $controller);
         $this->expectException(OutOfBoundsException::class);
-        $route->withAddedEndpoint($endpoint);
+        $route->withEndpoint($endpoint);
     }
 
     public function testWithAddedEndpointNoParams(): void
@@ -72,7 +72,7 @@ final class RouteTest extends TestCase
         $controller = new RouteTestControllerNoParams();
         $endpoint = new Endpoint($method, $controller);
         $this->expectException(InvalidArgumentException::class);
-        $route->withAddedEndpoint($endpoint);
+        $route->withEndpoint($endpoint);
     }
 
     public function testWithAddedEndpointWildcardMissing(): void
@@ -89,7 +89,7 @@ final class RouteTest extends TestCase
         $this->expectExceptionMessage(<<<PLAIN
         Wildcard parameter {$parameter} must bind to one of the known {$controllerName} parameters
         PLAIN);
-        $route->withAddedEndpoint($endpoint);
+        $route->withEndpoint($endpoint);
     }
 
     public function testWithAddedEndpointWildcardParameter(): void
@@ -99,7 +99,7 @@ final class RouteTest extends TestCase
         $method = new GetMethod();
         $controller = new RouteTestController();
         $endpoint = new Endpoint($method, $controller);
-        $route = $route->withAddedEndpoint($endpoint);
+        $route = $route->withEndpoint($endpoint);
         $this->assertTrue($route->endpoints()->hasKey($method->name()));
         $this->assertSame(
             [],
@@ -111,9 +111,9 @@ final class RouteTest extends TestCase
     {
         $route = new Route(new Path('/test/{id:[0-9]+}'), 'test');
         $endpoint = new Endpoint(new GetMethod(), new RouteTestController());
-        $route = $route->withAddedEndpoint($endpoint);
+        $route = $route->withEndpoint($endpoint);
         $this->expectException(OverflowException::class);
-        $route->withAddedEndpoint($endpoint);
+        $route->withEndpoint($endpoint);
     }
 
     public function testWithAddedEndpointConflict(): void
@@ -121,9 +121,9 @@ final class RouteTest extends TestCase
         $route = new Route(new Path('/test/{id:[0-9]+}'), 'test');
         $endpoint1 = new Endpoint(new GetMethod(), new RouteTestController());
         $endpoint2 = new Endpoint(new PostMethod(), new RouteTestControllerRegexConflict());
-        $route = $route->withAddedEndpoint($endpoint1);
+        $route = $route->withEndpoint($endpoint1);
         $this->expectException(EndpointConflictException::class);
-        $route->withAddedEndpoint($endpoint2);
+        $route->withEndpoint($endpoint2);
     }
 
     public function testWithAddedEndpointWildcardConflict(): void
@@ -131,6 +131,24 @@ final class RouteTest extends TestCase
         $route = new Route(new Path('/test/{id:\w+}'), 'test');
         $endpoint = new Endpoint(new GetMethod(), new RouteTestController());
         $this->expectException(WildcardConflictException::class);
-        $route->withAddedEndpoint($endpoint);
+        $route->withEndpoint($endpoint);
+    }
+
+    public function testWithMiddleware(): void
+    {
+        $route = route('/test/{id:\w+}');
+        $this->assertSame([], $route->middleware());
+        $middleware = ['uno', 'dos'];
+        $middlewareMore = ['dos', 'tres'];
+        $routeWithMiddleware = $route
+            ->withMiddleware(...$middleware);
+        $this->assertNotSame($route, $routeWithMiddleware);
+        $this->assertSame($middleware, $routeWithMiddleware->middleware());
+        $routeWithMiddleware = $routeWithMiddleware
+            ->withMiddleware(...$middlewareMore);
+        $this->assertSame(
+            ['uno', 'dos', 'tres'],
+            $routeWithMiddleware->middleware()
+        );
     }
 }

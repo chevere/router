@@ -36,7 +36,7 @@ final class RouterTest extends TestCase
     {
         $controller = new TestController();
         $route = route('/🐘/{id:\d+}/{name:\w+}');
-        $route = $route->withAddedEndpoint(
+        $route = $route->withEndpoint(
             new Endpoint(
                 new GetMethod(),
                 $controller

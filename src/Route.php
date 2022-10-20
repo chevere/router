@@ -33,6 +33,11 @@ final class Route implements RouteInterface
      */
     private array $wildcards;
 
+    /**
+     * @var array<string>
+     */
+    private array $middleware = [];
+
     private ?EndpointInterface $firstEndpoint;
 
     private EndpointsInterface $endpoints;
@@ -41,7 +46,6 @@ final class Route implements RouteInterface
         private PathInterface $path,
         private string $name,
         private string $view = '',
-        string ...$middleware,
     ) {
         $this->endpoints = new Endpoints();
     }
@@ -61,7 +65,24 @@ final class Route implements RouteInterface
         return $this->view;
     }
 
-    public function withAddedEndpoint(EndpointInterface $endpoint): RouteInterface
+    public function middleware(): array
+    {
+        return $this->middleware;
+    }
+
+    public function withMiddleware(string ...$middleware): RouteInterface
+    {
+        $new = clone $this;
+        $new->middleware = array_values(
+            array_unique(
+                array_merge($new->middleware, $middleware)
+            )
+        );
+
+        return $new;
+    }
+
+    public function withEndpoint(EndpointInterface $endpoint): RouteInterface
     {
         $new = clone $this;
         $new->assertUnique($endpoint);

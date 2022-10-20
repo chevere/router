@@ -43,15 +43,18 @@ function routes(RouteInterface ...$namedRoutes): RoutesInterface
 /**
  * @param ?string $name The route name, if not provided it will be same as the route path.
  * @param string $path The route path.
+ * @param array<string> $middleware The route middleware(s).
  * @param ControllerInterface ...$httpControllers Named arguments for httpMethod: Controller as `POST: PostController`.
  */
 function route(
     string $path,
     ?string $name = null,
     ?string $view = null,
+    array $middleware = [],
     ControllerInterface ...$httpControllers
 ): RouteInterface {
-    $route = new Route(new Path($path), $name ?? $path, $view ?? '');
+    $route = (new Route(new Path($path), $name ?? $path, $view ?? ''))
+        ->withMiddleware(...$middleware);
     foreach ($httpControllers as $httpMethod => $controller) {
         $httpMethod = strval($httpMethod);
         $method = EndpointInterface::KNOWN_METHODS[$httpMethod] ?? null;
@@ -64,7 +67,7 @@ function route(
         }
         /** @var MethodInterface $method */
         $method = new $method();
-        $route = $route->withAddedEndpoint(
+        $route = $route->withEndpoint(
             new Endpoint($method, $controller)
         );
     }

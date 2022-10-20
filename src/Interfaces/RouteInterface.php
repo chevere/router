@@ -37,6 +37,21 @@ interface RouteInterface
     public function view(): string;
 
     /**
+     * Provides access to the middleware.
+     *
+     * @return array<string>
+     */
+    public function middleware(): array;
+
+    /**
+     * Return an instance with the specified added `$middleware`.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the specified added `$middleware`.
+     */
+    public function withMiddleware(string ...$middleware): self;
+
+    /**
      * Return an instance with the specified added `$routeEndpoint`.
      *
      * This method MUST retain the state of the current instance, and return
@@ -50,7 +65,7 @@ interface RouteInterface
      * @throws OutOfBoundsException
      * @throws WildcardConflictException
      */
-    public function withAddedEndpoint(EndpointInterface $routeEndpoint): self;
+    public function withEndpoint(EndpointInterface $routeEndpoint): self;
 
     /**
      * Provides access to the endpoints instance.

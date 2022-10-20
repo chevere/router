@@ -68,7 +68,7 @@ final class IndexTest extends TestCase
         $groupName = 'some-group';
         $path = '/path';
         $route = route($path);
-        $routeWithAddedEndpoint = $route->withAddedEndpoint(
+        $routeWithAddedEndpoint = $route->withEndpoint(
             new Endpoint(new GetMethod(), new TestController())
         );
         $this->assertNotSame($route, $routeWithAddedEndpoint);
@@ -98,7 +98,7 @@ final class IndexTest extends TestCase
         ], $routerIndexWithAddedRoute->toArray());
         $path2 = '/path-2';
         $route2 = route($path2);
-        $route2 = $route2->withAddedEndpoint(
+        $route2 = $route2->withEndpoint(
             new Endpoint(new GetMethod(), new TestController())
         );
         $withAnotherAddedRoute = $routerIndexWithAddedRoute->withAddedRoute($route2, $groupName);
@@ -113,7 +113,7 @@ final class IndexTest extends TestCase
     {
         $repo = 'repository';
         $route = route('/path')
-            ->withAddedEndpoint(
+            ->withEndpoint(
                 new Endpoint(new GetMethod(), new TestController())
             );
         $routerIndex = (new Index())->withAddedRoute($route, $repo);
