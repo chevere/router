@@ -21,6 +21,9 @@ use Chevere\Router\Exceptions\WildcardConflictException;
 use Chevere\Router\Path;
 use function Chevere\Router\route;
 use Chevere\Router\Route;
+use Chevere\Router\Tests\_resources\MiddlewareOne;
+use Chevere\Router\Tests\_resources\MiddlewareThree;
+use Chevere\Router\Tests\_resources\MiddlewareTwo;
 use Chevere\Router\Tests\_resources\RouteTestController;
 use Chevere\Router\Tests\_resources\RouteTestControllerNoParams;
 use Chevere\Router\Tests\_resources\RouteTestControllerRegexConflict;
@@ -138,8 +141,11 @@ final class RouteTest extends TestCase
     {
         $route = route('/test/{id:\w+}');
         $this->assertSame([], $route->middleware());
-        $middleware = ['uno', 'dos'];
-        $middlewareMore = ['dos', 'tres'];
+        $middlewareOne = new MiddlewareOne();
+        $middlewareTwo = new MiddlewareTwo();
+        $middlewareThree = new MiddlewareThree();
+        $middleware = [$middlewareOne, $middlewareTwo];
+        $middlewareMore = [$middlewareTwo, $middlewareThree];
         $routeWithMiddleware = $route
             ->withMiddleware(...$middleware);
         $this->assertNotSame($route, $routeWithMiddleware);
@@ -147,7 +153,7 @@ final class RouteTest extends TestCase
         $routeWithMiddleware = $routeWithMiddleware
             ->withMiddleware(...$middlewareMore);
         $this->assertSame(
-            ['uno', 'dos', 'tres'],
+            [$middlewareOne, $middlewareTwo, $middlewareThree],
             $routeWithMiddleware->middleware()
         );
     }

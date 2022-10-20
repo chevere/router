@@ -18,6 +18,7 @@ use Chevere\Router\Exceptions\WildcardConflictException;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
+use Psr\Http\Server\MiddlewareInterface;
 
 /**
  * Describes the component in charge of defining a route.
@@ -39,7 +40,7 @@ interface RouteInterface
     /**
      * Provides access to the middleware.
      *
-     * @return array<string>
+     * @return array<MiddlewareInterface>
      */
     public function middleware(): array;
 
@@ -49,15 +50,15 @@ interface RouteInterface
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified added `$middleware`.
      */
-    public function withMiddleware(string ...$middleware): self;
+    public function withMiddleware(MiddlewareInterface ...$middleware): self;
 
     /**
-     * Return an instance with the specified added `$routeEndpoint`.
+     * Return an instance with the specified added `$endpoint`.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified added `$routeEndpoint`.
+     * an instance that contains the specified added `$endpoint`.
      *
-     * This method should allow to override any previous `$routeEndpoint`.
+     * This method should allow to override any previous `$endpoint`.
      *
      * @throws OverflowException
      * @throws EndpointConflictException
@@ -65,7 +66,7 @@ interface RouteInterface
      * @throws OutOfBoundsException
      * @throws WildcardConflictException
      */
-    public function withEndpoint(EndpointInterface $routeEndpoint): self;
+    public function withEndpoint(EndpointInterface $endpoint): self;
 
     /**
      * Provides access to the endpoints instance.

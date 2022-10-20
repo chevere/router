@@ -34,6 +34,7 @@ use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OverflowException;
 use Chevere\Throwable\Exceptions\RuntimeException;
 use Chevere\Type\Type;
+use Psr\Http\Server\MiddlewareInterface;
 
 function routes(RouteInterface ...$namedRoutes): RoutesInterface
 {
@@ -43,7 +44,7 @@ function routes(RouteInterface ...$namedRoutes): RoutesInterface
 /**
  * @param ?string $name The route name, if not provided it will be same as the route path.
  * @param string $path The route path.
- * @param array<string> $middleware The route middleware(s).
+ * @param array<MiddlewareInterface> $middleware The route middleware(s).
  * @param ControllerInterface ...$httpControllers Named arguments for httpMethod: Controller as `POST: PostController`.
  */
 function route(
