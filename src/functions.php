@@ -37,8 +37,7 @@ use Chevere\Type\Type;
 
 function routes(RouteInterface ...$namedRoutes): RoutesInterface
 {
-    return (new Routes())
-        ->withAdded(...$namedRoutes);
+    return (new Routes())->withAdded(...$namedRoutes);
 }
 
 /**
@@ -52,11 +51,7 @@ function route(
     ?string $view = null,
     ControllerInterface ...$httpControllers
 ): RouteInterface {
-    $route = new Route(
-        $name ?? $path,
-        new Path($path),
-        $view ?? ''
-    );
+    $route = new Route(new Path($path), $name ?? $path, $view ?? '');
     foreach ($httpControllers as $httpMethod => $controller) {
         $httpMethod = strval($httpMethod);
         $method = EndpointInterface::KNOWN_METHODS[$httpMethod] ?? null;

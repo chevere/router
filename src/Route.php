@@ -38,9 +38,10 @@ final class Route implements RouteInterface
     private EndpointsInterface $endpoints;
 
     public function __construct(
-        private string $name,
         private PathInterface $path,
+        private string $name,
         private string $view = '',
+        string ...$middleware,
     ) {
         $this->endpoints = new Endpoints();
     }
@@ -70,7 +71,7 @@ final class Route implements RouteInterface
             $wildcardMatch = $new->wildcards[$wildcard->__toString()] ?? null;
             /** @var StringParameterInterface $parameter */
             $parameter = $endpoint->controller()->parameters()->get($wildcard->__toString());
-            $parameterMatch = $parameter->regex()->toNoDelimitersNoAnchors();
+            $parameterMatch = $parameter->regex()->noDelimitersNoAnchors();
             if (! isset($wildcardMatch)) {
                 if ($parameterMatch !== $wildcard->match()->__toString()) {
                     throw new WildcardConflictException(

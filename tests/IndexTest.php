@@ -19,6 +19,7 @@ use Chevere\Router\Index;
 use Chevere\Router\Interfaces\IdentifierInterface;
 use Chevere\Router\Path;
 use Chevere\Router\Route;
+use function Chevere\Router\route;
 use Chevere\Router\Tests\_resources\TestController;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
@@ -56,7 +57,7 @@ final class IndexTest extends TestCase
 
     public function testWithAddedRouteInvalidGroup(): void
     {
-        $route = new Route('test', new Path('/'));
+        $route = new Route(new Path('/'), 'test');
         $routerIndex = new Index();
         $this->expectException(InvalidArgumentException::class);
         $routerIndex->withAddedRoute($route, ' ');
@@ -66,7 +67,7 @@ final class IndexTest extends TestCase
     {
         $groupName = 'some-group';
         $path = '/path';
-        $route = new Route('test', new Path($path));
+        $route = route($path);
         $routeWithAddedEndpoint = $route->withAddedEndpoint(
             new Endpoint(new GetMethod(), new TestController())
         );
@@ -96,7 +97,7 @@ final class IndexTest extends TestCase
             ],
         ], $routerIndexWithAddedRoute->toArray());
         $path2 = '/path-2';
-        $route2 = new Route('test', new Path($path2));
+        $route2 = route($path2);
         $route2 = $route2->withAddedEndpoint(
             new Endpoint(new GetMethod(), new TestController())
         );
@@ -111,7 +112,7 @@ final class IndexTest extends TestCase
     public function testWithAddedAlready(): void
     {
         $repo = 'repository';
-        $route = (new Route('test', new Path('/path')))
+        $route = route('/path')
             ->withAddedEndpoint(
                 new Endpoint(new GetMethod(), new TestController())
             );

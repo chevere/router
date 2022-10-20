@@ -49,6 +49,6 @@ final class PathTest extends TestCase
     {
         $string = '/path';
         $path = new Path($string);
-        $this->assertSame('/path', $path->regex()->toNoDelimiters());
+        $this->assertSame('/path', $path->regex()->noDelimiters());
     }
 }
