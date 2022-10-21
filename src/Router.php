@@ -82,8 +82,9 @@ final class Router implements RouterInterface
         }
         if ($route->endpoints()->count() === 0) {
             throw new WithoutEndpointsException(
-                (new Message("Argument of type %className% doesn't contain any endpoint."))
-                    ->withCode('%className%', $route::class)
+                (new Message("Route %name% (%path%) doesn't contain any endpoint."))
+                    ->withCode('%path%', $route->path()->__toString())
+                    ->withCode('%name%', $route->name())
             );
         }
     }

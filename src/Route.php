@@ -30,11 +30,6 @@ use Psr\Http\Server\MiddlewareInterface;
 final class Route implements RouteInterface
 {
     /**
-     * @var array<string, string>
-     */
-    private array $wildcards;
-
-    /**
      * @var array<MiddlewareInterface>
      */
     private array $middleware = [];
@@ -97,25 +92,29 @@ final class Route implements RouteInterface
         $new->assertNoConflict($endpoint);
         foreach ($new->path->wildcards()->getIterator() as $wildcard) {
             $new->assertWildcardEndpoint($wildcard, $endpoint);
-            $wildcardMatch = $new->wildcards[$wildcard->__toString()] ?? null;
             /** @var StringParameterInterface $parameter */
-            $parameter = $endpoint->controller()->parameters()->get($wildcard->__toString());
+            $parameter = $endpoint->controller()->parameters()
+                ->get(strval($wildcard));
             $parameterMatch = $parameter->regex()->noDelimitersNoAnchors();
-            if (! isset($wildcardMatch)) {
-                if ($parameterMatch !== $wildcard->match()->__toString()) {
-                    throw new WildcardConflictException(
-                        (new Message('Wildcard %parameter% matches against %match% which is incompatible with the match %controllerMatch% defined for %controller%'))
-                            ->withCode('%parameter%', $wildcard->__toString())
-                            ->withCode('%match%', $wildcard->match()->__toString())
-                            ->withCode('%controllerMatch%', $parameterMatch)
-                            ->withCode('%controller%', $endpoint->controller()::class)
-                    );
-                }
-                $new->wildcards[$wildcard->__toString()] = $parameterMatch;
+            $wildcardMatch = strval($wildcard->match());
+            $wildcardString = strval($wildcard);
+            if (strpos(strval($this->path), $wildcardString . '}') !== false) {
+                $wildcardMatch = $parameterMatch;
             }
-            $endpoint = $endpoint->withoutParameter($wildcard->__toString());
+            if ($parameterMatch !== $wildcardMatch) {
+                throw new WildcardConflictException(
+                    (new Message('Wildcard %parameter% matches against %match% which is incompatible with the match %controllerMatch% defined for %controller%'))
+                        ->withCode('%parameter%', strval($wildcard))
+                        ->withCode('%match%', $wildcardMatch)
+                        ->withCode('%controllerMatch%', $parameterMatch)
+                        ->withCode('%controller%', $endpoint->controller()::class)
+                );
+            }
+            $endpoint = $endpoint
+                ->withoutParameter(strval($wildcard));
         }
-        $new->endpoints = $new->endpoints->withPut($endpoint);
+        $new->endpoints = $new->endpoints
+            ->withPut($endpoint);
 
         return $new;
     }
@@ -157,7 +156,8 @@ final class Route implements RouteInterface
     {
         if ($endpoint->controller()->parameters()->count() === 0) {
             throw new InvalidArgumentException(
-                (new Message("Controller %controller% doesn't accept any parameter (route wildcard %wildcard%)"))
+                (new Message("Invalid route %path% binding with %controller% which doesn't accept any parameter"))
+                    ->withCode('%path%', $this->path->__toString())
                     ->withCode('%controller%', $endpoint->controller()::class)
                     ->withCode('%wildcard%', $wildcard->__toString())
             );
@@ -166,7 +166,8 @@ final class Route implements RouteInterface
             $parameters = array_keys($endpoint->parameters());
 
             throw new OutOfBoundsException(
-                (new Message('Wildcard parameter %wildcard% must bind to one of the known %controller% parameters: %parameters%'))
+                (new Message('Route %path% must bind to one of the known %controller% parameters: %parameters%'))
+                    ->withCode('%path%', $this->path->__toString())
                     ->withCode('%wildcard%', $wildcard->__toString())
                     ->withCode('%controller%', $endpoint->controller()::class)
                     ->withCode('%parameters%', implode(', ', $parameters))

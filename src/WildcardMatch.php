@@ -16,7 +16,6 @@ namespace Chevere\Router;
 use Chevere\Message\Message;
 use Chevere\Regex\Regex;
 use Chevere\Router\Interfaces\WildcardMatchInterface;
-use Chevere\String\ValidateString;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\UnexpectedValueException;
 
@@ -56,14 +55,14 @@ final class WildcardMatch implements WildcardMatchInterface
 
     private function assertFormat(): void
     {
-        if ((new ValidateString($this->string))->isStartingWith('^')) {
+        if (str_starts_with($this->string, '^')) {
             throw new InvalidArgumentException(
                 (new Message('String %string% must omit the starting anchor %char%'))
                     ->withCode('%string%', $this->string)
                     ->withCode('%char%', '^')
             );
         }
-        if ((new ValidateString($this->string))->isEndingWith('$')) {
+        if (str_ends_with($this->string, '$')) {
             throw new InvalidArgumentException(
                 (new Message('String %string% must omit the ending anchor %char%'))
                     ->withCode('%string%', $this->string)

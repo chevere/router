@@ -58,6 +58,26 @@ final class RouteTest extends TestCase
         $this->assertSame($endpoint, $route->endpoints()->get($method->name()));
     }
 
+    public function testWithWildcard(): void
+    {
+        $route = new Route(new Path('/test/{id}'), 'test');
+        $method = new GetMethod();
+        $controller = new RouteTestController();
+        $endpoint = new Endpoint($method, $controller);
+        $this->expectNotToPerformAssertions();
+        $route->withEndpoint($endpoint);
+    }
+
+    public function testWithWildcardStrict(): void
+    {
+        $route = new Route(new Path('/test/{id:[0-9]+}'), 'test');
+        $method = new GetMethod();
+        $controller = new RouteTestController();
+        $endpoint = new Endpoint($method, $controller);
+        $this->expectNotToPerformAssertions();
+        $route->withEndpoint($endpoint);
+    }
+
     public function testWithAddedEndpointWrongWildcard(): void
     {
         $route = new Route(new Path('/test/{foo}'), 'test');
@@ -82,15 +102,18 @@ final class RouteTest extends TestCase
     {
         $parameter = 'int';
         $path = new Path('/test/{' . $parameter . ':[0-9]+}');
+        $pathString = strval($path);
+        $controller = new RouteTestController();
         $endpoint = new Endpoint(
             new GetMethod(),
-            new RouteTestController()
+            $controller
         );
         $controllerName = RouteTestController::class;
+        $parameterMissing = $controller->parameters()->keys()[0];
         $route = new Route($path, 'test');
         $this->expectException(OutOfBoundsException::class);
         $this->expectExceptionMessage(<<<PLAIN
-        Wildcard parameter {$parameter} must bind to one of the known {$controllerName} parameters
+        Route {$pathString} must bind to one of the known {$controllerName} parameters: {$parameterMissing}
         PLAIN);
         $route->withEndpoint($endpoint);
     }
@@ -132,7 +155,10 @@ final class RouteTest extends TestCase
     public function testWithAddedEndpointWildcardConflict(): void
     {
         $route = new Route(new Path('/test/{id:\w+}'), 'test');
-        $endpoint = new Endpoint(new GetMethod(), new RouteTestController());
+        $endpoint = new Endpoint(
+            new GetMethod(),
+            new RouteTestController()
+        );
         $this->expectException(WildcardConflictException::class);
         $route->withEndpoint($endpoint);
     }
