@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
+use Chevere\DataStructure\Interfaces\MapInterface;
 use Chevere\DataStructure\Map;
 use Chevere\DataStructure\Traits\MapToArrayTrait;
 use Chevere\DataStructure\Traits\MapTrait;
@@ -25,14 +26,9 @@ final class Wildcards implements WildcardsInterface
     use MapToArrayTrait;
 
     /**
-     * int => RouteWildcardInterface $route
-     */
-    private Map $map;
-
-    /**
      * name => int $pos
      */
-    private Map $index;
+    private MapInterface $index;
 
     private int $pos = -1;
 
