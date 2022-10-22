@@ -24,6 +24,7 @@ use function Chevere\Filesystem\filePhpReturnForPath;
 use Chevere\Http\Exceptions\HttpMethodNotAllowedException;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Message\Message;
+use Chevere\Parameter\Interfaces\StringParameterInterface;
 use Chevere\Router\Exceptions\NotRoutableException;
 use Chevere\Router\Exceptions\WithoutEndpointsException;
 use Chevere\Router\Interfaces\EndpointInterface;
@@ -54,7 +55,23 @@ function route(
     array $middleware = [],
     ControllerInterface ...$httpControllers
 ): RouteInterface {
-    $route = (new Route(new Path($path), $name ?? $path, $view ?? ''))
+    $firstControllerKey = array_key_first($httpControllers);
+    if ($firstControllerKey !== null) {
+        $firstController = $httpControllers[$firstControllerKey];
+        $routePath = new Path($path);
+        foreach ($routePath->wildcards()->keys() as $wildcard) {
+            /** @var StringParameterInterface $controllerParameter */
+            $controllerParameter = $firstController->parameters()->get($wildcard);
+            $path = str_replace(
+                '{' . $wildcard . '}',
+                '{' . $wildcard . ':'
+                    . $controllerParameter->regex()->noDelimitersNoAnchors() . '}',
+                $path
+            );
+        }
+    }
+    $routePath = new Path($path);
+    $route = (new Route($routePath, $name ?? $path, $view ?? ''))
         ->withMiddleware(...$middleware);
     foreach ($httpControllers as $httpMethod => $controller) {
         $httpMethod = strval($httpMethod);

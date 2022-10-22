@@ -38,8 +38,6 @@ final class WildcardsTest extends TestCase
         );
         $wildcards = (new Wildcards())->withPut($wildcard);
         $this->assertCount(1, $wildcards);
-        $this->assertTrue($wildcards->hasPos(0));
-        $this->assertSame($wildcard, $wildcards->getPos(0));
         $this->assertTrue($wildcards->has($name));
         $this->assertSame($wildcard, $wildcards->get($name));
         $this->expectException(OutOfBoundsException::class);
@@ -53,7 +51,7 @@ final class WildcardsTest extends TestCase
         $this->assertNotSame($wildcards, $clone);
         $helper = new ObjectHelper($wildcards);
         $cloneHelper = new ObjectHelper($clone);
-        foreach (['map', 'index'] as $property) {
+        foreach (['map'] as $property) {
             $this->assertNotSame(
                 $helper->getPropertyValue($property),
                 $cloneHelper->getPropertyValue($property)
@@ -74,7 +72,6 @@ final class WildcardsTest extends TestCase
         }
         $this->assertCount(2, $wildcardsWithPut);
         foreach ($wildcards_array as $pos => $wildcard) {
-            $this->assertTrue($wildcardsWithPut->hasPos($pos));
             $this->assertTrue($wildcardsWithPut->has($wildcard->__toString()));
             $this->assertEqualsCanonicalizing(
                 $wildcard,

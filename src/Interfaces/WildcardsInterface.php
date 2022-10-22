@@ -18,7 +18,7 @@ use Chevere\DataStructure\Interfaces\MappedInterface;
 use Iterator;
 
 /**
- * Describes the component in charge of collecting objects implementing `RouteWildcardInterface`.
+ * Describes the component in charge of collecting objects implementing `WildcardInterface`.
  */
 interface WildcardsInterface extends MappedInterface, ToArrayInterface
 {
@@ -33,27 +33,17 @@ interface WildcardsInterface extends MappedInterface, ToArrayInterface
     public function withPut(WildcardInterface $wildcard): self;
 
     /**
-     * Returns a boolean indicating whether the instance has a given RouteWildcardInterface.
+     * Returns a boolean indicating whether the instance has a given WildcardInterface.
      */
-    public function has(string $wildcardName): bool;
+    public function has(string $name): bool;
 
     /**
-     * Provides access to the target RouteWildcardInterface instance.
+     * Provides access to the target WildcardInterface instance.
      */
-    public function get(string $wildcardName): WildcardInterface;
+    public function get(string $name): WildcardInterface;
 
     /**
-     * Returns a boolean indicating whether the instance has RouteWildcardInterface in the given pos.
-     */
-    public function hasPos(int $pos): bool;
-
-    /**
-     * Provides access to the target RouteWildcardInterface instance in the given pos.
-     */
-    public function getPos(int $pos): WildcardInterface;
-
-    /**
-     * @return Iterator<int , WildcardInterface>
+     * @return Iterator<string , WildcardInterface>
      */
     public function getIterator(): Iterator;
 }
