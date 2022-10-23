@@ -28,6 +28,6 @@ final class RoutedTest extends TestCase
         ];
         $routed = new Routed($controller, $arguments);
         $this->assertSame($arguments, $routed->arguments());
-        $this->assertSame($controller, $routed->controller());
+        $this->assertSame($controller, $routed->httpController());
     }
 }

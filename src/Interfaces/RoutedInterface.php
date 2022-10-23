@@ -13,18 +13,16 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Chevere\Controller\Interfaces\ControllerInterface;
+use Chevere\Controller\Interfaces\HttpControllerInterface;
 
 /**
  * Describes the component in charge of defining a routed route.
  */
 interface RoutedInterface
 {
-    public function controller(): ControllerInterface;
+    public function httpController(): HttpControllerInterface;
 
     /**
-     * Provides access to the `$arguments` instance.
-     *
      * @return array<string, string>
      */
     public function arguments(): array;
