@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Router\Interfaces;
 
 use Chevere\Common\Interfaces\DescriptionInterface;
-use Chevere\Controller\Interfaces\ControllerInterface;
+use Chevere\Controller\Interfaces\HttpControllerInterface;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Http\Methods\ConnectMethod;
 use Chevere\Http\Methods\DeleteMethod;
@@ -49,20 +49,9 @@ interface EndpointInterface extends DescriptionInterface
         'TRACE' => TraceMethod::class,
     ];
 
-    public function __construct(
-        MethodInterface $method,
-        ControllerInterface $controller
-    );
-
-    /**
-     * Provides access to the `$method` instance.
-     */
     public function method(): MethodInterface;
 
-    /**
-     * Provides access to the `$controller` instance.
-     */
-    public function controller(): ControllerInterface;
+    public function httpController(): HttpControllerInterface;
 
     /**
      * Return an instance with the specified `$description`.

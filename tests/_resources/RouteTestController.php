@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Tests\_resources;
 
-use Chevere\Controller\Controller;
+use Chevere\Controller\HttpController;
 use Chevere\Parameter\Attributes\ParameterAttribute;
 
-final class RouteTestController extends Controller
+final class RouteTestController extends HttpController
 {
     public function run(
         #[ParameterAttribute(regex: '/^[0-9]+$/')]

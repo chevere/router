@@ -33,7 +33,7 @@ final class FunctionsTest extends TestCase
             $this->assertSame($className, $route->name());
             $this->assertTrue($route->endpoints()->hasKey($httpMethod));
             $this->assertCount(1, $route->endpoints());
-            $this->assertSame($controller, $route->endpoints()->get($httpMethod)->controller());
+            $this->assertSame($controller, $route->endpoints()->get($httpMethod)->httpController());
         }
     }
 

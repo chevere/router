@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Tests\_resources;
 
-use Chevere\Controller\Controller;
+use Chevere\Controller\HttpController;
 use Chevere\Parameter\Attributes\ParameterAttribute;
 
-final class EndpointTestController extends Controller
+final class EndpointTestController extends HttpController
 {
     public function run(
         #[ParameterAttribute(regex: '/^[\w]+$/')]

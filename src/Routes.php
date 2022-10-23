@@ -60,7 +60,7 @@ final class Routes implements RoutesInterface
         }
         // @codeCoverageIgnoreStart
         // @infection-ignore-all
-        catch (\TypeError $e) { // @phpstan-ignore-line
+        catch (\TypeError $e) {
             throw new TypeError(previous: $e);
         }
         // @codeCoverageIgnoreEnd

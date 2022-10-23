@@ -27,7 +27,7 @@ final class EndpointTest extends TestCase
         $controller = new EndpointTestController();
         $endpoint = new Endpoint($method, $controller);
         $this->assertSame($method, $endpoint->method());
-        $this->assertSame($controller, $endpoint->controller());
+        $this->assertSame($controller, $endpoint->httpController());
         $this->assertSame($method->description(), $endpoint->description());
         /** @var string $name */
         foreach (array_keys($endpoint->parameters()) as $name) {

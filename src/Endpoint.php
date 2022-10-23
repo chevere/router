@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Common\Traits\DescriptionTrait;
-use Chevere\Controller\Interfaces\ControllerInterface;
+use Chevere\Controller\Interfaces\HttpControllerInterface;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Message\Message;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
@@ -34,21 +34,21 @@ final class Endpoint implements EndpointInterface
 
     public function __construct(
         private MethodInterface $method,
-        private ControllerInterface $controller
+        private HttpControllerInterface $httpController
     ) {
-        $this->description = $controller->getDescription();
+        $this->description = $httpController->getDescription();
         if ($this->description === '') {
             $this->description = $method->description();
         }
         /**
          * @var StringParameterInterface $parameter
          */
-        foreach ($controller->parameters()->getIterator() as $name => $parameter) {
+        foreach ($httpController->parameters()->getIterator() as $name => $parameter) {
             $this->parameters[$name] = [
                 'name' => $name,
                 'regex' => $parameter->regex()->__toString(),
                 'description' => $parameter->description(),
-                'isRequired' => $controller->parameters()->isRequired($name),
+                'isRequired' => $httpController->parameters()->isRequired($name),
             ];
         }
     }
@@ -58,9 +58,9 @@ final class Endpoint implements EndpointInterface
         return $this->method;
     }
 
-    public function controller(): ControllerInterface
+    public function httpController(): HttpControllerInterface
     {
-        return $this->controller;
+        return $this->httpController;
     }
 
     public function withDescription(string $description): static

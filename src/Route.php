@@ -93,7 +93,7 @@ final class Route implements RouteInterface
         foreach ($new->path->wildcards()->getIterator() as $wildcard) {
             $new->assertWildcardEndpoint($wildcard, $endpoint);
             /** @var StringParameterInterface $parameter */
-            $parameter = $endpoint->controller()->parameters()
+            $parameter = $endpoint->httpController()->parameters()
                 ->get(strval($wildcard));
             $parameterMatch = $parameter->regex()->noDelimitersNoAnchors();
             $wildcardMatch = strval($wildcard->match());
@@ -107,7 +107,7 @@ final class Route implements RouteInterface
                         ->withCode('%parameter%', strval($wildcard))
                         ->withCode('%match%', $wildcardMatch)
                         ->withCode('%controllerMatch%', $parameterMatch)
-                        ->withCode('%controller%', $endpoint->controller()::class)
+                        ->withCode('%controller%', $endpoint->httpController()::class)
                 );
             }
             $endpoint = $endpoint
@@ -144,8 +144,8 @@ final class Route implements RouteInterface
                 if ($parameter['regex'] !== $endpoint->parameters()[$name]['regex']) {
                     throw new EndpointConflictException(
                         (new Message('Controller parameters provided by %provided% must be compatible with the parameters defined first by %defined%'))
-                            ->withCode('%provided%', $endpoint->controller()::class)
-                            ->withCode('%defined%', $this->firstEndpoint->controller()::class)
+                            ->withCode('%provided%', $endpoint->httpController()::class)
+                            ->withCode('%defined%', $this->firstEndpoint->httpController()::class)
                     );
                 }
             }
@@ -154,11 +154,11 @@ final class Route implements RouteInterface
 
     private function assertWildcardEndpoint(WildcardInterface $wildcard, EndpointInterface $endpoint): void
     {
-        if ($endpoint->controller()->parameters()->count() === 0) {
+        if ($endpoint->httpController()->parameters()->count() === 0) {
             throw new InvalidArgumentException(
                 (new Message("Invalid route %path% binding with %controller% which doesn't accept any parameter"))
                     ->withCode('%path%', $this->path->__toString())
-                    ->withCode('%controller%', $endpoint->controller()::class)
+                    ->withCode('%controller%', $endpoint->httpController()::class)
                     ->withCode('%wildcard%', $wildcard->__toString())
             );
         }
@@ -169,7 +169,7 @@ final class Route implements RouteInterface
                 (new Message('Route %path% must bind to one of the known %controller% parameters: %parameters%'))
                     ->withCode('%path%', $this->path->__toString())
                     ->withCode('%wildcard%', $wildcard->__toString())
-                    ->withCode('%controller%', $endpoint->controller()::class)
+                    ->withCode('%controller%', $endpoint->httpController()::class)
                     ->withCode('%parameters%', implode(', ', $parameters))
             );
         }

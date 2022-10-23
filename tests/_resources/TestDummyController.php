@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Tests\_resources;
 
-use Chevere\Controller\Controller;
+use Chevere\Controller\HttpController;
 
-final class TestDummyController extends Controller
+final class TestDummyController extends HttpController
 {
     public function run(): array
     {

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
-use Chevere\Controller\Interfaces\ControllerInterface;
+use Chevere\Controller\Interfaces\HttpControllerInterface;
 use Chevere\Filesystem\Exceptions\FileInvalidContentsException;
 use Chevere\Filesystem\Exceptions\FileNotExistsException;
 use Chevere\Filesystem\Exceptions\FileReturnInvalidTypeException;
@@ -43,18 +43,20 @@ function routes(RouteInterface ...$namedRoutes): RoutesInterface
 }
 
 /**
- * @param ?string $name The route name, if not provided it will be same as the route path.
- * @param string $path The route path.
- * @param array<MiddlewareInterface> $middleware The route middleware(s).
- * @param ControllerInterface ...$httpControllers Named arguments for httpMethod: Controller as `POST: PostController`.
+ * @param string $path Route path.
+ * @param string $name If not provided it will be same as the route path.
+ * @param string $view View binding.
+ * @param array<MiddlewareInterface> $middleware Route middleware.
+ * @param HttpControllerInterface ...$httpControllers Binding for METHOD: CONTROLLER pairs.
  */
 function route(
     string $path,
-    ?string $name = null,
-    ?string $view = null,
+    string $name = '',
+    string $view = '',
     array $middleware = [],
-    ControllerInterface ...$httpControllers
+    HttpControllerInterface ...$httpControllers
 ): RouteInterface {
+    $name = $name === '' ? $path : $name;
     $firstControllerKey = array_key_first($httpControllers);
     if ($firstControllerKey !== null) {
         $firstController = $httpControllers[$firstControllerKey];
@@ -65,28 +67,28 @@ function route(
             $path = str_replace(
                 '{' . $wildcard . '}',
                 '{' . $wildcard . ':'
-                    . $controllerParameter->regex()->noDelimitersNoAnchors() . '}',
+                    . $controllerParameter->regex()->noDelimitersNoAnchors()
+                    . '}',
                 $path
             );
         }
     }
-    $routePath = new Path($path);
-    $route = (new Route($routePath, $name ?? $path, $view ?? ''))
+    $route = (new Route(new Path($path), $name, $view))
         ->withMiddleware(...$middleware);
-    foreach ($httpControllers as $httpMethod => $controller) {
+    foreach ($httpControllers as $httpMethod => $httpController) {
         $httpMethod = strval($httpMethod);
         $method = EndpointInterface::KNOWN_METHODS[$httpMethod] ?? null;
         if ($method === null) {
             throw new HttpMethodNotAllowedException(
                 message: (new Message('Unknown HTTP method `%httpMethod%` provided for %controller% controller.'))
                     ->withCode('%httpMethod%', $httpMethod)
-                    ->withCode('%controller%', $controller::class)
+                    ->withCode('%controller%', $httpController::class)
             );
         }
         /** @var MethodInterface $method */
         $method = new $method();
         $route = $route->withEndpoint(
-            new Endpoint($method, $controller)
+            new Endpoint($method, $httpController)
         );
     }
 
