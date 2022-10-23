@@ -14,14 +14,14 @@ declare(strict_types=1);
 namespace Chevere\Router\Tests\_resources;
 
 use Chevere\Controller\HttpController;
-use Chevere\Parameter\Attributes\ParameterAttribute;
+use Chevere\Parameter\Attributes\StringParameterAttribute;
 
 final class EndpointTestController extends HttpController
 {
     public function run(
-        #[ParameterAttribute(regex: '/^[\w]+$/')]
+        #[StringParameterAttribute('/[\w]+/')]
         string $name,
-        #[ParameterAttribute(regex: '/^[0-9]+$/')]
+        #[StringParameterAttribute('/[0-9]+/')]
         string $id
     ): array {
         return [];

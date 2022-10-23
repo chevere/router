@@ -14,12 +14,12 @@ declare(strict_types=1);
 namespace Chevere\Router\Tests\_resources;
 
 use Chevere\Controller\HttpController;
-use Chevere\Parameter\Attributes\ParameterAttribute;
+use Chevere\Parameter\Attributes\StringParameterAttribute;
 
 final class ArticleGetController extends HttpController
 {
     public function run(
-        #[ParameterAttribute(regex: '/^\d+$/')]
+        #[StringParameterAttribute('/\d+/')]
         string $id
     ): array {
         return [];
