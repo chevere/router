@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Controller\Interfaces\HttpControllerInterface;
+use Chevere\Controller\Interfaces\HttpMiddlewareInterface;
 use Chevere\Filesystem\Exceptions\FileInvalidContentsException;
 use Chevere\Filesystem\Exceptions\FileNotExistsException;
 use Chevere\Filesystem\Exceptions\FileReturnInvalidTypeException;
@@ -35,7 +36,6 @@ use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OverflowException;
 use Chevere\Throwable\Exceptions\RuntimeException;
 use Chevere\Type\Type;
-use Psr\Http\Server\MiddlewareInterface;
 
 function routes(RouteInterface ...$namedRoutes): RoutesInterface
 {
@@ -46,14 +46,13 @@ function routes(RouteInterface ...$namedRoutes): RoutesInterface
  * @param string $path Route path.
  * @param string $name If not provided it will be same as the route path.
  * @param string $view View binding.
- * @param array<MiddlewareInterface> $middleware Route middleware.
- * @param HttpControllerInterface ...$httpControllers Binding for METHOD: CONTROLLER pairs.
+ * @param HttpMiddlewareInterface $httpMiddleware Route level middleware (top priority).
  */
 function route(
     string $path,
     string $name = '',
     string $view = '',
-    array $middleware = [],
+    ?HttpMiddlewareInterface $httpMiddleware = null,
     HttpControllerInterface ...$httpControllers
 ): RouteInterface {
     $name = $name === '' ? $path : $name;
@@ -73,8 +72,7 @@ function route(
             );
         }
     }
-    $route = (new Route(new Path($path), $name, $view))
-        ->withMiddleware(...$middleware);
+    $route = (new Route(new Path($path), $name, $view));
     foreach ($httpControllers as $httpMethod => $httpController) {
         $httpMethod = strval($httpMethod);
         $method = EndpointInterface::KNOWN_METHODS[$httpMethod] ?? null;
@@ -85,6 +83,14 @@ function route(
                     ->withCode('%controller%', $httpController::class)
             );
         }
+        if ($httpMiddleware !== null) {
+            $httpController = $httpController->withMiddleware(
+                $httpController->middleware()->withPrepend(
+                    ...iterator_to_array($httpMiddleware->getIterator())
+                )
+            );
+        }
+
         /** @var MethodInterface $method */
         $method = new $method();
         $route = $route->withEndpoint(

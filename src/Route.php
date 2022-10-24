@@ -25,20 +25,9 @@ use Chevere\Router\Interfaces\WildcardInterface;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
-use Psr\Http\Server\MiddlewareInterface;
 
 final class Route implements RouteInterface
 {
-    /**
-     * @var array<MiddlewareInterface>
-     */
-    private array $middleware = [];
-
-    /**
-     * @var array<string>
-     */
-    private array $middlewareItems = [];
-
     private ?EndpointInterface $firstEndpoint;
 
     private EndpointsInterface $endpoints;
@@ -64,25 +53,6 @@ final class Route implements RouteInterface
     public function view(): string
     {
         return $this->view;
-    }
-
-    public function middleware(): array
-    {
-        return $this->middleware;
-    }
-
-    public function withMiddleware(MiddlewareInterface ...$middleware): RouteInterface
-    {
-        $new = clone $this;
-        foreach ($middleware as $item) {
-            if (in_array($item::class, $new->middlewareItems, true)) {
-                continue;
-            }
-            $new->middleware[] = $item;
-            $new->middlewareItems[] = $item::class;
-        }
-
-        return $new;
     }
 
     public function withEndpoint(EndpointInterface $endpoint): RouteInterface
