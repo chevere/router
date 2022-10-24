@@ -46,13 +46,13 @@ function routes(RouteInterface ...$namedRoutes): RoutesInterface
  * @param string $path Route path.
  * @param string $name If not provided it will be same as the route path.
  * @param string $view View binding.
- * @param HttpMiddlewareInterface $httpMiddleware Route level middleware (top priority).
+ * @param HttpMiddlewareInterface $middleware Route level middleware (top priority).
  */
 function route(
     string $path,
     string $name = '',
     string $view = '',
-    ?HttpMiddlewareInterface $httpMiddleware = null,
+    ?HttpMiddlewareInterface $middleware = null,
     HttpControllerInterface ...$httpControllers
 ): RouteInterface {
     $name = $name === '' ? $path : $name;
@@ -83,10 +83,10 @@ function route(
                     ->withCode('%controller%', $httpController::class)
             );
         }
-        if ($httpMiddleware !== null) {
+        if ($middleware !== null) {
             $httpController = $httpController->withMiddleware(
                 $httpController->middleware()->withPrepend(
-                    ...iterator_to_array($httpMiddleware->getIterator())
+                    ...iterator_to_array($middleware->getIterator())
                 )
             );
         }
