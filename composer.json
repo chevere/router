@@ -1,6 +1,6 @@
 {
     "name": "chevere/router",
-    "description": "A chevere router component.",
+    "description": "The chevere router component",
     "homepage": "https://chevere.org",
     "type": "library",
     "license": "Apache-2.0",
