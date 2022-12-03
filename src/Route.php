@@ -79,9 +79,8 @@ final class Route implements RouteInterface
                 $firstEndpoint = $new->firstEndpoint;
 
                 throw new WildcardConflictException(
-                    (new Message('Wildcard %parameter% first defined at %firstController% matches against %match% which is incompatible with the match %controllerMatch% defined by %controller%'))
+                    (new Message('Wildcard %parameter% matches against %match% which is incompatible with the match %controllerMatch% defined by %controller%'))
                         ->withCode('%parameter%', '{' . strval($wildcard) . '}')
-                        ->withCode('%firstController%', $firstEndpoint->httpController()::class)
                         ->withCode('%match%', $wildcardMatch)
                         ->withCode('%controllerMatch%', $parameterMatch)
                         ->withCode('%controller%', $endpoint->httpController()::class)
@@ -122,9 +121,12 @@ final class Route implements RouteInterface
         foreach ($firstEndpoint->parameters() as $name => $parameter) {
             if ($parameter['regex'] !== $endpoint->parameters()[$name]['regex']) {
                 throw new EndpointConflictException(
-                    (new Message('Controller parameters provided by %provided% must be compatible with the parameters defined first by %defined%'))
-                        ->withCode('%provided%', $endpoint->httpController()::class)
-                        ->withCode('%defined%', $firstEndpoint->httpController()::class)
+                    (new Message('Controller parameter %parameter% first defined at %firstController% matches against %match% which is incompatible with the match %controllerMatch% defined by %controller%'))
+                        ->withCode('%parameter%', $name)
+                        ->withCode('%match%', $parameter['regex'])
+                        ->withCode('%controllerMatch%', $endpoint->parameters()[$name]['regex'])
+                        ->withCode('%controller%', $endpoint->httpController()::class)
+                        ->withCode('%firstController%', $firstEndpoint->httpController()::class)
                 );
             }
         }
