@@ -119,12 +119,16 @@ final class Route implements RouteInterface
         /** @var EndpointInterface $firstEndpoint */
         $firstEndpoint = $this->firstEndpoint;
         foreach ($firstEndpoint->parameters() as $name => $parameter) {
-            if ($parameter['regex'] !== $endpoint->parameters()[$name]['regex']) {
+            /** @var string $match */
+            $match = $parameter['regex'];
+            /** @var string $controllerMatch */
+            $controllerMatch = $endpoint->parameters()[$name]['regex'];
+            if ($match !== $endpoint->parameters()[$name]['regex']) {
                 throw new EndpointConflictException(
                     (new Message('Controller parameter %parameter% first defined at %firstController% matches against %match% which is incompatible with the match %controllerMatch% defined by %controller%'))
                         ->withCode('%parameter%', $name)
-                        ->withCode('%match%', $parameter['regex'])
-                        ->withCode('%controllerMatch%', $endpoint->parameters()[$name]['regex'])
+                        ->withCode('%match%', $match)
+                        ->withCode('%controllerMatch%', $controllerMatch)
                         ->withCode('%controller%', $endpoint->httpController()::class)
                         ->withCode('%firstController%', $firstEndpoint->httpController()::class)
                 );
