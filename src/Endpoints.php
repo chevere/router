@@ -34,7 +34,7 @@ final class Endpoints implements EndpointsInterface
         return $new;
     }
 
-    public function hasKey(string $key): bool
+    public function has(string $key): bool
     {
         return $this->map->has($key);
     }

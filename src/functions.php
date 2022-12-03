@@ -24,6 +24,7 @@ use Chevere\Filesystem\Exceptions\FileWithoutContentsException;
 use function Chevere\Filesystem\filePhpReturnForPath;
 use Chevere\Http\Exceptions\HttpMethodNotAllowedException;
 use Chevere\Http\Interfaces\MethodInterface;
+use function Chevere\Message\message;
 use Chevere\Message\Message;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
 use Chevere\Router\Exceptions\NotRoutableException;
@@ -33,6 +34,7 @@ use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
+use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
 use Chevere\Throwable\Exceptions\RuntimeException;
 use Chevere\Type\Type;
@@ -56,15 +58,24 @@ function route(
     HttpControllerInterface ...$httpControllers
 ): RouteInterface {
     $name = $name === '' ? $path : $name;
-    $firstControllerKey = array_key_first($httpControllers);
-    if ($firstControllerKey !== null) {
-        $firstController = $httpControllers[$firstControllerKey];
-        $routePath = new Path($path);
+    $routePath = new Path($path);
+    $route = (new Route(new Path($path), $name, $view));
+    foreach ($httpControllers as $httpController) {
         foreach ($routePath->wildcards()->keys() as $wildcard) {
-            /** @var StringParameterInterface $controllerParameter */
-            $controllerParameter = $firstController->parameters()->get($wildcard);
+            $wildcardBracket = '{' . $wildcard . '}';
+
+            try {
+                /** @var StringParameterInterface $controllerParameter */
+                $controllerParameter = $httpController->parameters()->get($wildcard);
+            } catch(OutOfBoundsException) {
+                throw new InvalidArgumentException(
+                    message('Wildcard %wildcard% does not exists in controller %controller%')
+                        ->withCode('%wildcard%', $wildcardBracket)
+                        ->withCode('%controller%', $httpController::class)
+                );
+            }
             $path = str_replace(
-                '{' . $wildcard . '}',
+                $wildcardBracket,
                 '{' . $wildcard . ':'
                     . $controllerParameter->regex()->noDelimitersNoAnchors()
                     . '}',
@@ -90,7 +101,6 @@ function route(
                 )
             );
         }
-
         /** @var MethodInterface $method */
         $method = new $method();
         $route = $route->withEndpoint(

@@ -33,7 +33,7 @@ interface EndpointsInterface extends MappedInterface
     /**
      * Returns a boolean indicating whether the instance has `$key`.
      */
-    public function hasKey(string $key): bool;
+    public function has(string $key): bool;
 
     /**
      * Provides access to the RouteEndpointInterface identified by `$key`.

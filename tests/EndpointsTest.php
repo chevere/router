@@ -27,7 +27,7 @@ final class EndpointsTest extends TestCase
         $method = new GetMethod();
         $endpoints = new Endpoints();
         $this->assertCount(0, $endpoints);
-        $this->assertFalse($endpoints->hasKey($method->name()));
+        $this->assertFalse($endpoints->has($method->name()));
         $this->expectException(OutOfBoundsException::class);
         $endpoints->get($method->name());
     }
@@ -40,7 +40,7 @@ final class EndpointsTest extends TestCase
         $endpointsWithPut = $endpoints
             ->withPut($endpoint);
         $this->assertNotSame($endpoints, $endpointsWithPut);
-        $this->assertTrue($endpointsWithPut->hasKey($method->name()));
+        $this->assertTrue($endpointsWithPut->has($method->name()));
         $this->assertSame($endpointsWithPut->get($method->name()), $endpoint);
     }
 }

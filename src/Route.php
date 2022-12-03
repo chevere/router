@@ -58,6 +58,9 @@ final class Route implements RouteInterface
     public function withEndpoint(EndpointInterface $endpoint): RouteInterface
     {
         $new = clone $this;
+        if (! isset($new->firstEndpoint)) {
+            $new->firstEndpoint = $endpoint;
+        }
         $new->assertUnique($endpoint);
         $new->assertNoConflict($endpoint);
         foreach ($new->path->wildcards()->getIterator() as $wildcard) {
@@ -72,9 +75,13 @@ final class Route implements RouteInterface
                 $wildcardMatch = $parameterMatch;
             }
             if ($parameterMatch !== $wildcardMatch) {
+                /** @var EndpointInterface $firstEndpoint */
+                $firstEndpoint = $new->firstEndpoint;
+
                 throw new WildcardConflictException(
-                    (new Message('Wildcard %parameter% matches against %match% which is incompatible with the match %controllerMatch% defined for %controller%'))
-                        ->withCode('%parameter%', strval($wildcard))
+                    (new Message('Wildcard %parameter% first defined at %firstController% matches against %match% which is incompatible with the match %controllerMatch% defined by %controller%'))
+                        ->withCode('%parameter%', '{' . strval($wildcard) . '}')
+                        ->withCode('%firstController%', $firstEndpoint->httpController()::class)
                         ->withCode('%match%', $wildcardMatch)
                         ->withCode('%controllerMatch%', $parameterMatch)
                         ->withCode('%controller%', $endpoint->httpController()::class)
@@ -97,7 +104,7 @@ final class Route implements RouteInterface
     private function assertUnique(EndpointInterface $endpoint): void
     {
         $key = $endpoint->method()->name();
-        if ($this->endpoints->hasKey($key)) {
+        if ($this->endpoints->has($key)) {
             throw new OverflowException(
                 (new Message('Endpoint for method %method% has been already added'))
                     ->withCode('%method%', $key)
@@ -107,17 +114,18 @@ final class Route implements RouteInterface
 
     private function assertNoConflict(EndpointInterface $endpoint): void
     {
-        if (! isset($this->firstEndpoint)) {
-            $this->firstEndpoint = $endpoint;
-        } else {
-            foreach ($this->firstEndpoint->parameters() as $name => $parameter) {
-                if ($parameter['regex'] !== $endpoint->parameters()[$name]['regex']) {
-                    throw new EndpointConflictException(
-                        (new Message('Controller parameters provided by %provided% must be compatible with the parameters defined first by %defined%'))
-                            ->withCode('%provided%', $endpoint->httpController()::class)
-                            ->withCode('%defined%', $this->firstEndpoint->httpController()::class)
-                    );
-                }
+        if (count($this->endpoints()) === 0) {
+            return;
+        }
+        /** @var EndpointInterface $firstEndpoint */
+        $firstEndpoint = $this->firstEndpoint;
+        foreach ($firstEndpoint->parameters() as $name => $parameter) {
+            if ($parameter['regex'] !== $endpoint->parameters()[$name]['regex']) {
+                throw new EndpointConflictException(
+                    (new Message('Controller parameters provided by %provided% must be compatible with the parameters defined first by %defined%'))
+                        ->withCode('%provided%', $endpoint->httpController()::class)
+                        ->withCode('%defined%', $firstEndpoint->httpController()::class)
+                );
             }
         }
     }

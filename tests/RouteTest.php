@@ -51,7 +51,7 @@ final class RouteTest extends TestCase
         $controller = new RouteTestController();
         $endpoint = new Endpoint($method, $controller);
         $route = $route->withEndpoint($endpoint);
-        $this->assertTrue($route->endpoints()->hasKey($method->name()));
+        $this->assertTrue($route->endpoints()->has($method->name()));
         $this->assertSame($endpoint, $route->endpoints()->get($method->name()));
     }
 
@@ -123,7 +123,7 @@ final class RouteTest extends TestCase
         $controller = new RouteTestController();
         $endpoint = new Endpoint($method, $controller);
         $route = $route->withEndpoint($endpoint);
-        $this->assertTrue($route->endpoints()->hasKey($method->name()));
+        $this->assertTrue($route->endpoints()->has($method->name()));
         $this->assertSame(
             [],
             $route->endpoints()->get($method->name())->parameters()
