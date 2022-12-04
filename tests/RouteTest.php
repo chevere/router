@@ -157,6 +157,7 @@ final class RouteTest extends TestCase
             new RouteTestController()
         );
         $this->expectException(WildcardConflictException::class);
+        $this->expectExceptionMessage('Wildcard {id} matches against');
         $route->withEndpoint($endpoint);
     }
 }
