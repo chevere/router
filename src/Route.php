@@ -72,12 +72,9 @@ final class Route implements RouteInterface
             $wildcardMatch = strval($wildcard->match());
             $wildcardString = strval($wildcard);
             if (strpos(strval($this->path), $wildcardString . '}') !== false) {
-                $wildcardMatch = $parameterMatch;
+                $wildcardMatch = $parameterMatch; // @codeCoverageIgnore
             }
             if ($parameterMatch !== $wildcardMatch) {
-                /** @var EndpointInterface $firstEndpoint */
-                $firstEndpoint = $new->firstEndpoint;
-
                 throw new WildcardConflictException(
                     (new Message('Wildcard %parameter% matches against %match% which is incompatible with the match %controllerMatch% defined by %controller%'))
                         ->withCode('%parameter%', '{' . strval($wildcard) . '}')

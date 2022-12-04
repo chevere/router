@@ -67,7 +67,7 @@ function route(
             try {
                 /** @var StringParameterInterface $controllerParameter */
                 $controllerParameter = $httpController->parameters()->get($wildcard);
-            } catch(OutOfBoundsException) {
+            } catch (OutOfBoundsException) {
                 throw new InvalidArgumentException(
                     message('Wildcard %wildcard% does not exists in controller %controller%')
                         ->withCode('%wildcard%', $wildcardBracket)
