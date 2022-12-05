@@ -15,36 +15,29 @@ namespace Chevere\Router;
 
 use Chevere\Controller\Interfaces\HttpControllerInterface;
 use Chevere\Controller\Interfaces\HttpMiddlewareInterface;
-use Chevere\Filesystem\Exceptions\FileInvalidContentsException;
-use Chevere\Filesystem\Exceptions\FileNotExistsException;
-use Chevere\Filesystem\Exceptions\FileReturnInvalidTypeException;
-use Chevere\Filesystem\Exceptions\FilesystemException;
-use Chevere\Filesystem\Exceptions\FileUnableToGetException;
-use Chevere\Filesystem\Exceptions\FileWithoutContentsException;
-use function Chevere\Filesystem\filePhpReturnForPath;
 use Chevere\Http\Exceptions\HttpMethodNotAllowedException;
 use Chevere\Http\Interfaces\MethodInterface;
 use function Chevere\Message\message;
 use Chevere\Message\Message;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
-use Chevere\Router\Exceptions\NotRoutableException;
-use Chevere\Router\Exceptions\WithoutEndpointsException;
+use Chevere\Router\Exceptions\WildcardNotFoundException;
 use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
-use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
-use Chevere\Throwable\Exceptions\OverflowException;
-use Chevere\Throwable\Exceptions\RuntimeException;
-use Chevere\Type\Type;
 
+/**
+ * Creates Routes object for all `$routes`.
+ */
 function routes(RouteInterface ...$routes): RoutesInterface
 {
     return (new Routes())->withAdded(...$routes);
 }
 
 /**
+ * Creates Route binding.
+ *
  * @param string $path Route path.
  * @param string $name If not provided it will be same as the route path.
  * @param string $view View binding.
@@ -68,7 +61,7 @@ function route(
                 /** @var StringParameterInterface $controllerParameter */
                 $controllerParameter = $httpController->parameters()->get($wildcard);
             } catch (OutOfBoundsException) {
-                throw new InvalidArgumentException(
+                throw new WildcardNotFoundException(
                     message('Wildcard %wildcard% does not exists in controller %controller%')
                         ->withCode('%wildcard%', $wildcardBracket)
                         ->withCode('%controller%', $httpController::class)
@@ -112,12 +105,7 @@ function route(
 }
 
 /**
- * @throws NotRoutableException
- * @throws WithoutEndpointsException
- * @throws InvalidArgumentException
- * @throws OverflowException
- *
- * @codeCoverageIgnore
+ * Creates a Router for named Routes groups.
  */
 function router(RoutesInterface ...$routes): RouterInterface
 {
@@ -131,22 +119,4 @@ function router(RoutesInterface ...$routes): RouterInterface
     }
 
     return $router;
-}
-
-/**
- * @throws FilesystemException
- * @throws FileNotExistsException
- * @throws FileUnableToGetException
- * @throws FileWithoutContentsException
- * @throws FileInvalidContentsException
- * @throws RuntimeException
- * @throws FileReturnInvalidTypeException
- *
- * @codeCoverageIgnore
- */
-function importRoutes(string $path): RoutesInterface
-{
-    /** @var RoutesInterface */
-    return filePhpReturnForPath($path)
-        ->variableTyped(new Type(RoutesInterface::class));
 }

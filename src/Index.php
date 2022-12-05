@@ -136,10 +136,10 @@ final class Index implements IndexInterface
      * @throws TypeError
      * @throws OutOfBoundsException
      */
-    public function getRouteGroup(string $group): string
+    public function getRouteGroup(string $name): string
     {
         try {
-            return $this->groupsIndex->get($group);
+            return $this->groupsIndex->get($name);
         }
         // @codeCoverageIgnoreStart
         // @infection-ignore-all
@@ -150,7 +150,7 @@ final class Index implements IndexInterface
         catch (\OutOfBoundsException $e) {
             throw new OutOfBoundsException(
                 (new Message('Group %group% not found'))
-                    ->withCode('%group%', $group)
+                    ->withCode('%group%', $name)
             );
         }
     }

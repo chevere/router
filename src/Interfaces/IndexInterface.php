@@ -64,5 +64,5 @@ interface IndexInterface extends ToArrayInterface
      *
      * @throws OutOfBoundsException
      */
-    public function getRouteGroup(string $group): string;
+    public function getRouteGroup(string $name): string;
 }
