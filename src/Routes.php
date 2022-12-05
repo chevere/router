@@ -57,14 +57,7 @@ final class Routes implements RoutesInterface
         try {
             /** @var RouteInterface */
             return $this->map->get($path);
-        }
-        // @codeCoverageIgnoreStart
-        // @infection-ignore-all
-        catch (\TypeError $e) {
-            throw new TypeError(previous: $e);
-        }
-        // @codeCoverageIgnoreEnd
-        catch (\OutOfBoundsException $e) {
+        } catch (\OutOfBoundsException) {
             throw new OutOfBoundsException(
                 (new Message('Path %path% not found'))
                     ->withCode('%path%', $path)

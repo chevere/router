@@ -89,14 +89,7 @@ final class Index implements IndexInterface
     {
         try {
             return $this->identifiersMap->get($name);
-        }
-        // @codeCoverageIgnoreStart
-        // @infection-ignore-all
-        catch (\TypeError $e) { // @phpstan-ignore-line
-            throw new TypeError(previous: $e);
-        }
-        // @codeCoverageIgnoreEnd
-        catch (\OutOfBoundsException $e) {
+        } catch (\OutOfBoundsException $e) {
             throw new OutOfBoundsException(
                 (new Message('Route name %routeName% not found'))
                     ->withCode('%routeName%', $name)
@@ -117,14 +110,7 @@ final class Index implements IndexInterface
     {
         try {
             return $this->groupsMap->get($group);
-        }
-        // @codeCoverageIgnoreStart
-        // @infection-ignore-all
-        catch (\TypeError $e) { // @phpstan-ignore-line
-            throw new TypeError(previous: $e);
-        }
-        // @codeCoverageIgnoreEnd
-        catch (\OutOfBoundsException $e) {
+        } catch (\OutOfBoundsException) {
             throw new OutOfBoundsException(
                 (new Message('Group %group% not found'))
                     ->withCode('%group%', $group)
@@ -140,14 +126,7 @@ final class Index implements IndexInterface
     {
         try {
             return $this->groupsIndex->get($name);
-        }
-        // @codeCoverageIgnoreStart
-        // @infection-ignore-all
-        catch (\TypeError $e) { // @phpstan-ignore-line
-            throw new TypeError(previous: $e);
-        }
-        // @codeCoverageIgnoreEnd
-        catch (\OutOfBoundsException $e) {
+        } catch (\OutOfBoundsException) {
             throw new OutOfBoundsException(
                 (new Message('Group %group% not found'))
                     ->withCode('%group%', $name)

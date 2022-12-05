@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
+use Chevere\Controller\Interfaces\HttpControllerInterface;
 use Chevere\Http\Exceptions\HttpMethodNotAllowedException;
 use Chevere\Message\Message;
 use Chevere\Router\Exceptions\NotFoundException;
@@ -29,13 +30,22 @@ final class Dispatcher implements DispatcherInterface
     ) {
     }
 
+    // @infection-ignore-all
     public function dispatch(string $httpMethod, string $uri): RoutedInterface
     {
         $info = (new GroupCountBased($this->routeCollector->getData()))
             ->dispatch($httpMethod, $uri);
+        /** @var int $status */
+        $status = $info[0];
+        /** @var HttpControllerInterface $handler */
+        $handler = $info[1] ?? null;
+        /** @var string[] $allowed */
+        $allowed = $info[2] ?? [];
+        /** @var array<string, string> $arguments */
+        $arguments = $info[2] ?? [];
 
-        return match ($info[0]) {
-            GroupCountBased::FOUND => new Routed($info[1], $info[2]),
+        return match ($status) {
+            GroupCountBased::FOUND => new Routed($handler, $arguments),
             GroupCountBased::NOT_FOUND =>
                 throw new NotFoundException(
                     (new Message('No route found for %uri%'))
@@ -45,12 +55,12 @@ final class Dispatcher implements DispatcherInterface
                 throw new HttpMethodNotAllowedException(
                     (new Message('Method %method% is not in the list of allowed methods: %allowed%'))
                         ->withCode('%method%', $httpMethod)
-                        ->withCode('%allowed%', implode(', ', $info[1]))
+                        ->withCode('%allowed%', implode(', ', $allowed))
                 ),
             // @codeCoverageIgnoreStart
             default => throw new LogicException(
-                (new Message('Unknown route status %status%'))
-                    ->withCode('%status%', $info[0])
+                (new Message('Unknown router status code %status%'))
+                    ->withCode('%status%', strval($status))
             ),
             // @codeCoverageIgnoreEnd
         };

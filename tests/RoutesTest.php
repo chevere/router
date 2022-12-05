@@ -37,7 +37,7 @@ final class RoutesTest extends TestCase
         $this->assertTrue($routesWithAdded->has($key));
         $this->assertSame($route, $routesWithAdded->get($key));
         $this->expectException(OutOfBoundsException::class);
-        $routesWithAdded->get('not-found');
+        $routesWithAdded->get('404');
     }
 
     public function testWithAddedNameCollision(): void
