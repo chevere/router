@@ -31,28 +31,37 @@ use PHPUnit\Framework\TestCase;
 
 final class FunctionsTest extends TestCase
 {
-    public function testFunctionRoute(): void
+    public function functionRouteProvider(): array
+    {
+        $return = [];
+        foreach (EndpointInterface::KNOWN_METHODS as $method => $className) {
+            $return[] = [$method, $className];
+        }
+
+        return $return;
+    }
+
+    /**
+     * @dataProvider functionRouteProvider
+     */
+    public function testFunctionRoute(string $method, string $className): void
     {
         $controller = new TestDummyController();
-        foreach (EndpointInterface::KNOWN_METHODS as $httpMethod => $className) {
-            $arguments = [
-                'path' => '/test/',
-                'name' => $className,
-                'view' => $className,
-                ...[
-                    $httpMethod => $controller,
-                ],
-            ];
-            $route = route(...$arguments);
-            $this->assertSame($className, $route->name());
-            $this->assertSame($className, $route->view());
-            $this->assertTrue($route->endpoints()->has($httpMethod));
-            $this->assertCount(1, $route->endpoints());
-            $this->assertSame(
-                $controller,
-                $route->endpoints()->get($httpMethod)->httpController()
-            );
-        }
+        $arguments = [
+            'path' => '/test/',
+            'name' => $className,
+            'view' => $className,
+            $method => $controller,
+        ];
+        $route = route(...$arguments);
+        $this->assertSame($className, $route->name());
+        $this->assertSame($className, $route->view());
+        $this->assertTrue($route->endpoints()->has($method));
+        $this->assertCount(1, $route->endpoints());
+        $this->assertSame(
+            $controller,
+            $route->endpoints()->get($method)->httpController()
+        );
     }
 
     public function testFunctionRouteWildcardNotFound(): void

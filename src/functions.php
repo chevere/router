@@ -48,23 +48,23 @@ function route(
     string $name = '',
     string $view = '',
     ?HttpMiddlewareInterface $middleware = null,
-    HttpControllerInterface ...$httpControllers
+    HttpControllerInterface ...$controllers
 ): RouteInterface {
     $name = $name === '' ? $path : $name;
     $routePath = new Path($path);
     $route = (new Route(new Path($path), $name, $view));
-    foreach ($httpControllers as $httpController) {
+    foreach ($controllers as $controller) {
         foreach ($routePath->wildcards()->keys() as $wildcard) {
             $wildcardBracket = '{' . $wildcard . '}';
 
             try {
                 /** @var StringParameterInterface $controllerParameter */
-                $controllerParameter = $httpController->parameters()->get($wildcard);
+                $controllerParameter = $controller->parameters()->get($wildcard);
             } catch (OutOfBoundsException) {
                 throw new WildcardNotFoundException(
                     message('Wildcard %wildcard% does not exists in controller %controller%')
                         ->withCode('%wildcard%', $wildcardBracket)
-                        ->withCode('%controller%', $httpController::class)
+                        ->withCode('%controller%', $controller::class)
                 );
             }
             $path = str_replace(
@@ -77,19 +77,19 @@ function route(
         }
     }
     $route = (new Route(new Path($path), $name, $view));
-    foreach ($httpControllers as $httpMethod => $httpController) {
-        $httpMethod = strval($httpMethod);
-        $method = EndpointInterface::KNOWN_METHODS[$httpMethod] ?? null;
+    foreach ($controllers as $method => $controller) {
+        $provided = strval($method);
+        $method = EndpointInterface::KNOWN_METHODS[$method] ?? null;
         if ($method === null) {
             throw new HttpMethodNotAllowedException(
-                message: (new Message('Unknown HTTP method `%httpMethod%` provided for %controller% controller.'))
-                    ->withCode('%httpMethod%', $httpMethod)
-                    ->withCode('%controller%', $httpController::class)
+                message: (new Message('Unknown HTTP method `%provided%` provided for %controller% controller.'))
+                    ->withCode('%provided%', $provided)
+                    ->withCode('%controller%', $controller::class)
             );
         }
         if ($middleware !== null) {
-            $httpController = $httpController->withMiddleware(
-                $httpController->middleware()->withPrepend(
+            $controller = $controller->withMiddleware(
+                $controller->middleware()->withPrepend(
                     ...iterator_to_array($middleware->getIterator())
                 )
             );
@@ -97,7 +97,7 @@ function route(
         /** @var MethodInterface $method */
         $method = new $method();
         $route = $route->withEndpoint(
-            new Endpoint($method, $httpController)
+            new Endpoint($method, $controller)
         );
     }
 
