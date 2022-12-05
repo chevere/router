@@ -39,9 +39,9 @@ use Chevere\Throwable\Exceptions\OverflowException;
 use Chevere\Throwable\Exceptions\RuntimeException;
 use Chevere\Type\Type;
 
-function routes(RouteInterface ...$namedRoutes): RoutesInterface
+function routes(RouteInterface ...$routes): RoutesInterface
 {
-    return (new Routes())->withAdded(...$namedRoutes);
+    return (new Routes())->withAdded(...$routes);
 }
 
 /**
@@ -119,11 +119,14 @@ function route(
  *
  * @codeCoverageIgnore
  */
-function router(string $group, RoutesInterface $routes): RouterInterface
+function router(RoutesInterface ...$routes): RouterInterface
 {
     $router = new Router();
-    foreach ($routes->getIterator() as $route) {
-        $router = $router->withAddedRoute($group, $route);
+    foreach ($routes as $group => $groupRoutes) {
+        foreach ($groupRoutes->getIterator() as $route) {
+            $router = $router
+                ->withAddedRoute($group, $route);
+        }
     }
 
     return $router;
