@@ -14,12 +14,12 @@ declare(strict_types=1);
 namespace Chevere\Router\Tests\_resources;
 
 use Chevere\Controller\HttpController;
-use Chevere\Parameter\Attributes\StringParameterAttribute;
+use Chevere\Parameter\Attributes\StringAttribute;
 
 final class RouteTestControllerRegexConflict extends HttpController
 {
     public function run(
-        #[StringParameterAttribute('/\W+/')]
+        #[StringAttribute('/\W+/')]
         string $id
     ): array {
         return [];
