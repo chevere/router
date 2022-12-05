@@ -62,10 +62,10 @@ final class RoutesTest extends TestCase
 
     public function testWithAddedPathCollision(): void
     {
-        $routePath = new Path('/some-path');
+        $path = new Path('/some-path');
         $route = new Route(
             name: 'test',
-            path: $routePath
+            path: $path
         );
         $key = $route->path()->__toString();
         $routes = (new Routes())
@@ -75,7 +75,7 @@ final class RoutesTest extends TestCase
         $routes->withAdded(
             new Route(
                 name: 'test-2',
-                path: $routePath
+                path: $path
             )
         );
     }
