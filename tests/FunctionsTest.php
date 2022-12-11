@@ -24,8 +24,8 @@ use function Chevere\Router\routes;
 use Chevere\Router\Tests\_resources\MiddlewareOne;
 use Chevere\Router\Tests\_resources\MiddlewareThree;
 use Chevere\Router\Tests\_resources\MiddlewareTwo;
-use Chevere\Router\Tests\_resources\TestController;
-use Chevere\Router\Tests\_resources\TestDummyController;
+use Chevere\Router\Tests\_resources\TestControllerNoParameters;
+use Chevere\Router\Tests\_resources\TestControllerWithParameters;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
@@ -46,7 +46,7 @@ final class FunctionsTest extends TestCase
      */
     public function testFunctionRoute(string $method, string $className): void
     {
-        $controller = new TestDummyController();
+        $controller = new TestControllerNoParameters();
         $arguments = [
             'path' => '/test/',
             'name' => $className,
@@ -69,17 +69,17 @@ final class FunctionsTest extends TestCase
         $this->expectException(WildcardNotFoundException::class);
         $this->expectExceptionMessage(
             'Wildcard {wildcard} does not exists in controller '
-            . TestDummyController::class
+            . TestControllerNoParameters::class
         );
         route(
             path: '/test/{wildcard}',
-            GET: new TestDummyController(),
+            GET: new TestControllerNoParameters(),
         );
     }
 
     public function testFunctionRouteWildcard(): void
     {
-        $controller = new TestController();
+        $controller = new TestControllerWithParameters();
         /** @var StringParameter $id */
         $id = $controller->parameters()->get('id');
         /** @var StringParameter $name */
@@ -99,7 +99,7 @@ final class FunctionsTest extends TestCase
 
     public function testFunctionRouteMiddleware(): void
     {
-        $controller = new TestDummyController();
+        $controller = new TestControllerNoParameters();
         $middleware = new HttpMiddleware(
             new MiddlewareOne(),
             new MiddlewareTwo(),
@@ -119,14 +119,14 @@ final class FunctionsTest extends TestCase
 
     public function testFunctionRouteBadPath(): void
     {
-        $controller = new TestDummyController();
+        $controller = new TestControllerNoParameters();
         $this->expectException(InvalidArgumentException::class);
         route('test', 'name', GET: $controller);
     }
 
     public function testFunctionRouteBadHttpMethod(): void
     {
-        $controller = new TestDummyController();
+        $controller = new TestControllerNoParameters();
         $this->expectException(HttpMethodNotAllowedException::class);
         route('/test/', 'name', TEST: $controller);
     }
@@ -138,7 +138,7 @@ final class FunctionsTest extends TestCase
         $route = route(
             name: $name,
             path: $path,
-            GET: new TestDummyController()
+            GET: new TestControllerNoParameters()
         );
         $routes = routes(myRoute: $route);
         $this->assertTrue($routes->has($path));
@@ -151,13 +151,13 @@ final class FunctionsTest extends TestCase
             'web' => routes(
                 route(
                     path: '/',
-                    GET: new TestDummyController()
+                    GET: new TestControllerNoParameters()
                 )
             ),
             'api' => routes(
                 route(
                     path: '/api',
-                    GET: new TestDummyController()
+                    GET: new TestControllerNoParameters()
                 )
             ),
         ];

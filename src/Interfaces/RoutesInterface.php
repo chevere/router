@@ -27,12 +27,12 @@ interface RoutesInterface extends MappedInterface
     public const EXCEPTION_CODE_TAKEN_PATH = 100;
 
     /**
-     * Return an instance with the specified `$namedRoutes`.
+     * Return an instance with the specified `$routes`.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified `$namedRoutes`.
+     * an instance that contains the specified `$routes`.
      */
-    public function withAdded(RouteInterface ...$namedRoutes): self;
+    public function withAdded(RouteInterface ...$routes): self;
 
     /**
      * Indicates whether the instance has routable(s) identified by its `$path`.

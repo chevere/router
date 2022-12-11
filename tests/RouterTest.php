@@ -19,7 +19,7 @@ use Chevere\Router\Exceptions\NotRoutableException;
 use Chevere\Router\Exceptions\WithoutEndpointsException;
 use function Chevere\Router\route;
 use Chevere\Router\Router;
-use Chevere\Router\Tests\_resources\TestController;
+use Chevere\Router\Tests\_resources\TestControllerWithParameters;
 use FastRoute\RouteCollector;
 use PHPUnit\Framework\TestCase;
 
@@ -34,7 +34,7 @@ final class RouterTest extends TestCase
 
     public function testRouter(): void
     {
-        $controller = new TestController();
+        $controller = new TestControllerWithParameters();
         $route = route('/🐘/{id:\d+}/{name:\w+}');
         $route = $route->withEndpoint(
             new Endpoint(
@@ -77,7 +77,7 @@ final class RouterTest extends TestCase
 
     public function testNotExportable(): void
     {
-        $route = route('/test');
+        $route = route('/test', GET: new TestControllerWithParameters());
         $route->resource = fopen('php://output', 'r+');
         $this->expectException(NotRoutableException::class);
         (new Router())

@@ -22,8 +22,8 @@ use Chevere\Router\Path;
 use function Chevere\Router\route;
 use Chevere\Router\Route;
 use Chevere\Router\Tests\_resources\RouteTestController;
-use Chevere\Router\Tests\_resources\RouteTestControllerNoParams;
 use Chevere\Router\Tests\_resources\RouteTestControllerRegexConflict;
+use Chevere\Router\Tests\_resources\TestControllerNoParameters;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
@@ -89,7 +89,7 @@ final class RouteTest extends TestCase
     {
         $route = new Route(new Path('/test/{foo}'), 'test');
         $method = new GetMethod();
-        $controller = new RouteTestControllerNoParams();
+        $controller = new TestControllerNoParameters();
         $endpoint = new Endpoint($method, $controller);
         $this->expectException(InvalidArgumentException::class);
         $route->withEndpoint($endpoint);

@@ -21,10 +21,10 @@ use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use Chevere\Router\Parsers\StrictStd;
+use Chevere\VariableSupport\Exceptions\UnableToStoreException;
 use Chevere\VariableSupport\StorableVariable;
 use FastRoute\DataGenerator\GroupCountBased;
 use FastRoute\RouteCollector;
-use Throwable;
 
 final class Router implements RouterInterface
 {
@@ -76,8 +76,8 @@ final class Router implements RouterInterface
     private function assertRoute(RouteInterface $route): void
     {
         try {
-            new StorableVariable($route);
-        } catch (Throwable $e) {
+            (new StorableVariable($route))->toSerialize();
+        } catch (UnableToStoreException $e) {
             throw new NotRoutableException(previous: $e);
         }
         if ($route->endpoints()->count() === 0) {

@@ -27,8 +27,9 @@ final class Endpoints implements EndpointsInterface
     {
         $new = clone $this;
         $new->map = $new->map->withPut(
-            $routeEndpoint->method()->name(),
-            $routeEndpoint
+            ...[
+                $routeEndpoint->method()->name() => $routeEndpoint,
+            ]
         );
 
         return $new;

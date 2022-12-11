@@ -36,8 +36,12 @@ final class Routes implements RoutesInterface
             $key = $route->path()->__toString();
             $new->assertRoute($key, $route);
             $new->names = $new->names
-                ->withPut($route->name(), $key);
-            $new->map = $new->map->withPut($key, $route);
+                ->withPut(...[
+                    $route->name() => $key,
+                ]);
+            $new->map = $new->map->withPut(...[
+                $key => $route,
+            ]);
         }
 
         return $new;

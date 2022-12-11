@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Tests\_resources;
 
+use Chevere\Attribute\StringAttribute;
 use Chevere\Controller\HttpController;
-use Chevere\Parameter\Attributes\StringAttribute;
 
 final class EndpointTestController extends HttpController
 {
