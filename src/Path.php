@@ -46,10 +46,7 @@ final class Path implements PathInterface
 
         try {
             $dataGenerator->addRoute('GET', $this->data, '');
-        }
-        // @codeCoverageIgnoreStart
-        // @infection-ignore-all
-        catch (Throwable $e) {
+        } catch (Throwable $e) { // @codeCoverageIgnoreStart
             throw new LogicException(
                 previous: $e,
                 message: (new Message('Unable to add route %path%'))

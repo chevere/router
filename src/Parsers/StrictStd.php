@@ -48,10 +48,7 @@ final class StrictStd extends Std
 
         try {
             $datas = parent::parse($route);
-        }
-        // @codeCoverageIgnoreStart
-        // @infection-ignore-all
-        catch (Throwable $e) {
+        } catch (Throwable $e) { // @codeCoverageIgnoreStart
             throw new InvalidArgumentException(
                 previous: $e,
                 message: (new Message('Unable to parse route %route%'))
