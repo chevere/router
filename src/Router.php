@@ -76,7 +76,7 @@ final class Router implements RouterInterface
     private function assertRoute(RouteInterface $route): void
     {
         try {
-            (new StorableVariable($route))->toSerialize();
+            (new StorableVariable($route))->toExport();
         } catch (UnableToStoreException $e) {
             throw new NotRoutableException(previous: $e);
         }
