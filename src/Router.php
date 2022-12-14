@@ -14,15 +14,12 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Message\Message;
-use Chevere\Router\Exceptions\NotRoutableException;
 use Chevere\Router\Exceptions\WithoutEndpointsException;
 use Chevere\Router\Interfaces\IndexInterface;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use Chevere\Router\Parsers\StrictStd;
-use Chevere\VariableSupport\Exceptions\UnableToStoreException;
-use Chevere\VariableSupport\StorableVariable;
 use FastRoute\DataGenerator\GroupCountBased;
 use FastRoute\RouteCollector;
 
@@ -43,7 +40,7 @@ final class Router implements RouterInterface
 
     public function withAddedRoute(string $group, RouteInterface $route): RouterInterface
     {
-        $this->assertRoute($route);
+        $this->assertHasEndpoints($route);
         $new = clone $this;
         $new->index = $new->index->withAddedRoute($route, $group);
         $new->routes = $new->routes->withAdded($route);
@@ -73,19 +70,16 @@ final class Router implements RouterInterface
         return $this->routeCollector;
     }
 
-    private function assertRoute(RouteInterface $route): void
+    private function assertHasEndpoints(RouteInterface $route): void
     {
-        try {
-            (new StorableVariable($route))->toExport();
-        } catch (UnableToStoreException $e) {
-            throw new NotRoutableException(previous: $e);
+        if ($route->endpoints()->count() > 0) {
+            return;
         }
-        if ($route->endpoints()->count() === 0) {
-            throw new WithoutEndpointsException(
-                (new Message("Route %name% (%path%) doesn't contain any endpoint."))
-                    ->withCode('%path%', $route->path()->__toString())
-                    ->withCode('%name%', $route->name())
-            );
-        }
+
+        throw new WithoutEndpointsException(
+            (new Message("Route %name% (%path%) doesn't contain any endpoint."))
+                ->withCode('%path%', $route->path()->__toString())
+                ->withCode('%name%', $route->name())
+        );
     }
 }
