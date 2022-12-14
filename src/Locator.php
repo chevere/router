@@ -23,7 +23,7 @@ final class Locator implements LocatorInterface
         private string $repository,
         private string $path
     ) {
-        $this->string = "${repository}:${path}";
+        $this->string = "{$repository}:{$path}";
     }
 
     public function __toString(): string

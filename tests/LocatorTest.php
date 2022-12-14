@@ -23,7 +23,7 @@ final class LocatorTest extends TestCase
         $repo = 'repo';
         $path = '/path';
         $locator = new Locator($repo, $path);
-        $this->assertSame("${repo}:${path}", $locator->__toString());
+        $this->assertSame("{$repo}:{$path}", $locator->__toString());
         $this->assertSame($repo, $locator->repository());
         $this->assertSame($path, $locator->path());
     }
