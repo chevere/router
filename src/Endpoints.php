@@ -14,21 +14,22 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\DataStructure\Traits\MapTrait;
-use Chevere\Message\Message;
 use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\EndpointsInterface;
-use Chevere\Throwable\Exceptions\OutOfBoundsException;
 
 final class Endpoints implements EndpointsInterface
 {
+    /**
+     * @template-use MapTrait<EndpointInterface>
+     */
     use MapTrait;
 
-    public function withPut(EndpointInterface $routeEndpoint): EndpointsInterface
+    public function withPut(EndpointInterface $endpoint): EndpointsInterface
     {
         $new = clone $this;
         $new->map = $new->map->withPut(
             ...[
-                $routeEndpoint->method()->name() => $routeEndpoint,
+                $endpoint->method()->name() => $endpoint,
             ]
         );
 
@@ -42,16 +43,6 @@ final class Endpoints implements EndpointsInterface
 
     public function get(string $key): EndpointInterface
     {
-        try {
-            /** @var EndpointInterface $return */
-            $return = $this->map->get($key);
-        } catch (\OutOfBoundsException $e) {
-            throw new OutOfBoundsException(
-                (new Message('Key %key% not found'))
-                    ->withCode('%key%', $key)
-            );
-        }
-
-        return $return;
+        return $this->map->get($key);
     }
 }

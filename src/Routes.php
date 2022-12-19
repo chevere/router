@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
+use Chevere\DataStructure\Interfaces\MapInterface;
 use Chevere\DataStructure\Map;
 use Chevere\DataStructure\Traits\MapTrait;
 use Chevere\Message\Message;
@@ -24,17 +25,15 @@ use Chevere\Throwable\Exceptions\OverflowException;
 
 final class Routes implements RoutesInterface
 {
+    /**
+     * @template-use MapTrait<RouteInterface>
+     */
     use MapTrait;
 
     /**
-     * @var Map<string, RouteInterface>
+     * @var MapInterface<string>
      */
-    private Map $map;
-
-    /**
-     * @var Map<string, string>
-     */
-    private Map $names;
+    private MapInterface $names;
 
     public function withAdded(RouteInterface ...$routes): RoutesInterface
     {
@@ -66,6 +65,7 @@ final class Routes implements RoutesInterface
      */
     public function get(string $path): RouteInterface
     {
+        /** @return RouteInterface */
         return $this->map->get($path);
     }
 

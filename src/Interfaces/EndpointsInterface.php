@@ -18,7 +18,9 @@ use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Iterator;
 
 /**
- * Describes the component in charge of collecting objects implementing `RouteEndpointInterface`.
+ * Describes the component in charge of collecting objects implementing `EndpointInterface`.
+ *
+ * @extends MappedInterface<EndpointInterface>
  */
 interface EndpointsInterface extends MappedInterface
 {
@@ -28,7 +30,7 @@ interface EndpointsInterface extends MappedInterface
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified `$routeEndpoint`.
      */
-    public function withPut(EndpointInterface $routeEndpoint): self;
+    public function withPut(EndpointInterface $endpoint): self;
 
     /**
      * Returns a boolean indicating whether the instance has `$key`.

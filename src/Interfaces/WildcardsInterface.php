@@ -19,6 +19,8 @@ use Iterator;
 
 /**
  * Describes the component in charge of collecting objects implementing `WildcardInterface`.
+ *
+ * @extends MappedInterface<WildcardInterface>
  */
 interface WildcardsInterface extends MappedInterface, ToArrayInterface
 {

@@ -20,7 +20,11 @@ use Chevere\Router\Interfaces\WildcardsInterface;
 
 final class Wildcards implements WildcardsInterface
 {
+    /**
+     * @template-use MapTrait<WildcardInterface>
+     */
     use MapTrait;
+
     use MapToArrayTrait;
 
     public function withPut(WildcardInterface $wildcard): WildcardsInterface

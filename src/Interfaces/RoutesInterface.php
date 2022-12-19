@@ -19,6 +19,8 @@ use Iterator;
 
 /**
  * Describes the component in charge of collecting objects implementing `RouteInterface`.
+ *
+ * @extends MappedInterface<RouteInterface>
  */
 interface RoutesInterface extends MappedInterface
 {

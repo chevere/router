@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
+use Chevere\DataStructure\Interfaces\MapInterface;
 use Chevere\DataStructure\Map;
 use Chevere\Message\Message;
 use Chevere\Router\Interfaces\IdentifierInterface;
@@ -26,21 +27,21 @@ final class Index implements IndexInterface
 {
     /**
      * [<string>routeName => IdentifierInterface,]
-     * @var Map<string, IdentifierInterface>
+     * @var MapInterface<IdentifierInterface>
      */
-    private Map $identifiersMap;
+    private MapInterface $identifiersMap;
 
     /**
      * [<string>routeName => <string>groupName,]
-     * @var Map<string, string>
+     * @var MapInterface<string>
      */
-    private Map $groupsIndex;
+    private MapInterface $groupsIndex;
 
     /**
      * [<string>groupName => [<string>routeName],]
-     * @var Map<string, string[]>
+     * @var MapInterface<string[]>
      */
-    private Map $groupsMap;
+    private MapInterface $groupsMap;
 
     public function __construct()
     {
