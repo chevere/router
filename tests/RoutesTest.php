@@ -16,7 +16,7 @@ namespace Chevere\Router\Tests;
 use Chevere\Router\Path;
 use Chevere\Router\Route;
 use Chevere\Router\Routes;
-use Chevere\Throwable\Exceptions\OutOfBoundsException;
+use Chevere\Throwable\Exceptions\OutOfRangeException;
 use Chevere\Throwable\Exceptions\OverflowException;
 use PHPUnit\Framework\TestCase;
 
@@ -36,7 +36,7 @@ final class RoutesTest extends TestCase
         $this->assertNotSame($routes, $routesWithAdded);
         $this->assertTrue($routesWithAdded->has($key));
         $this->assertSame($route, $routesWithAdded->get($key));
-        $this->expectException(OutOfBoundsException::class);
+        $this->expectException(OutOfRangeException::class);
         $routesWithAdded->get('404');
     }
 

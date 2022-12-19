@@ -26,6 +26,14 @@ final class Routes implements RoutesInterface
 {
     use MapTrait;
 
+    /**
+     * @var Map<string, RouteInterface>
+     */
+    private Map $map;
+
+    /**
+     * @var Map<string, string>
+     */
     private Map $names;
 
     public function withAdded(RouteInterface ...$routes): RoutesInterface
@@ -58,15 +66,7 @@ final class Routes implements RoutesInterface
      */
     public function get(string $path): RouteInterface
     {
-        try {
-            /** @var RouteInterface */
-            return $this->map->get($path);
-        } catch (\OutOfBoundsException) {
-            throw new OutOfBoundsException(
-                (new Message('Path %path% not found'))
-                    ->withCode('%path%', $path)
-            );
-        }
+        return $this->map->get($path);
     }
 
     private function assertRoute(string $path, RouteInterface $route): void

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
+use Chevere\DataStructure\Map;
 use Chevere\Message\Message;
 use Chevere\Router\Interfaces\IdentifierInterface;
 use Chevere\Router\Interfaces\IndexInterface;
@@ -20,7 +21,6 @@ use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Throwable\Errors\TypeError;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
-use Ds\Map;
 
 final class Index implements IndexInterface
 {
@@ -54,7 +54,7 @@ final class Index implements IndexInterface
         $new = clone $this;
         $name = $route->path()->__toString();
         $identifier = new Identifier($group, $name);
-        if ($new->groupsIndex->hasKey($name)) {
+        if ($new->groupsIndex->has($name)) {
             /** @var string $groupName */
             $groupName = $new->groupsIndex->get($name);
 
@@ -64,21 +64,27 @@ final class Index implements IndexInterface
                     ->withCode('%groupName%', $groupName)
             );
         }
-        $new->identifiersMap->put($name, $identifier);
-        $new->groupsIndex->put($name, $group);
+        $new->identifiersMap = $new->identifiersMap->withPut(...[
+            $name => $identifier,
+        ]);
+        $new->groupsIndex = $new->groupsIndex->withPut(...[
+            $name => $group,
+        ]);
         $names = [];
-        if ($new->groupsMap->hasKey($group)) {
+        if ($new->groupsMap->has($group)) {
             $names = $new->groupsMap->get($group);
         }
         $names[] = $name;
-        $new->groupsMap->put($group, $names);
+        $new->groupsMap = $new->groupsMap->withPut(...[
+            $group => $names,
+        ]);
 
         return $new;
     }
 
     public function hasRouteName(string $name): bool
     {
-        return $this->identifiersMap->hasKey($name);
+        return $this->identifiersMap->has($name);
     }
 
     /**
@@ -87,19 +93,12 @@ final class Index implements IndexInterface
      */
     public function getRouteIdentifier(string $name): IdentifierInterface
     {
-        try {
-            return $this->identifiersMap->get($name);
-        } catch (\OutOfBoundsException $e) {
-            throw new OutOfBoundsException(
-                (new Message('Route name %routeName% not found'))
-                    ->withCode('%routeName%', $name)
-            );
-        }
+        return $this->identifiersMap->get($name);
     }
 
     public function hasGroup(string $group): bool
     {
-        return $this->groupsMap->hasKey($group);
+        return $this->groupsMap->has($group);
     }
 
     /**
@@ -108,14 +107,7 @@ final class Index implements IndexInterface
      */
     public function getGroupRouteNames(string $group): array
     {
-        try {
-            return $this->groupsMap->get($group);
-        } catch (\OutOfBoundsException) {
-            throw new OutOfBoundsException(
-                (new Message('Group %group% not found'))
-                    ->withCode('%group%', $group)
-            );
-        }
+        return $this->groupsMap->get($group);
     }
 
     /**
@@ -124,14 +116,7 @@ final class Index implements IndexInterface
      */
     public function getRouteGroup(string $name): string
     {
-        try {
-            return $this->groupsIndex->get($name);
-        } catch (\OutOfBoundsException) {
-            throw new OutOfBoundsException(
-                (new Message('Group %group% not found'))
-                    ->withCode('%group%', $name)
-            );
-        }
+        return $this->groupsIndex->get($name);
     }
 
     public function toArray(): array
