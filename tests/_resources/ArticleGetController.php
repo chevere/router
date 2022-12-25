@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Router\Tests\_resources;
+namespace Chevere\Tests\_resources;
 
 use Chevere\Attribute\StringAttribute;
 use Chevere\Controller\HttpController;

@@ -11,12 +11,12 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Router\Tests;
+namespace Chevere\Tests;
 
 use Chevere\Http\Methods\GetMethod;
 use function Chevere\Router\bind;
 use Chevere\Router\Endpoint;
-use Chevere\Router\Tests\_resources\EndpointTestController;
+use Chevere\Tests\_resources\EndpointTestController;
 use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 

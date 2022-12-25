@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Router\Tests;
+namespace Chevere\Tests;
 
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Http\Methods\PostMethod;
@@ -22,9 +22,9 @@ use Chevere\Router\Exceptions\WildcardConflictException;
 use Chevere\Router\Path;
 use function Chevere\Router\route;
 use Chevere\Router\Route;
-use Chevere\Router\Tests\_resources\RouteTestController;
-use Chevere\Router\Tests\_resources\RouteTestControllerRegexConflict;
-use Chevere\Router\Tests\_resources\TestControllerNoParameters;
+use Chevere\Tests\_resources\RouteTestController;
+use Chevere\Tests\_resources\RouteTestControllerRegexConflict;
+use Chevere\Tests\_resources\TestControllerNoParameters;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;

@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Router\Tests;
+namespace Chevere\Tests;
 
 use Chevere\Controller\HttpMiddleware;
 use Chevere\Http\Exceptions\HttpMethodNotAllowedException;
@@ -22,11 +22,11 @@ use Chevere\Router\Interfaces\EndpointInterface;
 use function Chevere\Router\route;
 use function Chevere\Router\router;
 use function Chevere\Router\routes;
-use Chevere\Router\Tests\_resources\MiddlewareOne;
-use Chevere\Router\Tests\_resources\MiddlewareThree;
-use Chevere\Router\Tests\_resources\MiddlewareTwo;
-use Chevere\Router\Tests\_resources\TestControllerNoParameters;
-use Chevere\Router\Tests\_resources\TestControllerWithParameters;
+use Chevere\Tests\_resources\MiddlewareOne;
+use Chevere\Tests\_resources\MiddlewareThree;
+use Chevere\Tests\_resources\MiddlewareTwo;
+use Chevere\Tests\_resources\TestControllerNoParameters;
+use Chevere\Tests\_resources\TestControllerWithParameters;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 

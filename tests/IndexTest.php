@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Router\Tests;
+namespace Chevere\Tests;
 
 use Chevere\Http\Methods\GetMethod;
 use function Chevere\Router\bind;
@@ -21,7 +21,7 @@ use Chevere\Router\Interfaces\IdentifierInterface;
 use Chevere\Router\Path;
 use Chevere\Router\Route;
 use function Chevere\Router\route;
-use Chevere\Router\Tests\_resources\TestControllerWithParameters;
+use Chevere\Tests\_resources\TestControllerWithParameters;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;

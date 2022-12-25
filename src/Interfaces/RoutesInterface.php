@@ -34,7 +34,7 @@ interface RoutesInterface extends MappedInterface
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified `$routes`.
      */
-    public function withAdded(RouteInterface ...$routes): self;
+    public function withAdded(RouteInterface ...$route): self;
 
     /**
      * Indicates whether the instance has routable(s) identified by its `$path`.

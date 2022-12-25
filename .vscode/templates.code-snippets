@@ -63,7 +63,7 @@
         ]
     },
     "interface": {
-        "description": "Chevere interface",
+        "description": "Interface",
         "prefix": "interface",
         "body": [
             "<?php",

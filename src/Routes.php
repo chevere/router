@@ -35,28 +35,28 @@ final class Routes implements RoutesInterface
      */
     private MapInterface $names;
 
-    public function withAdded(RouteInterface ...$routes): RoutesInterface
+    public function withAdded(RouteInterface ...$route): RoutesInterface
     {
         $new = clone $this;
         $new->names ??= new Map();
-        foreach ($routes as $route) {
-            $key = $route->path()->__toString();
-            $new->assertRoute($key, $route);
+        foreach ($route as $item) {
+            $key = $item->path()->__toString();
+            $new->assertRoute($key, $item);
             $new->names = $new->names
                 ->withPut(...[
-                    $route->name() => $key,
+                    $item->name() => $key,
                 ]);
             $new->map = $new->map->withPut(...[
-                $key => $route,
+                $key => $item,
             ]);
         }
 
         return $new;
     }
 
-    public function has(string ...$paths): bool
+    public function has(string ...$path): bool
     {
-        return $this->map->has(...$paths);
+        return $this->map->has(...$path);
     }
 
     /**

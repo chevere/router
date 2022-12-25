@@ -11,12 +11,12 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Router\Tests;
+namespace Chevere\Tests;
 
-use Chevere\Router\Tests\Helpers\ObjectHelper;
 use Chevere\Router\Wildcard;
 use Chevere\Router\WildcardMatch;
 use Chevere\Router\Wildcards;
+use Chevere\Tests\Helpers\ObjectHelper;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use FastRoute\RouteParser\Std;
 use PHPUnit\Framework\TestCase;

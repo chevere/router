@@ -31,7 +31,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Chevere\\Router\\Tests\\": "tests/"
+            "Chevere\\Tests\\": "tests/"
         }
     },
     "config": {
@@ -45,7 +45,7 @@
             "composer infection"
         ],
         "infection": "infection --only-covered -j10",
-        "phpstan": "vendor/bin/phpstan analyze src/ --memory-limit 512M --level 9 --debug",
+        "phpstan": "vendor/bin/phpstan analyze src/ --memory-limit 512M --level 9",
         "test": "vendor/bin/phpunit -c phpunit.xml",
         "test-rep": "vendor/bin/phpunit -c phpunit-report.xml",
         "update-cs": "mkdir -p .ecs && cd .ecs && curl -O https://raw.githubusercontent.com/chevere/code-style/main/.ecs/ecs-chevere.php"

@@ -11,8 +11,8 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Tests\_resources;
+namespace Chevere\Router;
 
-final class MiddlewareTwo extends Middleware
+final class Wea
 {
 }

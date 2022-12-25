@@ -11,10 +11,10 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Router\Tests;
+namespace Chevere\Tests;
 
 use Chevere\Router\Bind;
-use Chevere\Router\Tests\_resources\TestControllerWithParameters;
+use Chevere\Tests\_resources\TestControllerWithParameters;
 use PHPUnit\Framework\TestCase;
 
 final class BindTest extends TestCase

@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Router\Tests\Helpers;
+namespace Chevere\Tests\Helpers;
 
 use ReflectionObject;
 
