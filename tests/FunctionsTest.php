@@ -64,6 +64,53 @@ final class FunctionsTest extends TestCase
         );
     }
 
+    /**
+     * @dataProvider functionRouteViewDataProvider
+     */
+    public function testFunctionRouteViewNamespace(array $arguments, string $expectedView): void
+    {
+        $route = route(...$arguments);
+        $this->assertSame(
+            $expectedView,
+            $route->endpoints()->get('GET')->bind()->view()
+        );
+    }
+
+    public function functionRouteViewDataProvider(): array
+    {
+        $controller = new TestControllerNoParameters();
+
+        return [
+            [
+                [
+                    'path' => '/test/',
+                    'name' => 'test',
+                    'view' => '',
+                    'GET' => bind($controller),
+                ],
+                '',
+            ],
+            [
+                [
+                    'path' => '/test/',
+                    'name' => 'test',
+                    'view' => 'view',
+                    'GET' => bind($controller),
+                ],
+                'view/GET',
+            ],
+            [
+                [
+                    'path' => '/test/',
+                    'name' => 'test',
+                    'view' => 'view',
+                    'GET' => bind($controller, 'test'),
+                ],
+                'view/test/GET',
+            ],
+        ];
+    }
+
     public function testFunctionRouteWildcardNotFound(): void
     {
         $this->expectException(WildcardNotFoundException::class);

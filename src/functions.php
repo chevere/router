@@ -43,7 +43,7 @@ function routes(RouteInterface ...$routes): RoutesInterface
  * @param string $name If not provided it will be same as the route path.
  * @param string $view View namespace.
  * @param HttpMiddlewareInterface $middleware Route level middleware (top priority).
- * @param BindInterface ...$bind Bindings for HTTP controller `GET: bind(HttpController, 'view')`.
+ * @param BindInterface ...$bind Binding for HTTP controllers `GET: bind(HttpController, 'view'), POST:...`.
  */
 function route(
     string $path,
@@ -58,7 +58,9 @@ function route(
     foreach ($bind as $item) {
         $controller = $item->controller();
         foreach ($routePath->wildcards()->keys() as $wildcard) {
-            $wildcardBracket = '{' . $wildcard . '}';
+            $wildcardBracket = <<<STRING
+            {{$wildcard}}
+            STRING;
 
             try {
                 /** @var StringParameterInterface $controllerParameter */
@@ -72,9 +74,9 @@ function route(
             }
             $path = str_replace(
                 $wildcardBracket,
-                '{' . $wildcard . ':'
-                    . $controllerParameter->regex()->noDelimitersNoAnchors()
-                    . '}',
+                <<<STRING
+                {{$wildcard}:{$controllerParameter->regex()->noDelimitersNoAnchors()}}
+                STRING,
                 $path
             );
         }
@@ -82,12 +84,12 @@ function route(
     $route = (new Route(new Path($path), $name));
     foreach ($bind as $method => $item) {
         $controller = $item->controller();
-        $provided = strval($method);
+        $httpMethod = strval($method);
         $method = EndpointInterface::KNOWN_METHODS[$method] ?? null;
         if ($method === null) {
             throw new HttpMethodNotAllowedException(
                 message: (new Message('Unknown HTTP method `%provided%` provided for %controller% controller.'))
-                    ->withCode('%provided%', $provided)
+                    ->withCode('%provided%', $httpMethod)
                     ->withCode('%controller%', $controller::class)
             );
         }
@@ -100,12 +102,19 @@ function route(
                 )
             );
         }
+        $itemView = $item->view();
+        $itemView = match (true) {
+            $view !== '' && $itemView !== '' => "{$view}/{$itemView}/{$httpMethod}",
+            $view !== '' => "{$view}/{$httpMethod}",
+            $itemView !== '' => "{$itemView}/{$httpMethod}",
+            default => '',
+        };
         /** @var MethodInterface $method */
         $method = new $method();
         $route = $route->withEndpoint(
             new Endpoint(
                 $method,
-                bind($controller, $item->view())
+                bind($controller, $itemView)
             )
         );
     }
