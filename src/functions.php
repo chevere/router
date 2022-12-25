@@ -21,6 +21,7 @@ use function Chevere\Message\message;
 use Chevere\Message\Message;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
 use Chevere\Router\Exceptions\WildcardNotFoundException;
+use Chevere\Router\Interfaces\BindInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
@@ -40,20 +41,22 @@ function routes(RouteInterface ...$routes): RoutesInterface
  *
  * @param string $path Route path.
  * @param string $name If not provided it will be same as the route path.
- * @param string $view View binding.
+ * @param string $view View namespace.
  * @param HttpMiddlewareInterface $middleware Route level middleware (top priority).
+ * @param BindInterface ...$bind Bindings for HTTP controller `GET: bind(HttpController, 'view')`.
  */
 function route(
     string $path,
     string $name = '',
     string $view = '',
     ?HttpMiddlewareInterface $middleware = null,
-    HttpControllerInterface ...$controllers
+    BindInterface ...$bind
 ): RouteInterface {
     $name = $name === '' ? $path : $name;
     $routePath = new Path($path);
-    $route = (new Route(new Path($path), $name, $view));
-    foreach ($controllers as $controller) {
+    $route = (new Route(new Path($path), $name));
+    foreach ($bind as $item) {
+        $controller = $item->controller();
         foreach ($routePath->wildcards()->keys() as $wildcard) {
             $wildcardBracket = '{' . $wildcard . '}';
 
@@ -76,8 +79,9 @@ function route(
             );
         }
     }
-    $route = (new Route(new Path($path), $name, $view));
-    foreach ($controllers as $method => $controller) {
+    $route = (new Route(new Path($path), $name));
+    foreach ($bind as $method => $item) {
+        $controller = $item->controller();
         $provided = strval($method);
         $method = EndpointInterface::KNOWN_METHODS[$method] ?? null;
         if ($method === null) {
@@ -90,14 +94,19 @@ function route(
         if ($middleware !== null) {
             $controller = $controller->withMiddleware(
                 $controller->middleware()->withPrepend(
-                    ...iterator_to_array($middleware->getIterator())
+                    ...iterator_to_array(
+                        $middleware->getIterator()
+                    )
                 )
             );
         }
         /** @var MethodInterface $method */
         $method = new $method();
         $route = $route->withEndpoint(
-            new Endpoint($method, $controller)
+            new Endpoint(
+                $method,
+                bind($controller, $item->view())
+            )
         );
     }
 
@@ -119,4 +128,14 @@ function router(RoutesInterface ...$routes): RouterInterface
     }
 
     return $router;
+}
+
+/**
+ * Binds an HttpControllerInterface to a view.
+ */
+function bind(
+    HttpControllerInterface $controller,
+    string $view = ''
+): BindInterface {
+    return new Bind($controller, $view);
 }

@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Chevere\Router\Exceptions\WildcardInvalidException;
 use Stringable;
 
 /**
@@ -24,11 +23,6 @@ interface WildcardInterface extends Stringable
     public const ACCEPT_CHARS = '([a-z\_][\w_]*?)';
 
     public const ACCEPT_CHARS_REGEX = '/^' . self::ACCEPT_CHARS . '+$/i';
-
-    /**
-     * @throws WildcardInvalidException
-     */
-    public function __construct(string $name, WildcardMatchInterface $match);
 
     /**
      * Provides access to the match instance.

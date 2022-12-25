@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Router\Tests;
 
 use Chevere\Http\Methods\GetMethod;
+use function Chevere\Router\bind;
 use Chevere\Router\Endpoint;
 use Chevere\Router\Endpoints;
 use Chevere\Router\Tests\_resources\ArticleGetController;
@@ -35,7 +36,7 @@ final class EndpointsTest extends TestCase
     public function testWithPut(): void
     {
         $method = new GetMethod();
-        $endpoint = new Endpoint($method, new ArticleGetController());
+        $endpoint = new Endpoint($method, bind(new ArticleGetController()));
         $endpoints = new Endpoints();
         $endpointsWithPut = $endpoints
             ->withPut($endpoint);

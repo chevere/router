@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Chevere\Router\Interfaces;
 
 use Chevere\Common\Interfaces\DescriptionInterface;
-use Chevere\Controller\Interfaces\HttpControllerInterface;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Http\Methods\ConnectMethod;
 use Chevere\Http\Methods\DeleteMethod;
@@ -51,7 +50,7 @@ interface EndpointInterface extends DescriptionInterface
 
     public function method(): MethodInterface;
 
-    public function httpController(): HttpControllerInterface;
+    public function bind(): BindInterface;
 
     /**
      * Return an instance with the specified `$description`.

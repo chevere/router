@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Router\Tests;
 
 use Chevere\Http\Methods\GetMethod;
+use function Chevere\Router\bind;
 use Chevere\Router\Endpoint;
 use Chevere\Router\Index;
 use Chevere\Router\Interfaces\IdentifierInterface;
@@ -69,7 +70,7 @@ final class IndexTest extends TestCase
         $path = '/path';
         $route = route($path);
         $routeWithAddedEndpoint = $route->withEndpoint(
-            new Endpoint(new GetMethod(), new TestControllerWithParameters())
+            new Endpoint(new GetMethod(), bind(new TestControllerWithParameters()))
         );
         $this->assertNotSame($route, $routeWithAddedEndpoint);
         $routerIndex = new Index();
@@ -99,7 +100,7 @@ final class IndexTest extends TestCase
         $path2 = '/path-2';
         $route2 = route($path2);
         $route2 = $route2->withEndpoint(
-            new Endpoint(new GetMethod(), new TestControllerWithParameters())
+            new Endpoint(new GetMethod(), bind(new TestControllerWithParameters()))
         );
         $withAnotherAddedRoute = $routerIndexWithAddedRoute->withAddedRoute($route2, $groupName);
         $this->assertSame(
@@ -114,7 +115,7 @@ final class IndexTest extends TestCase
         $repo = 'repository';
         $route = route('/path')
             ->withEndpoint(
-                new Endpoint(new GetMethod(), new TestControllerWithParameters())
+                new Endpoint(new GetMethod(), bind(new TestControllerWithParameters()))
             );
         $routerIndex = (new Index())->withAddedRoute($route, $repo);
         $this->expectException(OverflowException::class);

@@ -14,10 +14,10 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Common\Traits\DescriptionTrait;
-use Chevere\Controller\Interfaces\HttpControllerInterface;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Message\Message;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
+use Chevere\Router\Interfaces\BindInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 
@@ -34,21 +34,21 @@ final class Endpoint implements EndpointInterface
 
     public function __construct(
         private MethodInterface $method,
-        private HttpControllerInterface $httpController
+        private BindInterface $bind
     ) {
-        $this->description = $httpController->getDescription();
+        $this->description = $bind->controller()->getDescription();
         if ($this->description === '') {
             $this->description = $method->description();
         }
         /**
          * @var StringParameterInterface $parameter
          */
-        foreach ($httpController->parameters()->getIterator() as $name => $parameter) {
+        foreach ($bind->controller()->parameters()->getIterator() as $name => $parameter) {
             $this->parameters[$name] = [
                 'name' => $name,
                 'regex' => $parameter->regex()->__toString(),
                 'description' => $parameter->description(),
-                'isRequired' => $httpController->parameters()->isRequired($name),
+                'isRequired' => $bind->controller()->parameters()->isRequired($name),
             ];
         }
     }
@@ -58,9 +58,9 @@ final class Endpoint implements EndpointInterface
         return $this->method;
     }
 
-    public function httpController(): HttpControllerInterface
+    public function bind(): BindInterface
     {
-        return $this->httpController;
+        return $this->bind;
     }
 
     public function withDescription(string $description): static

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Router\Tests;
 
 use Chevere\Http\Methods\GetMethod;
+use function Chevere\Router\bind;
 use Chevere\Router\Endpoint;
 use Chevere\Router\Exceptions\WithoutEndpointsException;
 use function Chevere\Router\route;
@@ -34,11 +35,12 @@ final class RouterTest extends TestCase
     public function testRouter(): void
     {
         $controller = new TestControllerWithParameters();
+        $bind = bind($controller);
         $route = route('/🐘/{id:\d+}/{name:\w+}');
         $route = $route->withEndpoint(
             new Endpoint(
                 new GetMethod(),
-                $controller
+                $bind
             )
         );
         $router = new Router();
@@ -56,7 +58,7 @@ final class RouterTest extends TestCase
         );
         $this->assertSame(
             [
-                0 => $controller,
+                0 => $bind,
                 1 => [
                     'id' => 'id',
                     'name' => 'name',

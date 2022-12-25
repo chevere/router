@@ -13,27 +13,24 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
+use Chevere\Controller\Interfaces\HttpControllerInterface;
 use Chevere\Router\Interfaces\BindInterface;
-use Chevere\Router\Interfaces\RoutedInterface;
 
-final class Routed implements RoutedInterface
+final class Bind implements BindInterface
 {
-    /**
-     * @param array<string, string> $arguments
-     */
     public function __construct(
-        private BindInterface $bind,
-        private array $arguments,
+        private HttpControllerInterface $httpController,
+        private string $view
     ) {
     }
 
-    public function bind(): BindInterface
+    public function controller(): HttpControllerInterface
     {
-        return $this->bind;
+        return $this->httpController;
     }
 
-    public function arguments(): array
+    public function view(): string
     {
-        return $this->arguments;
+        return $this->view;
     }
 }

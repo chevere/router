@@ -16,15 +16,12 @@ namespace Chevere\Router\Interfaces;
 use Chevere\Http\Exceptions\HttpMethodNotAllowedException;
 use Chevere\Router\Exceptions\NotFoundException;
 use Chevere\Throwable\Exceptions\LogicException;
-use FastRoute\RouteCollector;
 
 /**
  * Describes the component in charge of dispatch router.
  */
 interface DispatcherInterface
 {
-    public function __construct(RouteCollector $routeCollector);
-
     /**
      * Dispatches against the provided HTTP method verb and URI.
      *

@@ -13,14 +13,12 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Chevere\Controller\Interfaces\HttpControllerInterface;
-
 /**
  * Describes the component in charge of defining a routed route.
  */
 interface RoutedInterface
 {
-    public function httpController(): HttpControllerInterface;
+    public function bind(): BindInterface;
 
     /**
      * @return array<string, string>

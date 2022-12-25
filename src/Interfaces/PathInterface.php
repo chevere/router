@@ -14,8 +14,6 @@ declare(strict_types=1);
 namespace Chevere\Router\Interfaces;
 
 use Chevere\Regex\Interfaces\RegexInterface;
-use Chevere\Throwable\Exceptions\InvalidArgumentException;
-use Chevere\Throwable\Exceptions\LogicException;
 use Stringable;
 
 /**
@@ -23,12 +21,6 @@ use Stringable;
  */
 interface PathInterface extends Stringable
 {
-    /**
-     * @throws InvalidArgumentException
-     * @throws LogicException
-     */
-    public function __construct(string $route);
-
     /**
      * Provides access to the wildcards instance.
      */

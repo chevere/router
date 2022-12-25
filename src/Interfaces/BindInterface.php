@@ -13,14 +13,15 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Stringable;
+use Chevere\Controller\Interfaces\HttpControllerInterface;
 
 /**
- * Describes the component in charge of defining a route name.
+ * Describes the component in charge of binding a HttpControllerInterface
+ * to a view.
  */
-interface LocatorInterface extends Stringable
+interface BindInterface
 {
-    public function repository(): string;
+    public function controller(): HttpControllerInterface;
 
-    public function path(): string;
+    public function view(): string;
 }

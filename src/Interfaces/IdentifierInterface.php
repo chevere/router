@@ -14,18 +14,12 @@ declare(strict_types=1);
 namespace Chevere\Router\Interfaces;
 
 use Chevere\Common\Interfaces\ToArrayInterface;
-use Chevere\Throwable\Exceptions\InvalidArgumentException;
 
 /**
  * Describes the component in charge of describing the route identifier.
  */
 interface IdentifierInterface extends ToArrayInterface
 {
-    /**
-     * @throws InvalidArgumentException
-     */
-    public function __construct(string $group, string $name);
-
     /**
      * Provides access to the `$group` instance.
      */

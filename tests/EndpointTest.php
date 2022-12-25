@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Router\Tests;
 
 use Chevere\Http\Methods\GetMethod;
+use function Chevere\Router\bind;
 use Chevere\Router\Endpoint;
 use Chevere\Router\Tests\_resources\EndpointTestController;
 use OutOfBoundsException;
@@ -25,9 +26,10 @@ final class EndpointTest extends TestCase
     {
         $method = new GetMethod();
         $controller = new EndpointTestController();
-        $endpoint = new Endpoint($method, $controller);
+        $bind = bind($controller);
+        $endpoint = new Endpoint($method, $bind);
         $this->assertSame($method, $endpoint->method());
-        $this->assertSame($controller, $endpoint->httpController());
+        $this->assertSame($bind, $endpoint->bind());
         $this->assertSame($method->description(), $endpoint->description());
         /** @var string $name */
         foreach (array_keys($endpoint->parameters()) as $name) {
@@ -52,7 +54,7 @@ final class EndpointTest extends TestCase
     public function testWithDescription(): void
     {
         $description = 'Some description';
-        $endpoint = new Endpoint(new GetMethod(), new EndpointTestController());
+        $endpoint = new Endpoint(new GetMethod(), bind(new EndpointTestController()));
         $endpointWithDescription = $endpoint->withDescription($description);
         $this->assertNotSame($endpoint, $endpointWithDescription);
         $this->assertSame($description, $endpointWithDescription->description());
@@ -60,9 +62,9 @@ final class EndpointTest extends TestCase
 
     public function testWithoutWrongParameter(): void
     {
-        $controller = new EndpointTestController();
+        $bind = bind(new EndpointTestController());
         $this->expectException(OutOfBoundsException::class);
-        (new Endpoint(new GetMethod(), $controller))
+        (new Endpoint(new GetMethod(), $bind))
             ->withoutParameter('0x0');
     }
 
@@ -72,7 +74,7 @@ final class EndpointTest extends TestCase
         $iterator = $controller->parameters()->getIterator();
         $iterator->rewind();
         $key = $iterator->key() ?? 'name';
-        $endpoint = (new Endpoint(new GetMethod(), $controller))
+        $endpoint = (new Endpoint(new GetMethod(), bind($controller)))
             ->withoutParameter($key);
         $this->assertArrayNotHasKey($key, $endpoint->parameters());
     }

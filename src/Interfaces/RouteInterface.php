@@ -32,11 +32,6 @@ interface RouteInterface
     public function path(): PathInterface;
 
     /**
-     * Provides access to view.
-     */
-    public function view(): string;
-
-    /**
      * Return an instance with the specified added `$endpoint`.
      *
      * This method MUST retain the state of the current instance, and return

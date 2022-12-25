@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
-use Chevere\Controller\Interfaces\HttpControllerInterface;
 use Chevere\Http\Exceptions\HttpMethodNotAllowedException;
 use Chevere\Message\Message;
 use Chevere\Router\Exceptions\NotFoundException;
+use Chevere\Router\Interfaces\BindInterface;
 use Chevere\Router\Interfaces\DispatcherInterface;
 use Chevere\Router\Interfaces\RoutedInterface;
 use Chevere\Throwable\Exceptions\LogicException;
@@ -37,7 +37,7 @@ final class Dispatcher implements DispatcherInterface
             ->dispatch($httpMethod, $uri);
         /** @var int $status */
         $status = $info[0];
-        /** @var HttpControllerInterface $handler */
+        /** @var BindInterface $handler */
         $handler = $info[1] ?? null;
         /** @var string[] $allowed */
         $allowed = $info[2] ?? [];

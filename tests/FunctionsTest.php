@@ -16,6 +16,7 @@ namespace Chevere\Router\Tests;
 use Chevere\Controller\HttpMiddleware;
 use Chevere\Http\Exceptions\HttpMethodNotAllowedException;
 use Chevere\Parameter\StringParameter;
+use function Chevere\Router\bind;
 use Chevere\Router\Exceptions\WildcardNotFoundException;
 use Chevere\Router\Interfaces\EndpointInterface;
 use function Chevere\Router\route;
@@ -51,16 +52,15 @@ final class FunctionsTest extends TestCase
             'path' => '/test/',
             'name' => $className,
             'view' => $className,
-            $method => $controller,
+            $method => bind($controller),
         ];
         $route = route(...$arguments);
         $this->assertSame($className, $route->name());
-        $this->assertSame($className, $route->view());
         $this->assertTrue($route->endpoints()->has($method));
         $this->assertCount(1, $route->endpoints());
         $this->assertSame(
             $controller,
-            $route->endpoints()->get($method)->httpController()
+            $route->endpoints()->get($method)->bind()->controller()
         );
     }
 
@@ -73,7 +73,7 @@ final class FunctionsTest extends TestCase
         );
         route(
             path: '/test/{wildcard}',
-            GET: new TestControllerNoParameters(),
+            GET: bind(new TestControllerNoParameters()),
         );
     }
 
@@ -86,7 +86,7 @@ final class FunctionsTest extends TestCase
         $name = $controller->parameters()->get('name');
         $route = route(
             path: '/test/{id}/{name}',
-            GET: $controller,
+            GET: bind($controller),
         );
         $this->assertSame(
             strtr('/test/{id:%id%}/{name:%name%}', [
@@ -108,9 +108,9 @@ final class FunctionsTest extends TestCase
         $route = route(
             path: '/test',
             middleware: $middleware,
-            GET: $controller,
+            GET: bind($controller),
         );
-        $controllerWithMiddleware = $route->endpoints()->get('GET')->httpController();
+        $controllerWithMiddleware = $route->endpoints()->get('GET')->bind()->controller();
         $this->assertEquals(
             $middleware,
             $controllerWithMiddleware->middleware()
@@ -121,14 +121,14 @@ final class FunctionsTest extends TestCase
     {
         $controller = new TestControllerNoParameters();
         $this->expectException(InvalidArgumentException::class);
-        route('test', 'name', GET: $controller);
+        route('test', 'name', GET: bind($controller));
     }
 
     public function testFunctionRouteBadHttpMethod(): void
     {
         $controller = new TestControllerNoParameters();
         $this->expectException(HttpMethodNotAllowedException::class);
-        route('/test/', 'name', TEST: $controller);
+        route('/test/', 'name', TEST: bind($controller));
     }
 
     public function testFunctionRoutes(): void
@@ -138,7 +138,7 @@ final class FunctionsTest extends TestCase
         $route = route(
             name: $name,
             path: $path,
-            GET: new TestControllerNoParameters()
+            GET: bind(new TestControllerNoParameters())
         );
         $routes = routes(myRoute: $route);
         $this->assertTrue($routes->has($path));
@@ -151,13 +151,13 @@ final class FunctionsTest extends TestCase
             'web' => routes(
                 route(
                     path: '/',
-                    GET: new TestControllerNoParameters()
+                    GET: bind(new TestControllerNoParameters())
                 )
             ),
             'api' => routes(
                 route(
                     path: '/api',
-                    GET: new TestControllerNoParameters()
+                    GET: bind(new TestControllerNoParameters())
                 )
             ),
         ];
