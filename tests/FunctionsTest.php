@@ -69,6 +69,9 @@ final class FunctionsTest extends TestCase
      */
     public function testFunctionRouteViewNamespace(array $arguments, string $expectedView): void
     {
+        $arguments = array_merge([
+            'path' => '/test/',
+        ], $arguments);
         $route = route(...$arguments);
         $this->assertSame(
             $expectedView,
@@ -83,8 +86,6 @@ final class FunctionsTest extends TestCase
         return [
             [
                 [
-                    'path' => '/test/',
-                    'name' => 'test',
                     'view' => '',
                     'GET' => bind($controller),
                 ],
@@ -92,8 +93,6 @@ final class FunctionsTest extends TestCase
             ],
             [
                 [
-                    'path' => '/test/',
-                    'name' => 'test',
                     'view' => 'view',
                     'GET' => bind($controller),
                 ],
@@ -101,8 +100,6 @@ final class FunctionsTest extends TestCase
             ],
             [
                 [
-                    'path' => '/test/',
-                    'name' => 'test',
                     'view' => 'view',
                     'GET' => bind($controller, 'test'),
                 ],
