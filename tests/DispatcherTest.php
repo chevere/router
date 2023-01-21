@@ -35,17 +35,17 @@ final class DispatcherTest extends TestCase
     public function testFound(): void
     {
         $routeCollector = $this->getRouteCollector();
-        $routeCollector->addRoute('GET', '/', bind(new TestControllerWithParameters()));
+        $bind = bind(new TestControllerWithParameters(), 'view');
+        $routeCollector->addRoute('GET', '/', $bind);
         $routeDispatcher = new Dispatcher($routeCollector);
-        $this->expectNotToPerformAssertions();
-        $routeDispatcher->dispatch('GET', '/');
+        $bindDispatch = $routeDispatcher->dispatch('GET', '/')->bind();
+        $this->assertSame($bind, $bindDispatch);
     }
 
     public function testHttpMethodNotAllowed(): void
     {
         $routeCollector = $this->getRouteCollector();
-        $routeCollector->addRoute('GET', '/', function () {
-        });
+        $routeCollector->addRoute('GET', '/', 'test');
         $routeDispatcher = new Dispatcher($routeCollector);
         $this->expectException(HttpMethodNotAllowedException::class);
         $routeDispatcher->dispatch('Asdf', '/');
