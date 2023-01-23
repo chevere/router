@@ -43,20 +43,22 @@ function routes(RouteInterface ...$routes): RoutesInterface
  * @param string $name If not provided it will be same as the route path.
  * @param string $view View namespace.
  * @param HttpMiddlewareInterface $middleware Route level middleware (top priority).
- * @param BindInterface ...$bind Binding for HTTP controllers `GET: bind(HttpController, 'view'), POST:...`.
+ * @param BindInterface|HttpControllerInterface ...$bind Binding for HTTP controllers `GET: bind(HttpController, 'view'), POST:...`.
  */
 function route(
     string $path,
     string $name = '',
     string $view = '',
     ?HttpMiddlewareInterface $middleware = null,
-    BindInterface ...$bind
+    BindInterface|HttpControllerInterface ...$bind
 ): RouteInterface {
     $name = $name === '' ? $path : $name;
     $routePath = new Path($path);
     $route = (new Route(new Path($path), $name));
     foreach ($bind as $item) {
-        $controller = $item->controller();
+        $controller = $item instanceof BindInterface
+            ? $item->controller()
+            : $item;
         foreach ($routePath->wildcards()->keys() as $wildcard) {
             $wildcardBracket = <<<STRING
             {{$wildcard}}
@@ -83,7 +85,9 @@ function route(
     }
     $route = (new Route(new Path($path), $name));
     foreach ($bind as $method => $item) {
-        $controller = $item->controller();
+        $controller = $item instanceof BindInterface
+            ? $item->controller()
+            : $item;
         $httpMethod = strval($method);
         $method = EndpointInterface::KNOWN_METHODS[$method] ?? null;
         if ($method === null) {
@@ -102,7 +106,9 @@ function route(
                 )
             );
         }
-        $itemView = $item->view();
+        $itemView = $item instanceof BindInterface
+            ? $item->view()
+            : '';
         $itemView = match (true) {
             $view !== '' && $itemView !== '' => "{$view}/{$itemView}/{$httpMethod}",
             $view !== '' => "{$view}/{$httpMethod}",
