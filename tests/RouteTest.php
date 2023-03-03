@@ -38,7 +38,7 @@ final class RouteTest extends TestCase
         $routePath = new Path($path);
         $route = new Route($routePath, 'test');
         $this->assertSame($routePath, $route->path());
-        $route = route($path, 'name', 'view');
+        $route = route($path, 'name');
         $this->assertSame('name', $route->name());
         $this->assertEquals($routePath, $route->path());
     }

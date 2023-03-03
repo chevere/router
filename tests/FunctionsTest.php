@@ -51,7 +51,6 @@ final class FunctionsTest extends TestCase
         $arguments = [
             'path' => '/test/',
             'name' => $className,
-            'view' => $className,
             $method => bind($controller),
         ];
         $route = route(...$arguments);
@@ -86,24 +85,21 @@ final class FunctionsTest extends TestCase
         return [
             [
                 [
-                    'view' => '',
-                    'GET' => bind($controller),
+                    'GET' => $controller,
                 ],
                 '',
             ],
             [
                 [
-                    'view' => 'view',
                     'GET' => bind($controller),
                 ],
-                'view/GET',
+                'GET',
             ],
             [
                 [
-                    'view' => 'view',
                     'GET' => bind($controller, 'test'),
                 ],
-                'view/test/GET',
+                'test/GET',
             ],
         ];
     }

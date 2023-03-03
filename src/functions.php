@@ -41,14 +41,12 @@ function routes(RouteInterface ...$routes): RoutesInterface
  *
  * @param string $path Route path.
  * @param string $name If not provided it will be same as the route path.
- * @param string $view View namespace.
  * @param HttpMiddlewareInterface $middleware Route level middleware (top priority).
  * @param BindInterface|HttpControllerInterface ...$bind Binding for HTTP controllers `GET: bind(HttpController, 'view'), POST:...`.
  */
 function route(
     string $path,
     string $name = '',
-    string $view = '',
     ?HttpMiddlewareInterface $middleware = null,
     BindInterface|HttpControllerInterface ...$bind
 ): RouteInterface {
@@ -85,7 +83,8 @@ function route(
     }
     $route = (new Route(new Path($path), $name));
     foreach ($bind as $method => $item) {
-        $controller = $item instanceof BindInterface
+        $isBind = $item instanceof BindInterface;
+        $controller = $isBind
             ? $item->controller()
             : $item;
         $httpMethod = strval($method);
@@ -106,12 +105,11 @@ function route(
                 )
             );
         }
-        $itemView = $item instanceof BindInterface
+        $itemView = $isBind
             ? $item->view()
             : '';
         $itemView = match (true) {
-            $view !== '' && $itemView !== '' => "{$view}/{$itemView}/{$httpMethod}",
-            $view !== '' => "{$view}/{$httpMethod}",
+            $itemView === '' && $isBind => $httpMethod,
             $itemView !== '' => "{$itemView}/{$httpMethod}",
             default => '',
         };
