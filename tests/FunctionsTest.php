@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
-use Chevere\Controller\HttpMiddleware;
-use Chevere\Http\Exceptions\HttpMethodNotAllowedException;
+use Chevere\Http\Exceptions\MethodNotAllowedException;
+use Chevere\Http\Middlewares;
 use Chevere\Parameter\StringParameter;
 use function Chevere\Router\bind;
 use Chevere\Router\Exceptions\WildcardNotFoundException;
@@ -140,7 +140,7 @@ final class FunctionsTest extends TestCase
     public function testFunctionRouteMiddleware(): void
     {
         $controller = new TestControllerNoParameters();
-        $middleware = new HttpMiddleware(
+        $middleware = new Middlewares(
             new MiddlewareOne(),
             new MiddlewareTwo(),
             new MiddlewareThree(),
@@ -153,7 +153,7 @@ final class FunctionsTest extends TestCase
         $controllerWithMiddleware = $route->endpoints()->get('GET')->bind()->controller();
         $this->assertEquals(
             $middleware,
-            $controllerWithMiddleware->middleware()
+            $controllerWithMiddleware->middlewares()
         );
     }
 
@@ -167,7 +167,7 @@ final class FunctionsTest extends TestCase
     public function testFunctionRouteBadHttpMethod(): void
     {
         $controller = new TestControllerNoParameters();
-        $this->expectException(HttpMethodNotAllowedException::class);
+        $this->expectException(MethodNotAllowedException::class);
         route('/test/', 'name', TEST: bind($controller));
     }
 

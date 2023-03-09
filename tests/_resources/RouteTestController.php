@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Tests\_resources;
 
 use Chevere\Attribute\StringAttribute;
-use Chevere\Controller\HttpController;
+use Chevere\HttpController\HttpController;
 
 final class RouteTestController extends HttpController
 {

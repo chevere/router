@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Chevere\Controller\Interfaces\HttpControllerInterface;
+use Chevere\HttpController\Interfaces\HttpControllerInterface;
 
 /**
  * Describes the component in charge of binding a HttpControllerInterface

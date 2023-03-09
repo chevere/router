@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
-use Chevere\Controller\Interfaces\HttpControllerInterface;
+use Chevere\HttpController\Interfaces\HttpControllerInterface;
 use Chevere\Router\Interfaces\BindInterface;
 
 final class Bind implements BindInterface

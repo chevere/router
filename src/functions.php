@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
-use Chevere\Controller\Interfaces\HttpControllerInterface;
-use Chevere\Controller\Interfaces\HttpMiddlewareInterface;
-use Chevere\Http\Exceptions\HttpMethodNotAllowedException;
+use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Http\Interfaces\MethodInterface;
+use Chevere\Http\Interfaces\MiddlewaresInterface;
+use Chevere\HttpController\Interfaces\HttpControllerInterface;
 use function Chevere\Message\message;
 use Chevere\Message\Message;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
@@ -41,13 +41,13 @@ function routes(RouteInterface ...$routes): RoutesInterface
  *
  * @param string $path Route path.
  * @param string $name If not provided it will be same as the route path.
- * @param HttpMiddlewareInterface $middleware Route level middleware (top priority).
+ * @param MiddlewaresInterface $middleware PSR HTTP server middlewares.
  * @param BindInterface|HttpControllerInterface ...$bind Binding for HTTP controllers `GET: bind(HttpController, 'view'), POST:...`.
  */
 function route(
     string $path,
     string $name = '',
-    ?HttpMiddlewareInterface $middleware = null,
+    ?MiddlewaresInterface $middleware = null,
     BindInterface|HttpControllerInterface ...$bind
 ): RouteInterface {
     $name = $name === '' ? $path : $name;
@@ -90,15 +90,15 @@ function route(
         $httpMethod = strval($method);
         $method = EndpointInterface::KNOWN_METHODS[$method] ?? null;
         if ($method === null) {
-            throw new HttpMethodNotAllowedException(
+            throw new MethodNotAllowedException(
                 message: (new Message('Unknown HTTP method `%provided%` provided for %controller% controller.'))
                     ->withCode('%provided%', $httpMethod)
                     ->withCode('%controller%', $controller::class)
             );
         }
         if ($middleware !== null) {
-            $controller = $controller->withMiddleware(
-                $controller->middleware()->withPrepend(
+            $controller = $controller->withMiddlewares(
+                $controller->middlewares()->withPrepend(
                     ...iterator_to_array(
                         $middleware->getIterator()
                     )
