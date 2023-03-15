@@ -22,7 +22,7 @@ final class Wildcard implements WildcardInterface
 {
     public function __construct(
         private string $name,
-        private  WildcardMatchInterface $match
+        private WildcardMatchInterface $match
     ) {
         $this->assertName();
     }
