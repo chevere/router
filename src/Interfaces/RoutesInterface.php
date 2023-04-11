@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Router\Interfaces;
 
 use Chevere\DataStructure\Interfaces\MappedInterface;
+use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Iterator;
 
@@ -43,6 +44,8 @@ interface RoutesInterface extends MappedInterface
      * an instance that contains the specified `$routes` merged.
      */
     public function withRoutesFrom(self ...$routes): self;
+
+    public function withMiddleware(MiddlewaresInterface $middlewares): self;
 
     /**
      * Indicates whether the instance has routable(s) identified by its `$path`.

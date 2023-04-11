@@ -24,14 +24,24 @@ final class Endpoints implements EndpointsInterface
      */
     use MapTrait;
 
-    public function withPut(EndpointInterface $endpoint): EndpointsInterface
+    public function withPut(EndpointInterface ...$endpoint): EndpointsInterface
     {
         $new = clone $this;
-        $new->map = $new->map->withPut(
-            ...[
-                $endpoint->method()->name() => $endpoint,
-            ]
-        );
+        foreach ($endpoint as $item) {
+            $new->map = $new->map->withPut(
+                ...[
+                    $item->method()->name() => $item,
+                ]
+            );
+        }
+
+        return $new;
+    }
+
+    public function without(string ...$key): EndpointsInterface
+    {
+        $new = clone $this;
+        $new->map = $new->map->without(...$key);
 
         return $new;
     }

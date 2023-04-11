@@ -16,6 +16,7 @@ namespace Chevere\Router;
 use Chevere\DataStructure\Interfaces\MapInterface;
 use Chevere\DataStructure\Map;
 use Chevere\DataStructure\Traits\MapTrait;
+use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\Message\Message;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
@@ -61,6 +62,29 @@ final class Routes implements RoutesInterface
             foreach ($item as $route) {
                 $new = $new->withAdded($route);
             }
+        }
+
+        return $new;
+    }
+
+    public function withMiddleware(MiddlewaresInterface $middlewares): RoutesInterface
+    {
+        $new = clone $this;
+        foreach ($new->getIterator() as $name => $route) {
+            foreach ($route->endpoints() as $endpoint) {
+                $bind = $endpoint->bind();
+                $finalMiddlewares = $bind->controller()->middlewares()->withAppend(
+                    ...iterator_to_array($middlewares->getIterator())
+                );
+                $controller = $bind->controller()->withMiddlewares($finalMiddlewares);
+                $bind = new Bind($controller, $bind->view());
+                $route = $route
+                    ->withoutEndpoint($endpoint->method())
+                    ->withEndpoint(new Endpoint($endpoint->method(), $bind));
+            }
+            $new->map = $new->map->withPut(...[
+                $name => $route,
+            ]);
         }
 
         return $new;

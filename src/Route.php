@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
+use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Message\Message;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
 use Chevere\Router\Exceptions\EndpointConflictException;
@@ -82,6 +83,14 @@ final class Route implements RouteInterface
         }
         $new->endpoints = $new->endpoints
             ->withPut($endpoint);
+
+        return $new;
+    }
+
+    public function withoutEndpoint(MethodInterface $method): RouteInterface
+    {
+        $new = clone $this;
+        $new->endpoints = $new->endpoints->without($method->name());
 
         return $new;
     }

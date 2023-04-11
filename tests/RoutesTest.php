@@ -13,9 +13,16 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
+use Chevere\Http\Methods\GetMethod;
+use Chevere\Http\Middlewares;
+use Chevere\Router\Bind;
+use Chevere\Router\Endpoint;
 use Chevere\Router\Path;
 use Chevere\Router\Route;
 use Chevere\Router\Routes;
+use Chevere\Tests\_resources\ControllerNoParameters;
+use Chevere\Tests\_resources\MiddlewareOne;
+use Chevere\Tests\_resources\MiddlewareTwo;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
 use PHPUnit\Framework\TestCase;
@@ -62,6 +69,29 @@ final class RoutesTest extends TestCase
         $this->assertSame(['/test-2', '/test'], $barWithFoo->keys());
         $this->expectException(OverflowException::class);
         $foo->withRoutesFrom($foo);
+    }
+
+    public function testWithMiddleware(): void
+    {
+        $name = 'test';
+        $route = (new Route(
+            name: $name,
+            path: new Path('/some-path')
+        ));
+        $route = $route->withEndpoint(
+            new Endpoint(
+                new GetMethod(),
+                new Bind(new ControllerNoParameters(), '')
+            )
+        );
+        $routes = (new Routes())->withAdded($route);
+        $routes = $routes->withMiddleware(
+            new Middlewares(
+                new MiddlewareOne(),
+                new MiddlewareTwo()
+            )
+        );
+        vdd($routes);
     }
 
     public function testWithAddedNameCollision(): void
