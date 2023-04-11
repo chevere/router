@@ -29,7 +29,7 @@ use Chevere\Throwable\Exceptions\OverflowException;
 
 final class Route implements RouteInterface
 {
-    private ?EndpointInterface $firstEndpoint;
+    private EndpointInterface $firstEndpoint;
 
     private EndpointsInterface $endpoints;
 
@@ -78,11 +78,9 @@ final class Route implements RouteInterface
                         ->withCode('%controller%', $endpoint->bind()->controller()::class)
                 );
             }
-            $endpoint = $endpoint
-                ->withoutParameter(strval($wildcard));
+            $endpoint = $endpoint->withoutParameter(strval($wildcard));
         }
-        $new->endpoints = $new->endpoints
-            ->withPut($endpoint);
+        $new->endpoints = $new->endpoints->withPut($endpoint);
 
         return $new;
     }
@@ -91,6 +89,9 @@ final class Route implements RouteInterface
     {
         $new = clone $this;
         $new->endpoints = $new->endpoints->without($method->name());
+        if (count($new->endpoints) > 0) {
+            $new->firstEndpoint = $new->endpoints->get($new->endpoints->keys()[0]);
+        }
 
         return $new;
     }
@@ -116,9 +117,7 @@ final class Route implements RouteInterface
         if (count($this->endpoints()) === 0) {
             return;
         }
-        /** @var EndpointInterface $firstEndpoint */
-        $firstEndpoint = $this->firstEndpoint;
-        foreach ($firstEndpoint->parameters() as $name => $parameter) {
+        foreach ($this->firstEndpoint->parameters() as $name => $parameter) {
             /** @var string $match */
             $match = $parameter['regex'];
             /** @var string $controllerMatch */
@@ -130,7 +129,7 @@ final class Route implements RouteInterface
                         ->withCode('%match%', $match)
                         ->withCode('%controllerMatch%', $controllerMatch)
                         ->withCode('%controller%', $endpoint->bind()->controller()::class)
-                        ->withCode('%firstController%', $firstEndpoint->bind()->controller()::class)
+                        ->withCode('%firstController%', $this->firstEndpoint->bind()->controller()::class)
                 );
             }
         }

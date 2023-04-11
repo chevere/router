@@ -67,25 +67,18 @@ final class Routes implements RoutesInterface
         return $new;
     }
 
-    public function withMiddleware(MiddlewaresInterface $middlewares): RoutesInterface
+    public function withPrependMiddlewares(MiddlewaresInterface $middlewares): RoutesInterface
     {
         $new = clone $this;
-        foreach ($new->getIterator() as $name => $route) {
-            foreach ($route->endpoints() as $endpoint) {
-                $bind = $endpoint->bind();
-                $finalMiddlewares = $bind->controller()->middlewares()->withAppend(
-                    ...iterator_to_array($middlewares->getIterator())
-                );
-                $controller = $bind->controller()->withMiddlewares($finalMiddlewares);
-                $bind = new Bind($controller, $bind->view());
-                $route = $route
-                    ->withoutEndpoint($endpoint->method())
-                    ->withEndpoint(new Endpoint($endpoint->method(), $bind));
-            }
-            $new->map = $new->map->withPut(...[
-                $name => $route,
-            ]);
-        }
+        $new->addMiddleware($middlewares, true);
+
+        return $new;
+    }
+
+    public function withAppendMiddlewares(MiddlewaresInterface $middlewares): RoutesInterface
+    {
+        $new = clone $this;
+        $new->addMiddleware($middlewares, false);
 
         return $new;
     }
@@ -103,6 +96,27 @@ final class Routes implements RoutesInterface
     {
         /** @return RouteInterface */
         return $this->map->get($path);
+    }
+
+    private function addMiddleware(MiddlewaresInterface $middlewares, bool $prepend): void
+    {
+        $method = $prepend ? 'withPrepend' : 'withAppend';
+        foreach ($this->getIterator() as $name => $route) {
+            foreach ($route->endpoints() as $endpoint) {
+                $bind = $endpoint->bind();
+                $finalMiddlewares = $bind->controller()->middlewares()->{$method}(
+                    ...iterator_to_array($middlewares->getIterator())
+                );
+                $controller = $bind->controller()->withMiddlewares($finalMiddlewares);
+                $bind = new Bind($controller, $bind->view());
+                $route = $route
+                    ->withoutEndpoint($endpoint->method())
+                    ->withEndpoint(new Endpoint($endpoint->method(), $bind));
+            }
+            $this->map = $this->map->withPut(...[
+                $name => $route,
+            ]);
+        }
     }
 
     private function assertNoOverflow(string $path, RouteInterface $route): void

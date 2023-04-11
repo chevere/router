@@ -41,6 +41,8 @@ final class RouteTest extends TestCase
         $route = route($path, 'name');
         $this->assertSame('name', $route->name());
         $this->assertEquals($routePath, $route->path());
+        $this->expectException(OutOfBoundsException::class);
+        $route->withoutEndpoint(new GetMethod());
     }
 
     public function testWithEndpoint(): void
@@ -49,9 +51,34 @@ final class RouteTest extends TestCase
         $method = new GetMethod();
         $controller = new ControllerWithParameter();
         $endpoint = new Endpoint($method, bind($controller));
-        $route = $route->withEndpoint($endpoint);
-        $this->assertTrue($route->endpoints()->has($method->name()));
-        $this->assertSame($endpoint, $route->endpoints()->get($method->name()));
+        $routeWith = $route->withEndpoint($endpoint);
+        $this->assertTrue($routeWith->endpoints()->has($method->name()));
+        $this->assertSame($endpoint, $routeWith->endpoints()->get($method->name()));
+    }
+
+    public function testWithoutEndpointFixFirst(): void
+    {
+        $route = new Route(new Path('/test'), 'test');
+        $fooMethod = new GetMethod();
+        $barMethod = new PostMethod();
+        $controller = new ControllerWithParameter();
+        $foo = new Endpoint($fooMethod, bind($controller));
+        $bar = new Endpoint($barMethod, bind($controller));
+        $route = $route
+            ->withEndpoint($foo)
+            ->withEndpoint($bar);
+        $withoutFoo = $route->withoutEndpoint($fooMethod);
+        $this->assertFalse($withoutFoo->endpoints()->has($fooMethod->name()));
+    }
+
+    public function testWithoutEndpointOutOfBounds(): void
+    {
+        $route = new Route(new Path('/test'), 'test');
+        $method = new GetMethod();
+        $controller = new ControllerWithParameter();
+        $foo = new Endpoint($method, bind($controller));
+        $this->expectException(OutOfBoundsException::class);
+        $route->withoutEndpoint($method);
     }
 
     public function testWithWildcard(): void

@@ -52,7 +52,7 @@ final class WildcardsTest extends TestCase
         $helper = new ObjectHelper($wildcards);
         $cloneHelper = new ObjectHelper($clone);
         foreach (['map'] as $property) {
-            $this->assertNotSame(
+            $this->assertSame(
                 $helper->getPropertyValue($property),
                 $cloneHelper->getPropertyValue($property)
             );

@@ -45,7 +45,9 @@ interface RoutesInterface extends MappedInterface
      */
     public function withRoutesFrom(self ...$routes): self;
 
-    public function withMiddleware(MiddlewaresInterface $middlewares): self;
+    public function withPrependMiddlewares(MiddlewaresInterface $middlewares): self;
+
+    public function withAppendMiddlewares(MiddlewaresInterface $middlewares): self;
 
     /**
      * Indicates whether the instance has routable(s) identified by its `$path`.

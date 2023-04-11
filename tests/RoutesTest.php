@@ -22,6 +22,7 @@ use Chevere\Router\Route;
 use Chevere\Router\Routes;
 use Chevere\Tests\_resources\ControllerNoParameters;
 use Chevere\Tests\_resources\MiddlewareOne;
+use Chevere\Tests\_resources\MiddlewareThree;
 use Chevere\Tests\_resources\MiddlewareTwo;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
@@ -78,20 +79,42 @@ final class RoutesTest extends TestCase
             name: $name,
             path: new Path('/some-path')
         ));
+        $foo = new MiddlewareOne();
+        $bar = new MiddlewareTwo();
+        $baz = new MiddlewareThree();
         $route = $route->withEndpoint(
             new Endpoint(
                 new GetMethod(),
-                new Bind(new ControllerNoParameters(), '')
+                new Bind(
+                    (new ControllerNoParameters())->withMiddlewares(
+                        new Middlewares($foo)
+                    ),
+                    'view'
+                )
             )
         );
+
         $routes = (new Routes())->withAdded($route);
-        $routes = $routes->withMiddleware(
-            new Middlewares(
-                new MiddlewareOne(),
-                new MiddlewareTwo()
-            )
+        $routesWith = $routes->withAppendMiddlewares(
+            new Middlewares($bar, $baz)
         );
-        vdd($routes);
+        $this->assertNotSame($routes, $routesWith);
+        $middlewares = $routesWith->get('/some-path')->endpoints()->get('GET')->bind()->controller()->middlewares();
+        $this->assertSame([0, 1, 2], $middlewares->keys());
+        $this->assertSame(
+            [$foo, $bar, $baz],
+            iterator_to_array($middlewares->getIterator())
+        );
+        $routesWith = $routes->withPrependMiddlewares(
+            new Middlewares($bar, $baz)
+        );
+        $this->assertNotSame($routes, $routesWith);
+        $middlewares = $routesWith->get('/some-path')->endpoints()->get('GET')->bind()->controller()->middlewares();
+        $this->assertSame([0, 1, 2], $middlewares->keys());
+        $this->assertSame(
+            [$bar, $baz, $foo],
+            iterator_to_array($middlewares->getIterator())
+        );
     }
 
     public function testWithAddedNameCollision(): void
