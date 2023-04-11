@@ -15,14 +15,14 @@ namespace Chevere\Tests;
 
 use function Chevere\Router\bind;
 use Chevere\Router\Routed;
-use Chevere\Tests\_resources\TestControllerWithParameters;
+use Chevere\Tests\_resources\ControllerWithParameters;
 use PHPUnit\Framework\TestCase;
 
 final class RoutedTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $controller = new TestControllerWithParameters();
+        $controller = new ControllerWithParameters();
         $arguments = [
             'name' => 'name-value',
             'id' => 'id-value',

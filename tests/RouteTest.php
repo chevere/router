@@ -22,9 +22,9 @@ use Chevere\Router\Exceptions\WildcardConflictException;
 use Chevere\Router\Path;
 use function Chevere\Router\route;
 use Chevere\Router\Route;
-use Chevere\Tests\_resources\RouteTestController;
-use Chevere\Tests\_resources\RouteTestControllerRegexConflict;
-use Chevere\Tests\_resources\TestControllerNoParameters;
+use Chevere\Tests\_resources\ControllerNoParameters;
+use Chevere\Tests\_resources\ControllerRegexConflict;
+use Chevere\Tests\_resources\ControllerWithParameter;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
@@ -43,11 +43,11 @@ final class RouteTest extends TestCase
         $this->assertEquals($routePath, $route->path());
     }
 
-    public function testWithAddedEndpoint(): void
+    public function testWithEndpoint(): void
     {
         $route = new Route(new Path('/test'), 'test');
         $method = new GetMethod();
-        $controller = new RouteTestController();
+        $controller = new ControllerWithParameter();
         $endpoint = new Endpoint($method, bind($controller));
         $route = $route->withEndpoint($endpoint);
         $this->assertTrue($route->endpoints()->has($method->name()));
@@ -58,7 +58,7 @@ final class RouteTest extends TestCase
     {
         $route = new Route(new Path('/test/{id}'), 'test');
         $method = new GetMethod();
-        $controller = new RouteTestController();
+        $controller = new ControllerWithParameter();
         $endpoint = new Endpoint($method, bind($controller));
         $this->expectNotToPerformAssertions();
         $route->withEndpoint($endpoint);
@@ -68,43 +68,43 @@ final class RouteTest extends TestCase
     {
         $route = new Route(new Path('/test/{id:[0-9]+}'), 'test');
         $method = new GetMethod();
-        $controller = new RouteTestController();
+        $controller = new ControllerWithParameter();
         $endpoint = new Endpoint($method, bind($controller));
         $this->expectNotToPerformAssertions();
         $route->withEndpoint($endpoint);
     }
 
-    public function testWithAddedEndpointWrongWildcard(): void
+    public function testWithEndpointWrongWildcard(): void
     {
         $route = new Route(new Path('/test/{foo}'), 'test');
         $method = new GetMethod();
-        $controller = new RouteTestController();
+        $controller = new ControllerWithParameter();
         $endpoint = new Endpoint($method, bind($controller));
         $this->expectException(OutOfBoundsException::class);
         $route->withEndpoint($endpoint);
     }
 
-    public function testWithAddedEndpointNoParams(): void
+    public function testWithEndpointNoParams(): void
     {
         $route = new Route(new Path('/test/{foo}'), 'test');
         $method = new GetMethod();
-        $controller = new TestControllerNoParameters();
+        $controller = new ControllerNoParameters();
         $endpoint = new Endpoint($method, bind($controller));
         $this->expectException(InvalidArgumentException::class);
         $route->withEndpoint($endpoint);
     }
 
-    public function testWithAddedEndpointWildcardMissing(): void
+    public function testWithEndpointWildcardMissing(): void
     {
         $parameter = 'int';
         $path = new Path('/test/{' . $parameter . ':[0-9]+}');
         $pathString = strval($path);
-        $controller = new RouteTestController();
+        $controller = new ControllerWithParameter();
         $endpoint = new Endpoint(
             new GetMethod(),
             bind($controller)
         );
-        $controllerName = RouteTestController::class;
+        $controllerName = ControllerWithParameter::class;
         $parameterMissing = $controller->parameters()->keys()[0];
         $route = new Route($path, 'test');
         $this->expectException(OutOfBoundsException::class);
@@ -114,12 +114,12 @@ final class RouteTest extends TestCase
         $route->withEndpoint($endpoint);
     }
 
-    public function testWithAddedEndpointWildcardParameter(): void
+    public function testWithEndpointWildcardParameter(): void
     {
         $path = new Path('/test/{id:[0-9]+}');
         $route = new Route($path, 'test');
         $method = new GetMethod();
-        $controller = new RouteTestController();
+        $controller = new ControllerWithParameter();
         $endpoint = new Endpoint($method, bind($controller));
         $route = $route->withEndpoint($endpoint);
         $this->assertTrue($route->endpoints()->has($method->name()));
@@ -129,31 +129,43 @@ final class RouteTest extends TestCase
         );
     }
 
-    public function testWithAddedEndpointOverride(): void
+    public function testWithEndpointOverride(): void
     {
         $route = new Route(new Path('/test/{id:[0-9]+}'), 'test');
-        $endpoint = new Endpoint(new GetMethod(), bind(new RouteTestController()));
+        $endpoint = new Endpoint(new GetMethod(), bind(new ControllerWithParameter()));
         $route = $route->withEndpoint($endpoint);
         $this->expectException(OverflowException::class);
         $route->withEndpoint($endpoint);
     }
 
-    public function testWithAddedEndpointConflict(): void
+    public function testWithEndpointConflictMatch(): void
     {
         $route = new Route(new Path('/test/{id:[0-9]+}'), 'test');
-        $endpoint1 = new Endpoint(new GetMethod(), bind(new RouteTestController()));
-        $endpoint2 = new Endpoint(new PostMethod(), bind(new RouteTestControllerRegexConflict()));
+        $endpoint1 = new Endpoint(new GetMethod(), bind(new ControllerWithParameter()));
+        $endpoint2 = new Endpoint(new PostMethod(), bind(new ControllerRegexConflict()));
         $route = $route->withEndpoint($endpoint1);
         $this->expectException(EndpointConflictException::class);
+        $this->expectExceptionMessage('incompatible with the match /\W+/');
         $route->withEndpoint($endpoint2);
     }
 
-    public function testWithAddedEndpointWildcardConflict(): void
+    public function testWithEndpointConflictUnmatched(): void
+    {
+        $route = new Route(new Path('/test/{id:[0-9]+}'), 'test');
+        $endpoint1 = new Endpoint(new GetMethod(), bind(new ControllerWithParameter()));
+        $endpoint2 = new Endpoint(new PostMethod(), bind(new ControllerNoParameters()));
+        $route = $route->withEndpoint($endpoint1);
+        $this->expectException(EndpointConflictException::class);
+        $this->expectExceptionMessage('incompatible with the match <none>');
+        $route->withEndpoint($endpoint2);
+    }
+
+    public function testWithEndpointWildcardConflict(): void
     {
         $route = new Route(new Path('/test/{id:\w+}'), 'test');
         $endpoint = new Endpoint(
             new GetMethod(),
-            bind(new RouteTestController())
+            bind(new ControllerWithParameter())
         );
         $this->expectException(WildcardConflictException::class);
         $this->expectExceptionMessage('Wildcard {id} matches against');

@@ -16,10 +16,10 @@ namespace Chevere\Tests\_resources;
 use Chevere\Attribute\StringAttribute;
 use Chevere\HttpController\HttpController;
 
-final class RouteTestControllerRegexConflict extends HttpController
+final class ControllerWithParameter extends HttpController
 {
     public function run(
-        #[StringAttribute('/\W+/')]
+        #[StringAttribute('/[0-9]+/')]
         string $id
     ): array {
         return [];

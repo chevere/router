@@ -13,19 +13,15 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\_resources;
 
+use Chevere\Attribute\StringAttribute;
 use Chevere\HttpController\HttpController;
 
-final class TestControllerNotExportable extends HttpController
+final class ControllerRegexConflict extends HttpController
 {
-    private $resource;
-
-    public function run(): array
-    {
+    public function run(
+        #[StringAttribute('/\W+/')]
+        string $id
+    ): array {
         return [];
-    }
-
-    public function setUpBefore(): void
-    {
-        $this->resource = fopen('php://output', 'r+');
     }
 }

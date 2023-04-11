@@ -15,10 +15,17 @@ namespace Chevere\Tests\_resources;
 
 use Chevere\HttpController\HttpController;
 
-final class TestControllerNoParameters extends HttpController
+final class ControllerNotExportable extends HttpController
 {
+    private $resource;
+
     public function run(): array
     {
         return [];
+    }
+
+    public function setUpBefore(): void
+    {
+        $this->resource = fopen('php://output', 'r+');
     }
 }

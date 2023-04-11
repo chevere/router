@@ -14,14 +14,14 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\Router\Bind;
-use Chevere\Tests\_resources\TestControllerWithParameters;
+use Chevere\Tests\_resources\ControllerWithParameters;
 use PHPUnit\Framework\TestCase;
 
 final class BindTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $controller = new TestControllerWithParameters();
+        $controller = new ControllerWithParameters();
         $view = 'test';
         $bind = new Bind($controller, $view);
         $this->assertSame($controller, $bind->controller());

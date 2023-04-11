@@ -22,11 +22,11 @@ use Chevere\Router\Interfaces\EndpointInterface;
 use function Chevere\Router\route;
 use function Chevere\Router\router;
 use function Chevere\Router\routes;
+use Chevere\Tests\_resources\ControllerNoParameters;
+use Chevere\Tests\_resources\ControllerWithParameters;
 use Chevere\Tests\_resources\MiddlewareOne;
 use Chevere\Tests\_resources\MiddlewareThree;
 use Chevere\Tests\_resources\MiddlewareTwo;
-use Chevere\Tests\_resources\TestControllerNoParameters;
-use Chevere\Tests\_resources\TestControllerWithParameters;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
@@ -47,7 +47,7 @@ final class FunctionsTest extends TestCase
      */
     public function testFunctionRoute(string $method, string $className): void
     {
-        $controller = new TestControllerNoParameters();
+        $controller = new ControllerNoParameters();
         $arguments = [
             'path' => '/test/',
             'name' => $className,
@@ -80,7 +80,7 @@ final class FunctionsTest extends TestCase
 
     public function functionRouteViewDataProvider(): array
     {
-        $controller = new TestControllerNoParameters();
+        $controller = new ControllerNoParameters();
 
         return [
             [
@@ -109,17 +109,17 @@ final class FunctionsTest extends TestCase
         $this->expectException(WildcardNotFoundException::class);
         $this->expectExceptionMessage(
             'Wildcard {wildcard} does not exists in controller '
-            . TestControllerNoParameters::class
+            . ControllerNoParameters::class
         );
         route(
             path: '/test/{wildcard}',
-            GET: bind(new TestControllerNoParameters()),
+            GET: bind(new ControllerNoParameters()),
         );
     }
 
     public function testFunctionRouteWildcard(): void
     {
-        $controller = new TestControllerWithParameters();
+        $controller = new ControllerWithParameters();
         /** @var StringParameter $id */
         $id = $controller->parameters()->get('id');
         /** @var StringParameter $name */
@@ -139,7 +139,7 @@ final class FunctionsTest extends TestCase
 
     public function testFunctionRouteMiddleware(): void
     {
-        $controller = new TestControllerNoParameters();
+        $controller = new ControllerNoParameters();
         $middleware = new Middlewares(
             new MiddlewareOne(),
             new MiddlewareTwo(),
@@ -159,14 +159,14 @@ final class FunctionsTest extends TestCase
 
     public function testFunctionRouteBadPath(): void
     {
-        $controller = new TestControllerNoParameters();
+        $controller = new ControllerNoParameters();
         $this->expectException(InvalidArgumentException::class);
         route('test', 'name', GET: bind($controller));
     }
 
     public function testFunctionRouteBadHttpMethod(): void
     {
-        $controller = new TestControllerNoParameters();
+        $controller = new ControllerNoParameters();
         $this->expectException(MethodNotAllowedException::class);
         route('/test/', 'name', TEST: bind($controller));
     }
@@ -178,7 +178,7 @@ final class FunctionsTest extends TestCase
         $route = route(
             name: $name,
             path: $path,
-            GET: bind(new TestControllerNoParameters())
+            GET: bind(new ControllerNoParameters())
         );
         $routes = routes(myRoute: $route);
         $this->assertTrue($routes->has($path));
@@ -191,13 +191,13 @@ final class FunctionsTest extends TestCase
             'web' => routes(
                 route(
                     path: '/',
-                    GET: bind(new TestControllerNoParameters())
+                    GET: bind(new ControllerNoParameters())
                 )
             ),
             'api' => routes(
                 route(
                     path: '/api',
-                    GET: bind(new TestControllerNoParameters())
+                    GET: bind(new ControllerNoParameters())
                 )
             ),
         ];

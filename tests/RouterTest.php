@@ -19,7 +19,7 @@ use Chevere\Router\Endpoint;
 use Chevere\Router\Exceptions\WithoutEndpointsException;
 use function Chevere\Router\route;
 use Chevere\Router\Router;
-use Chevere\Tests\_resources\TestControllerWithParameters;
+use Chevere\Tests\_resources\ControllerWithParameters;
 use FastRoute\RouteCollector;
 use PHPUnit\Framework\TestCase;
 
@@ -34,7 +34,7 @@ final class RouterTest extends TestCase
 
     public function testRouter(): void
     {
-        $controller = new TestControllerWithParameters();
+        $controller = new ControllerWithParameters();
         $bind = bind($controller);
         $route = route('/🐘/{id:\d+}/{name:\w+}');
         $route = $route->withEndpoint(

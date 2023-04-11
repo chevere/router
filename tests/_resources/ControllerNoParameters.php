@@ -13,17 +13,12 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\_resources;
 
-use Chevere\Attribute\StringAttribute;
 use Chevere\HttpController\HttpController;
 
-final class TestControllerWithParameters extends HttpController
+final class ControllerNoParameters extends HttpController
 {
-    public function run(
-        #[StringAttribute('/\w+/')]
-        string $name,
-        #[StringAttribute('/\d+/')]
-        string $id
-    ): array {
+    public function run(): array
+    {
         return [];
     }
 }
