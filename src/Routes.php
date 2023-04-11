@@ -41,7 +41,7 @@ final class Routes implements RoutesInterface
         $new->names ??= new Map();
         foreach ($route as $item) {
             $key = $item->path()->__toString();
-            $new->assertRoute($key, $item);
+            $new->assertNoOverflow($key, $item);
             $new->names = $new->names
                 ->withPut(...[
                     $item->name() => $key,
@@ -49,6 +49,18 @@ final class Routes implements RoutesInterface
             $new->map = $new->map->withPut(...[
                 $key => $item,
             ]);
+        }
+
+        return $new;
+    }
+
+    public function withRoutesFrom(RoutesInterface ...$routes): RoutesInterface
+    {
+        $new = clone $this;
+        foreach ($routes as $item) {
+            foreach ($item as $route) {
+                $new = $new->withAdded($route);
+            }
         }
 
         return $new;
@@ -69,7 +81,7 @@ final class Routes implements RoutesInterface
         return $this->map->get($path);
     }
 
-    private function assertRoute(string $path, RouteInterface $route): void
+    private function assertNoOverflow(string $path, RouteInterface $route): void
     {
         if ($this->names->has($route->name())) {
             throw new OverflowException(
