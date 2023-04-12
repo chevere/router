@@ -95,21 +95,21 @@ final class RoutesTest extends TestCase
         );
 
         $routes = (new Routes())->withAdded($route);
-        $routesWith = $routes->withAppendMiddlewares(
-            new Middlewares($bar, $baz)
-        );
+        $routesWith = $routes
+            ->withAppendMiddleware($bar, $baz);
         $this->assertNotSame($routes, $routesWith);
-        $middlewares = $routesWith->get('/some-path')->endpoints()->get('GET')->bind()->controller()->middlewares();
+        $middlewares = $routesWith->get('/some-path')->endpoints()->get('GET')
+            ->bind()->controller()->middlewares();
         $this->assertSame([0, 1, 2], $middlewares->keys());
         $this->assertSame(
             [$foo, $bar, $baz],
             iterator_to_array($middlewares->getIterator())
         );
-        $routesWith = $routes->withPrependMiddlewares(
-            new Middlewares($bar, $baz)
-        );
+        $routesWith = $routes
+            ->withPrependMiddleware($bar, $baz);
         $this->assertNotSame($routes, $routesWith);
-        $middlewares = $routesWith->get('/some-path')->endpoints()->get('GET')->bind()->controller()->middlewares();
+        $middlewares = $routesWith->get('/some-path')->endpoints()->get('GET')
+            ->bind()->controller()->middlewares();
         $this->assertSame([0, 1, 2], $middlewares->keys());
         $this->assertSame(
             [$bar, $baz, $foo],

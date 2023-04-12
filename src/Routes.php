@@ -16,13 +16,13 @@ namespace Chevere\Router;
 use Chevere\DataStructure\Interfaces\MapInterface;
 use Chevere\DataStructure\Map;
 use Chevere\DataStructure\Traits\MapTrait;
-use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\Message\Message;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use Chevere\Throwable\Errors\TypeError;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
+use Psr\Http\Server\MiddlewareInterface;
 
 final class Routes implements RoutesInterface
 {
@@ -67,18 +67,18 @@ final class Routes implements RoutesInterface
         return $new;
     }
 
-    public function withPrependMiddlewares(MiddlewaresInterface $middlewares): RoutesInterface
+    public function withPrependMiddleware(MiddlewareInterface ...$middleware): RoutesInterface
     {
         $new = clone $this;
-        $new->addMiddleware($middlewares, true);
+        $new->addMiddleware('withPrepend', ...$middleware);
 
         return $new;
     }
 
-    public function withAppendMiddlewares(MiddlewaresInterface $middlewares): RoutesInterface
+    public function withAppendMiddleware(MiddlewareInterface ...$middleware): RoutesInterface
     {
         $new = clone $this;
-        $new->addMiddleware($middlewares, false);
+        $new->addMiddleware('withAppend', ...$middleware);
 
         return $new;
     }
@@ -98,14 +98,13 @@ final class Routes implements RoutesInterface
         return $this->map->get($path);
     }
 
-    private function addMiddleware(MiddlewaresInterface $middlewares, bool $prepend): void
+    private function addMiddleware(string $method, MiddlewareInterface ...$middleware): void
     {
-        $method = $prepend ? 'withPrepend' : 'withAppend';
         foreach ($this->getIterator() as $name => $route) {
             foreach ($route->endpoints() as $endpoint) {
                 $bind = $endpoint->bind();
                 $finalMiddlewares = $bind->controller()->middlewares()->{$method}(
-                    ...iterator_to_array($middlewares->getIterator())
+                    ...$middleware
                 );
                 $controller = $bind->controller()->withMiddlewares($finalMiddlewares);
                 $bind = new Bind($controller, $bind->view());

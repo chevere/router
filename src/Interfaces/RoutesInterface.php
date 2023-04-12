@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace Chevere\Router\Interfaces;
 
 use Chevere\DataStructure\Interfaces\MappedInterface;
-use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Iterator;
+use Psr\Http\Server\MiddlewareInterface;
 
 /**
  * Describes the component in charge of collecting objects implementing `RouteInterface`.
@@ -38,16 +38,28 @@ interface RoutesInterface extends MappedInterface
     public function withAdded(RouteInterface ...$route): self;
 
     /**
-     * Return an instance with the specified `$routes` merged.
+     * Return an instance with the specified `$routes` from another instance added.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified `$routes` merged.
+     * an instance that contains the specified `$routes` from another instance added.
      */
     public function withRoutesFrom(self ...$routes): self;
 
-    public function withPrependMiddlewares(MiddlewaresInterface $middlewares): self;
+    /**
+     * Return an instance with the specified `$middleware` prepended to each controller.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the specified `$middleware` prepended to each controller.
+     */
+    public function withPrependMiddleware(MiddlewareInterface ...$middleware): self;
 
-    public function withAppendMiddlewares(MiddlewaresInterface $middlewares): self;
+    /**
+     * Return an instance with the specified `$middleware` appended to each controller.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the specified `$middleware` appended to each controller.
+     */
+    public function withAppendMiddleware(MiddlewareInterface ...$middleware): self;
 
     /**
      * Indicates whether the instance has routable(s) identified by its `$path`.
