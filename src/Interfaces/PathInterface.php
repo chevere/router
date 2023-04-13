@@ -22,6 +22,11 @@ use Stringable;
 interface PathInterface extends Stringable
 {
     /**
+     * Route used to construct the instance.
+     */
+    public function __toString(): string;
+
+    /**
      * Provides access to the wildcards instance.
      */
     public function wildcards(): WildcardsInterface;
@@ -30,4 +35,9 @@ interface PathInterface extends Stringable
      * Provides access to the regex instance.
      */
     public function regex(): RegexInterface;
+
+    /**
+     * Route without regex wildcards.
+     */
+    public function name(): string;
 }
