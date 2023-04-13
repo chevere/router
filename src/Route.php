@@ -78,7 +78,6 @@ final class Route implements RouteInterface
                         ->withCode('%controller%', $endpoint->bind()->controller()::class)
                 );
             }
-            $endpoint = $endpoint->withoutParameter(strval($wildcard));
         }
         $new->endpoints = $new->endpoints->withPut($endpoint);
 
@@ -117,11 +116,17 @@ final class Route implements RouteInterface
         if (count($this->endpoints()) === 0) {
             return;
         }
-        foreach ($this->firstEndpoint->parameters() as $name => $parameter) {
-            /** @var string $match */
-            $match = $parameter['regex'];
-            /** @var string $controllerMatch */
-            $controllerMatch = $endpoint->parameters()[$name]['regex'] ?? '<none>';
+        /** @var StringParameterInterface $parameter */
+        foreach ($this->firstEndpoint->bind()->controller()->parameters() as $name => $parameter) {
+            $match = $parameter->regex()->__toString();
+
+            try {
+                /** @var StringParameterInterface $string */
+                $string = $endpoint->bind()->controller()->parameters()->get($name);
+                $controllerMatch = $string->regex()->__toString();
+            } catch(OutOfBoundsException) {
+                $controllerMatch = '<none>';
+            }
             if ($match !== $controllerMatch) {
                 throw new EndpointConflictException(
                     (new Message('Controller parameter %parameter% first defined at %firstController% matches against %match% which is incompatible with the match %controllerMatch% defined by %controller%'))
@@ -137,7 +142,8 @@ final class Route implements RouteInterface
 
     private function assertWildcardEndpoint(WildcardInterface $wildcard, EndpointInterface $endpoint): void
     {
-        if ($endpoint->bind()->controller()->parameters()->count() === 0) {
+        $parameters = $endpoint->bind()->controller()->parameters();
+        if (count($parameters) === 0) {
             throw new InvalidArgumentException(
                 (new Message("Invalid route %path% binding with %controller% which doesn't accept any parameter"))
                     ->withCode('%path%', $this->path->__toString())
@@ -145,15 +151,14 @@ final class Route implements RouteInterface
                     ->withCode('%wildcard%', $wildcard->__toString())
             );
         }
-        if (! array_key_exists($wildcard->__toString(), $endpoint->parameters())) {
-            $parameters = array_keys($endpoint->parameters());
 
+        if (! $parameters->has($wildcard->__toString())) {
             throw new OutOfBoundsException(
                 (new Message('Route %path% must bind to one of the known %controller% parameters: %parameters%'))
                     ->withCode('%path%', $this->path->__toString())
                     ->withCode('%wildcard%', $wildcard->__toString())
                     ->withCode('%controller%', $endpoint->bind()->controller()::class)
-                    ->withCode('%parameters%', implode(', ', $parameters))
+                    ->withCode('%parameters%', implode(', ', $parameters->keys()))
             );
         }
     }

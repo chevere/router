@@ -150,10 +150,6 @@ final class RouteTest extends TestCase
         $endpoint = new Endpoint($method, bind($controller));
         $route = $route->withEndpoint($endpoint);
         $this->assertTrue($route->endpoints()->has($method->name()));
-        $this->assertSame(
-            [],
-            $route->endpoints()->get($method->name())->parameters()
-        );
     }
 
     public function testWithEndpointOverride(): void
