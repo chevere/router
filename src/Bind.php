@@ -20,7 +20,7 @@ final class Bind implements BindInterface
 {
     public function __construct(
         private HttpControllerInterface $httpController,
-        private string $view
+        private string $view = ''
     ) {
     }
 
