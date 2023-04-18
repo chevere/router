@@ -46,11 +46,10 @@ function routes(RouteInterface ...$routes): RoutesInterface
  */
 function route(
     string $path,
-    string $name = '',
+    ?string $name = null,
     ?MiddlewaresInterface $middleware = null,
     BindInterface|HttpControllerInterface ...$bind
 ): RouteInterface {
-    $name = $name === '' ? $path : $name;
     $routePath = new Path($path);
     $route = (new Route(new Path($path), $name));
     foreach ($bind as $item) {

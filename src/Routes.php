@@ -120,7 +120,7 @@ final class Routes implements RoutesInterface
 
     private function assertNoOverflow(string $path, RouteInterface $route): void
     {
-        if ($this->names->has($route->name())) {
+        if ($route->name() !== null && $this->names->has($route->name())) {
             throw new OverflowException(
                 code: static::EXCEPTION_CODE_TAKEN_NAME,
                 message: (new Message('Named route %name% has been already taken.'))
@@ -130,8 +130,8 @@ final class Routes implements RoutesInterface
         if ($this->map->has($path)) {
             throw new OverflowException(
                 code: static::EXCEPTION_CODE_TAKEN_PATH,
-                message: (new Message('Route path %path% has been already taken.'))
-                    ->withCode('%path%', $route->name())
+                message: (new Message('Route %path% has been already taken.'))
+                    ->withCode('%path%', $route->path()->__toString())
             );
         }
     }

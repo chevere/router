@@ -60,8 +60,8 @@ final class Index implements IndexInterface
             $groupName = $new->groupsIndex->get($id);
 
             throw new OverflowException(
-                (new Message('Route %name% (regex %id%) is already bound to group %group%'))
-                    ->withCode('%name%', $route->name())
+                (new Message('Route %path% (regex %id%) is already bound to group %group%'))
+                    ->withCode('%path%', $route->path()->__toString())
                     ->withCode('%id%', $id)
                     ->withCode('%group%', $groupName)
             );
