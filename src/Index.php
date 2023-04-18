@@ -53,15 +53,16 @@ final class Index implements IndexInterface
     public function withAddedRoute(RouteInterface $route, string $group): IndexInterface
     {
         $new = clone $this;
-        $id = $route->path()->__toString();
+        $id = $route->path()->regex()->noDelimiters();
         $identifier = new Identifier($group, $id);
         if ($new->groupsIndex->has($id)) {
             /** @var string $groupName */
             $groupName = $new->groupsIndex->get($id);
 
             throw new OverflowException(
-                (new Message('Route path %path% is already bound to group %group%'))
-                    ->withCode('%path%', $id)
+                (new Message('Route %name% (regex %id%) is already bound to group %group%'))
+                    ->withCode('%name%', $route->name())
+                    ->withCode('%id%', $id)
                     ->withCode('%group%', $groupName)
             );
         }
