@@ -20,13 +20,7 @@ use Chevere\Common\Interfaces\ToArrayInterface;
  */
 interface IdentifierInterface extends ToArrayInterface
 {
-    /**
-     * Provides access to the `$group` instance.
-     */
     public function group(): string;
 
-    /**
-     * Provides access to the `$name` instance.
-     */
-    public function name(): string;
+    public function id(): string;
 }

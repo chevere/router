@@ -14,7 +14,8 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\Router\Identifier;
-use Chevere\Throwable\Exceptions\InvalidArgumentException;
+use Chevere\String\Exceptions\CtypeSpaceException;
+use Chevere\String\Exceptions\EmptyException;
 use PHPUnit\Framework\TestCase;
 
 final class IdentifierTest extends TestCase
@@ -25,7 +26,7 @@ final class IdentifierTest extends TestCase
         $name = 'some-name';
         $routeIdentifier = new Identifier($group, $name);
         $this->assertSame($group, $routeIdentifier->group());
-        $this->assertSame($name, $routeIdentifier->name());
+        $this->assertSame($name, $routeIdentifier->id());
         $this->assertSame([
             'group' => $group,
             'name' => $name,
@@ -34,29 +35,25 @@ final class IdentifierTest extends TestCase
 
     public function testEmptyGroup(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageMatches('/ \$group /');
+        $this->expectException(EmptyException::class);
         new Identifier('', 'some-name');
     }
 
     public function testCtypeSpaceGroup(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageMatches('/ \$group /');
+        $this->expectException(CtypeSpaceException::class);
         new Identifier('   ', 'some-name');
     }
 
     public function testEmptyName(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageMatches('/ \$name /');
+        $this->expectException(EmptyException::class);
         new Identifier('some-group', '');
     }
 
     public function testCtypeSpaceName(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageMatches('/ \$name /');
+        $this->expectException(CtypeSpaceException::class);
         new Identifier('some-group', '  ');
     }
 }

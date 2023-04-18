@@ -13,11 +13,9 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
-use Chevere\Message\Message;
 use Chevere\Router\Interfaces\IdentifierInterface;
 use Chevere\String\AssertString;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
-use Throwable;
 
 final class Identifier implements IdentifierInterface
 {
@@ -26,10 +24,10 @@ final class Identifier implements IdentifierInterface
      */
     public function __construct(
         private string $group,
-        private string $name
+        private string $id
     ) {
-        $this->assertString('group');
-        $this->assertString('name');
+        $this->assertString($group);
+        $this->assertString($id);
     }
 
     public function group(): string
@@ -37,30 +35,23 @@ final class Identifier implements IdentifierInterface
         return $this->group;
     }
 
-    public function name(): string
+    public function id(): string
     {
-        return $this->name;
+        return $this->id;
     }
 
     public function toArray(): array
     {
         return [
             'group' => $this->group,
-            'name' => $this->name,
+            'name' => $this->id,
         ];
     }
 
-    private function assertString(string $argumentName): void
+    private function assertString(string $string): void
     {
-        try {
-            (new AssertString($this->{$argumentName}))
-                ->notEmpty()
-                ->notCtypeSpace();
-        } catch (Throwable $e) {
-            throw new InvalidArgumentException(
-                (new Message('Argument %argumentName% must not be empty neither ctype-space.'))
-                    ->withCode('%argumentName%', '$' . $argumentName)
-            );
-        }
+        (new AssertString($string))
+            ->notEmpty()
+            ->notCtypeSpace();
     }
 }
