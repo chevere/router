@@ -29,9 +29,10 @@ final class Endpoint implements EndpointInterface, DescribedInterface
         private MethodInterface $method,
         private BindInterface $bind
     ) {
-        $this->description
-            ??= $bind->controller()->description()
-            ?? $method->description();
+        $this->description = $bind->controller()->description();
+        if ($this->description === '') {
+            $this->description = $method->description();
+        }
     }
 
     public function method(): MethodInterface
