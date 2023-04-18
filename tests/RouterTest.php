@@ -73,6 +73,6 @@ final class RouterTest extends TestCase
     {
         $route = route('/test');
         $this->expectException(WithoutEndpointsException::class);
-        (new Router())->withAddedRoute($route);
+        (new Router())->withAddedRoute($route, '');
     }
 }

@@ -132,11 +132,10 @@ function route(
 function router(RoutesInterface ...$routes): RouterInterface
 {
     $router = new Router();
-    foreach ($routes as $group => $groupRoutes) {
+    foreach ($routes as $group => $items) {
         $group = strval($group);
-        foreach ($groupRoutes->getIterator() as $route) {
-            $router = $router
-                ->withAddedRoute($route, $group);
+        foreach ($items as $route) {
+            $router = $router->withAddedRoute($route, $group);
         }
     }
 
