@@ -41,14 +41,14 @@ final class Routes implements RoutesInterface
         $new = clone $this;
         $new->names ??= new Map();
         foreach ($route as $item) {
-            $key = $item->path()->__toString();
-            $new->assertNoOverflow($key, $item);
+            $id = $item->path()->regex()->noDelimiters();
+            $new->assertNoOverflow($id, $item);
             $new->names = $new->names
                 ->withPut(...[
-                    $item->name() => $key,
+                    $item->name() => $id,
                 ]);
             $new->map = $new->map->withPut(...[
-                $key => $item,
+                $id => $item,
             ]);
         }
 

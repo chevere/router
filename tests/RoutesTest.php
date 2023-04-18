@@ -37,7 +37,7 @@ final class RoutesTest extends TestCase
             name: $name,
             path: new Path('/some-path')
         ));
-        $key = $route->path()->__toString();
+        $key = $route->path()->regex()->noDelimiters();
         $routes = new Routes();
         $routesWithAdded = $routes->withAdded($route);
         $this->assertNotSame($routes, $routesWithAdded);

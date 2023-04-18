@@ -78,8 +78,8 @@ final class Router implements RouterInterface
 
         throw new WithoutEndpointsException(
             (new Message("Route %name% (%path%) doesn't contain any endpoint."))
-                ->withCode('%path%', $route->path()->__toString())
                 ->withCode('%name%', $route->name())
+                ->withCode('%path%', $route->path()->__toString())
         );
     }
 }
