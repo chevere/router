@@ -25,7 +25,7 @@ use Chevere\Throwable\Exceptions\OverflowException;
  */
 interface RouteInterface
 {
-    public function name(): ?string;
+    public function name(): string;
 
     /**
      * Provides access to the `$path` instance.

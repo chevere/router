@@ -35,12 +35,12 @@ final class Route implements RouteInterface
 
     public function __construct(
         private PathInterface $path,
-        private ?string $name = null,
+        private string $name,
     ) {
         $this->endpoints = new Endpoints();
     }
 
-    public function name(): ?string
+    public function name(): string
     {
         return $this->name;
     }
