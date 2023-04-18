@@ -38,7 +38,7 @@ final class Router implements RouterInterface
         $this->routeCollector = new RouteCollector(new StrictStd(), new GroupCountBased());
     }
 
-    public function withAddedRoute(string $group, RouteInterface $route): RouterInterface
+    public function withAddedRoute(RouteInterface $route, string $group = ''): RouterInterface
     {
         $this->assertHasEndpoints($route);
         $new = clone $this;

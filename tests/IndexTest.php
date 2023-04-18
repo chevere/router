@@ -66,43 +66,43 @@ final class IndexTest extends TestCase
 
     public function testWithAddedRoute(): void
     {
-        $groupName = 'some-group';
+        $groupName = '';
         $path = '/path';
         $route = route($path);
-        $routeWithAddedEndpoint = $route->withEndpoint(
+        $withEndpoint = $route->withEndpoint(
             new Endpoint(new GetMethod(), bind(new ControllerWithParameters()))
         );
-        $this->assertNotSame($route, $routeWithAddedEndpoint);
-        $routerIndex = new Index();
-        $routerIndexWithAddedRoute = $routerIndex
-            ->withAddedRoute($routeWithAddedEndpoint, $groupName);
-        $this->assertNotSame($routerIndex, $routerIndexWithAddedRoute);
-        $this->assertTrue($routerIndexWithAddedRoute->hasRouteName($path));
+        $this->assertNotSame($route, $withEndpoint);
+        $index = new Index();
+        $indexWithAddedRoute = $index
+            ->withAddedRoute($withEndpoint, $groupName);
+        $this->assertNotSame($index, $indexWithAddedRoute);
+        $this->assertTrue($indexWithAddedRoute->hasRouteName($path));
         $this->assertInstanceOf(
             IdentifierInterface::class,
-            $routerIndexWithAddedRoute->getRouteIdentifier($path)
+            $indexWithAddedRoute->getRouteIdentifier($path)
         );
-        $this->assertTrue($routerIndexWithAddedRoute->hasGroup($groupName));
+        $this->assertTrue($indexWithAddedRoute->hasGroup($groupName));
         $this->assertSame(
             [$path],
-            $routerIndexWithAddedRoute->getGroupRouteNames($groupName)
+            $indexWithAddedRoute->getGroupRouteNames($groupName)
         );
         $this->assertSame(
             $groupName,
-            $routerIndexWithAddedRoute->getRouteGroup($path)
+            $indexWithAddedRoute->getRouteGroup($path)
         );
         $this->assertSame([
             $path => [
                 'group' => $groupName,
                 'name' => $path,
             ],
-        ], $routerIndexWithAddedRoute->toArray());
+        ], $indexWithAddedRoute->toArray());
         $path2 = '/path-2';
         $route2 = route($path2);
         $route2 = $route2->withEndpoint(
             new Endpoint(new GetMethod(), bind(new ControllerWithParameters()))
         );
-        $withAnotherAddedRoute = $routerIndexWithAddedRoute->withAddedRoute($route2, $groupName);
+        $withAnotherAddedRoute = $indexWithAddedRoute->withAddedRoute($route2, $groupName);
         $this->assertSame(
             [$path, $path2],
             $withAnotherAddedRoute->getGroupRouteNames($groupName)

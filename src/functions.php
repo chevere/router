@@ -135,7 +135,7 @@ function router(RoutesInterface ...$routes): RouterInterface
         $group = strval($group);
         foreach ($groupRoutes->getIterator() as $route) {
             $router = $router
-                ->withAddedRoute($group, $route);
+                ->withAddedRoute($route, $group);
         }
     }
 

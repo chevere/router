@@ -26,8 +26,11 @@ final class Identifier implements IdentifierInterface
         private string $group,
         private string $id
     ) {
-        $this->assertString($group);
-        $this->assertString($id);
+        (new AssertString($group))
+            ->notCtypeSpace();
+        (new AssertString($id))
+            ->notEmpty()
+            ->notCtypeSpace();
     }
 
     public function group(): string
@@ -46,12 +49,5 @@ final class Identifier implements IdentifierInterface
             'group' => $this->group,
             'name' => $this->id,
         ];
-    }
-
-    private function assertString(string $string): void
-    {
-        (new AssertString($string))
-            ->notEmpty()
-            ->notCtypeSpace();
     }
 }

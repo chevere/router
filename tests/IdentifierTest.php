@@ -33,12 +33,6 @@ final class IdentifierTest extends TestCase
         ], $routeIdentifier->toArray());
     }
 
-    public function testEmptyGroup(): void
-    {
-        $this->expectException(EmptyException::class);
-        new Identifier('', 'some-name');
-    }
-
     public function testCtypeSpaceGroup(): void
     {
         $this->expectException(CtypeSpaceException::class);

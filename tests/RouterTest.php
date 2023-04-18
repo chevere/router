@@ -45,7 +45,7 @@ final class RouterTest extends TestCase
         );
         $router = new Router();
         $routerWithAddedRoute = $router
-            ->withAddedRoute('my-group', $route);
+            ->withAddedRoute($route, 'my-group');
         $this->assertNotSame($router, $routerWithAddedRoute);
         $this->assertCount(1, $routerWithAddedRoute->routes());
         $this->assertInstanceOf(
@@ -64,7 +64,8 @@ final class RouterTest extends TestCase
                     'name' => 'name',
                 ],
             ],
-            $routerWithAddedRoute->routeCollector()->getData()[1]['GET'][0]['routeMap'][3]
+            $routerWithAddedRoute->routeCollector()
+                ->getData()[1]['GET'][0]['routeMap'][3]
         );
     }
 
@@ -72,7 +73,6 @@ final class RouterTest extends TestCase
     {
         $route = route('/test');
         $this->expectException(WithoutEndpointsException::class);
-        (new Router())
-            ->withAddedRoute('my-group', $route);
+        (new Router())->withAddedRoute($route);
     }
 }
