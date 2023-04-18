@@ -133,7 +133,9 @@ function router(RoutesInterface ...$routes): RouterInterface
 {
     $router = new Router();
     foreach ($routes as $group => $items) {
-        $group = strval($group);
+        $group = ! is_numeric($group)
+            ? strval($group)
+            : '';
         foreach ($items as $route) {
             $router = $router->withAddedRoute($route, $group);
         }
