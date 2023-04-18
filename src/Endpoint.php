@@ -23,16 +23,15 @@ final class Endpoint implements EndpointInterface, DescribedInterface
 {
     use DescribedTrait;
 
-    private string $description;
+    private ?string $description;
 
     public function __construct(
         private MethodInterface $method,
         private BindInterface $bind
     ) {
-        $this->description = $bind->controller()->description();
-        if ($this->description === '') {
-            $this->description = $method->description();
-        }
+        $this->description
+            ??= $bind->controller()->description()
+            ?? $method->description();
     }
 
     public function method(): MethodInterface
