@@ -39,5 +39,5 @@ interface PathInterface extends Stringable
     /**
      * Route without regex wildcards.
      */
-    public function name(): string;
+    public function handle(): string;
 }

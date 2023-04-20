@@ -35,7 +35,7 @@ final class Path implements PathInterface
 
     private WildcardsInterface $wildcards;
 
-    private string $name;
+    private string $handle;
 
     public function __construct(
         private string $route
@@ -54,7 +54,7 @@ final class Path implements PathInterface
             );
         }
         // @codeCoverageIgnoreEnd
-        $this->setName();
+        $this->setHandle();
         $this->wildcards = new Wildcards();
         $routerData = array_values(array_filter($dataGenerator->getData()));
         foreach ($this->data as $value) {
@@ -86,19 +86,19 @@ final class Path implements PathInterface
         return $this->regex;
     }
 
-    public function name(): string
+    public function handle(): string
     {
-        return $this->name;
+        return $this->handle;
     }
 
-    private function setName(): void
+    private function setHandle(): void
     {
-        $this->name = '';
+        $this->handle = '';
         /**
          * @var string|string[] $el
          */
         foreach ($this->data as $el) {
-            $this->name .= is_string($el)
+            $this->handle .= is_string($el)
                 ? $el
                 : '{' . $el[0] . '}';
         }
