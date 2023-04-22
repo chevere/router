@@ -44,7 +44,7 @@ final class Router implements RouterInterface
         $new = clone $this;
         $new->index = $new->index->withAddedRoute($route, $group);
         $new->routes = $new->routes->withAdded($route);
-        foreach ($route->endpoints()->getIterator() as $endpoint) {
+        foreach ($route->endpoints() as $endpoint) {
             $new->routeCollector->addRoute(
                 $endpoint->method()::name(),
                 $route->path()->__toString(),

@@ -32,7 +32,7 @@ final class EndpointTest extends TestCase
         $this->assertSame($method->description(), $endpoint->description());
         $parameters = [];
         /** @var StringParameterInterface $parameter */
-        foreach ($controller->parameters()->getIterator() as $name => $parameter) {
+        foreach ($controller->parameters() as $name => $parameter) {
             $parameters[$name] = [
                 'name' => $name,
                 'regex' => $parameter->regex()->__toString(),

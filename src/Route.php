@@ -58,7 +58,7 @@ final class Route implements RouteInterface
         }
         $new->assertUnique($endpoint);
         $new->assertNoConflict($endpoint);
-        foreach ($new->path->wildcards()->getIterator() as $wildcard) {
+        foreach ($new->path->wildcards() as $wildcard) {
             $new->assertWildcardEndpoint($wildcard, $endpoint);
             /** @var StringParameterInterface $parameter */
             $parameter = $endpoint->bind()->controller()->parameters()
