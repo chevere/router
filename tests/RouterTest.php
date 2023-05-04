@@ -34,7 +34,7 @@ final class RouterTest extends TestCase
 
     public function testRouter(): void
     {
-        $controller = new ControllerWithParameters();
+        $controller = ControllerWithParameters::class;
         $bind = bind($controller);
         $route = route('/🐘/{id:\d+}/{name:\w+}');
         $route = $route->withEndpoint(
@@ -44,8 +44,7 @@ final class RouterTest extends TestCase
             )
         );
         $router = new Router();
-        $routerWithAddedRoute = $router
-            ->withAddedRoute($route, 'my-group');
+        $routerWithAddedRoute = $router->withAddedRoute($route, 'my-group');
         $this->assertNotSame($router, $routerWithAddedRoute);
         $this->assertCount(1, $routerWithAddedRoute->routes());
         $this->assertInstanceOf(

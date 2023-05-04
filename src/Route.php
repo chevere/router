@@ -61,7 +61,7 @@ final class Route implements RouteInterface
         foreach ($new->path->wildcards() as $wildcard) {
             $new->assertWildcardEndpoint($wildcard, $endpoint);
             /** @var StringParameterInterface $parameter */
-            $parameter = $endpoint->bind()->controller()->parameters()
+            $parameter = $endpoint->bind()->controllerName()::getParameters()
                 ->get(strval($wildcard));
             $parameterMatch = $parameter->regex()->noDelimitersNoAnchors();
             $wildcardMatch = strval($wildcard->match());
@@ -75,7 +75,7 @@ final class Route implements RouteInterface
                         ->withCode('%parameter%', '{' . strval($wildcard) . '}')
                         ->withCode('%match%', $wildcardMatch)
                         ->withCode('%controllerMatch%', $parameterMatch)
-                        ->withCode('%controller%', $endpoint->bind()->controller()::class)
+                        ->withCode('%controller%', $endpoint->bind()->controllerName())
                 );
             }
         }
@@ -117,12 +117,12 @@ final class Route implements RouteInterface
             return;
         }
         /** @var StringParameterInterface $parameter */
-        foreach ($this->firstEndpoint->bind()->controller()->parameters() as $name => $parameter) {
+        foreach ($this->firstEndpoint->bind()->controllerName()::getParameters() as $name => $parameter) {
             $match = $parameter->regex()->__toString();
 
             try {
                 /** @var StringParameterInterface $string */
-                $string = $endpoint->bind()->controller()->parameters()->get($name);
+                $string = $endpoint->bind()->controllerName()::getParameters()->get($name);
                 $controllerMatch = $string->regex()->__toString();
             } catch(OutOfBoundsException) {
                 $controllerMatch = '<none>';
@@ -133,8 +133,8 @@ final class Route implements RouteInterface
                         ->withCode('%parameter%', $name)
                         ->withCode('%match%', $match)
                         ->withCode('%controllerMatch%', $controllerMatch)
-                        ->withCode('%controller%', $endpoint->bind()->controller()::class)
-                        ->withCode('%firstController%', $this->firstEndpoint->bind()->controller()::class)
+                        ->withCode('%controller%', $endpoint->bind()->controllerName())
+                        ->withCode('%firstController%', $this->firstEndpoint->bind()->controllerName())
                 );
             }
         }
@@ -142,12 +142,12 @@ final class Route implements RouteInterface
 
     private function assertWildcardEndpoint(WildcardInterface $wildcard, EndpointInterface $endpoint): void
     {
-        $parameters = $endpoint->bind()->controller()->parameters();
+        $parameters = $endpoint->bind()->controllerName()::getParameters();
         if (count($parameters) === 0) {
             throw new InvalidArgumentException(
                 (new Message("Invalid route %path% binding with %controller% which doesn't accept any parameter"))
                     ->withCode('%path%', $this->path->__toString())
-                    ->withCode('%controller%', $endpoint->bind()->controller()::class)
+                    ->withCode('%controller%', $endpoint->bind()->controllerName())
                     ->withCode('%wildcard%', $wildcard->__toString())
             );
         }
@@ -157,7 +157,7 @@ final class Route implements RouteInterface
                 (new Message('Route %path% must bind to one of the known %controller% parameters: %parameters%'))
                     ->withCode('%path%', $this->path->__toString())
                     ->withCode('%wildcard%', $wildcard->__toString())
-                    ->withCode('%controller%', $endpoint->bind()->controller()::class)
+                    ->withCode('%controller%', $endpoint->bind()->controllerName())
                     ->withCode('%parameters%', implode(', ', $parameters->keys()))
             );
         }

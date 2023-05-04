@@ -21,7 +21,7 @@ use Chevere\HttpController\Interfaces\HttpControllerInterface;
  */
 interface BindInterface
 {
-    public function controller(): HttpControllerInterface;
+    public function controllerName(): string;
 
     public function view(): string;
 }

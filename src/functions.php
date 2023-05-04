@@ -16,6 +16,7 @@ namespace Chevere\Router;
 use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
+use Chevere\HttpController\HttpControllerName;
 use Chevere\HttpController\Interfaces\HttpControllerInterface;
 use function Chevere\Message\message;
 use Chevere\Message\Message;
@@ -42,20 +43,20 @@ function routes(RouteInterface ...$routes): RoutesInterface
  * @param string $path Route path.
  * @param string $name If not provided it will be same as the route path.
  * @param MiddlewaresInterface $middleware PSR HTTP server middlewares.
- * @param BindInterface|HttpControllerInterface ...$bind Binding for HTTP controllers `GET: bind(HttpController, 'view'), POST:...`.
+ * @param BindInterface|string ...$bind Binding for HTTP controllers `GET: bind(HttpController, 'view'), POST:...`.
  */
 function route(
     string $path,
     string $name = '',
     ?MiddlewaresInterface $middleware = null,
-    BindInterface|HttpControllerInterface ...$bind
+    BindInterface|string ...$bind
 ): RouteInterface {
     $name = $name === '' ? $path : $name;
     $routePath = new Path($path);
     $route = (new Route(new Path($path), $name));
     foreach ($bind as $item) {
         $controller = $item instanceof BindInterface
-            ? $item->controller()
+            ? $item->controllerName()
             : $item;
         foreach ($routePath->wildcards()->keys() as $wildcard) {
             $wildcardBracket = <<<STRING
@@ -64,12 +65,12 @@ function route(
 
             try {
                 /** @var StringParameterInterface $controllerParameter */
-                $controllerParameter = $controller->parameters()->get($wildcard);
+                $controllerParameter = $controller::getParameters()->get($wildcard);
             } catch (OutOfBoundsException) {
                 throw new WildcardNotFoundException(
                     message('Wildcard %wildcard% does not exists in controller %controller%')
                         ->withCode('%wildcard%', $wildcardBracket)
-                        ->withCode('%controller%', $controller::class)
+                        ->withCode('%controller%', $controller)
                 );
             }
             $path = str_replace(
@@ -85,7 +86,7 @@ function route(
     foreach ($bind as $method => $item) {
         $isBind = $item instanceof BindInterface;
         $controller = $isBind
-            ? $item->controller()
+            ? $item->controllerName()
             : $item;
         $httpMethod = strval($method);
         $method = EndpointInterface::KNOWN_METHODS[$method] ?? null;
@@ -93,18 +94,18 @@ function route(
             throw new MethodNotAllowedException(
                 message: (new Message('Unknown HTTP method `%provided%` provided for %controller% controller.'))
                     ->withCode('%provided%', $httpMethod)
-                    ->withCode('%controller%', $controller::class)
+                    ->withCode('%controller%', $controller)
             );
         }
-        if ($middleware !== null) {
-            $controller = $controller->withMiddlewares(
-                $controller->middlewares()->withPrepend(
-                    ...iterator_to_array(
-                        $middleware->getIterator()
-                    )
-                )
-            );
-        }
+        // if ($middleware !== null) {
+        //     $controller = $controller->withMiddlewares(
+        //         $controller->middlewares()->withPrepend(
+        //             ...iterator_to_array(
+        //                 $middleware->getIterator()
+        //             )
+        //         )
+        //     );
+        // }
         $itemView = $isBind
             ? $item->view()
             : '';
@@ -148,8 +149,11 @@ function router(RoutesInterface ...$routes): RouterInterface
  * Binds an HttpControllerInterface to a view.
  */
 function bind(
-    HttpControllerInterface $controller,
+    string $controllerName,
     string $view = ''
 ): BindInterface {
-    return new Bind($controller, $view);
+    return new Bind(
+        new HttpControllerName($controllerName),
+        $view
+    );
 }

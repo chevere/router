@@ -36,7 +36,7 @@ final class EndpointsTest extends TestCase
     public function testWithPut(): void
     {
         $method = new GetMethod();
-        $endpoint = new Endpoint($method, bind(new ArticleGetController()));
+        $endpoint = new Endpoint($method, bind(ArticleGetController::class));
         $endpoints = new Endpoints();
         $endpointsWithPut = $endpoints
             ->withPut($endpoint);

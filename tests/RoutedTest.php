@@ -22,13 +22,13 @@ final class RoutedTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $controller = new ControllerWithParameters();
+        $controller = ControllerWithParameters::class;
         $arguments = [
             'name' => 'name-value',
             'id' => 'id-value',
         ];
         $routed = new Routed(bind($controller), $arguments);
         $this->assertSame($arguments, $routed->arguments());
-        $this->assertSame($controller, $routed->bind()->controller());
+        $this->assertSame($controller, $routed->bind()->controllerName());
     }
 }

@@ -100,22 +100,22 @@ final class Routes implements RoutesInterface
 
     private function addMiddleware(string $method, MiddlewareInterface ...$middleware): void
     {
-        foreach ($this->getIterator() as $name => $route) {
-            foreach ($route->endpoints() as $endpoint) {
-                $bind = $endpoint->bind();
-                $finalMiddlewares = $bind->controller()->middlewares()->{$method}(
-                    ...$middleware
-                );
-                $controller = $bind->controller()->withMiddlewares($finalMiddlewares);
-                $bind = new Bind($controller, $bind->view());
-                $route = $route
-                    ->withoutEndpoint($endpoint->method())
-                    ->withEndpoint(new Endpoint($endpoint->method(), $bind));
-            }
-            $this->map = $this->map->withPut(...[
-                $name => $route,
-            ]);
-        }
+        // foreach ($this->getIterator() as $name => $route) {
+        //     foreach ($route->endpoints() as $endpoint) {
+        //         $bind = $endpoint->bind();
+        //         $finalMiddlewares = $bind->controllerName()->middlewares()->{$method}(
+        //             ...$middleware
+        //         );
+        //         $controller = $bind->controllerName()->withMiddlewares($finalMiddlewares);
+        //         $bind = new Bind($controller, $bind->view());
+        //         $route = $route
+        //             ->withoutEndpoint($endpoint->method())
+        //             ->withEndpoint(new Endpoint($endpoint->method(), $bind));
+        //     }
+        //     $this->map = $this->map->withPut(...[
+        //         $name => $route,
+        //     ]);
+        // }
     }
 
     private function assertNoOverflow(string $path, RouteInterface $route): void

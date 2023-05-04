@@ -24,7 +24,7 @@ final class EndpointTest extends TestCase
     public function testConstruct(): void
     {
         $method = new GetMethod();
-        $controller = new EndpointTestController();
+        $controller = EndpointTestController::class;
         $bind = bind($controller);
         $endpoint = new Endpoint($method, $bind);
         $this->assertSame($method, $endpoint->method());
@@ -32,12 +32,12 @@ final class EndpointTest extends TestCase
         $this->assertSame($method->description(), $endpoint->description());
         $parameters = [];
         /** @var StringParameterInterface $parameter */
-        foreach ($controller->parameters() as $name => $parameter) {
+        foreach ($controller::getParameters() as $name => $parameter) {
             $parameters[$name] = [
                 'name' => $name,
                 'regex' => $parameter->regex()->__toString(),
                 'description' => $parameter->description(),
-                'isRequired' => $controller->parameters()->isRequired($name),
+                'isRequired' => $controller::getParameters()->isRequired($name),
             ];
         }
     }
