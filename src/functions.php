@@ -20,7 +20,8 @@ use Chevere\HttpController\HttpControllerName;
 use Chevere\HttpController\Interfaces\HttpControllerInterface;
 use function Chevere\Message\message;
 use Chevere\Message\Message;
-use Chevere\Parameter\Interfaces\StringParameterInterface;
+use Chevere\Parameter\Interfaces\ParametersInterface;
+use Chevere\Router\Exceptions\WildcardInvalidException;
 use Chevere\Router\Exceptions\WildcardNotFoundException;
 use Chevere\Router\Interfaces\BindInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
@@ -28,6 +29,7 @@ use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
+use TypeError;
 
 /**
  * Creates Routes object for all `$routes`.
@@ -43,7 +45,7 @@ function routes(RouteInterface ...$routes): RoutesInterface
  * @param string $path Route path.
  * @param string $name If not provided it will be same as the route path.
  * @param MiddlewaresInterface $middleware PSR HTTP server middlewares.
- * @param BindInterface|string ...$bind Binding for HTTP controllers `GET: bind(HttpController, 'view'), POST:...`.
+ * @param BindInterface|string ...$bind Binding for HTTP controllers `GET: bind(HttpController::class, 'view'), POST: ClassName, PUT: ...`.
  */
 function route(
     string $path,
@@ -55,28 +57,33 @@ function route(
     $routePath = new Path($path);
     $route = (new Route(new Path($path), $name));
     foreach ($bind as $item) {
-        $controller = $item instanceof BindInterface
-            ? $item->controllerName()
-            : $item;
+        $controllerName = controllerName($item);
         foreach ($routePath->wildcards()->keys() as $wildcard) {
             $wildcardBracket = <<<STRING
             {{$wildcard}}
             STRING;
 
             try {
-                /** @var StringParameterInterface $controllerParameter */
-                $controllerParameter = $controller::getParameters()->get($wildcard);
+                /** @var ParametersInterface $parameters */
+                $parameters = $controllerName::getParameters();
+                $stringParameter = $parameters->getString($wildcard);
             } catch (OutOfBoundsException) {
                 throw new WildcardNotFoundException(
                     message('Wildcard %wildcard% does not exists in controller %controller%')
                         ->withCode('%wildcard%', $wildcardBracket)
-                        ->withCode('%controller%', $controller)
+                        ->withCode('%controller%', $controllerName)
+                );
+            } catch(TypeError) {
+                throw new WildcardInvalidException(
+                    message('Wildcard %wildcard% is not a string parameter in controller %controller%')
+                        ->withCode('%wildcard%', $wildcardBracket)
+                        ->withCode('%controller%', $controllerName)
                 );
             }
             $path = str_replace(
                 $wildcardBracket,
                 <<<STRING
-                {{$wildcard}:{$controllerParameter->regex()->noDelimitersNoAnchors()}}
+                {{$wildcard}:{$stringParameter->regex()->noDelimitersNoAnchors()}}
                 STRING,
                 $path
             );
@@ -84,17 +91,14 @@ function route(
     }
     $route = (new Route(new Path($path), $name));
     foreach ($bind as $method => $item) {
-        $isBind = $item instanceof BindInterface;
-        $controller = $isBind
-            ? $item->controllerName()
-            : $item;
+        $controllerName = controllerName($item);
         $httpMethod = strval($method);
         $method = EndpointInterface::KNOWN_METHODS[$method] ?? null;
         if ($method === null) {
             throw new MethodNotAllowedException(
                 message: (new Message('Unknown HTTP method `%provided%` provided for %controller% controller.'))
                     ->withCode('%provided%', $httpMethod)
-                    ->withCode('%controller%', $controller)
+                    ->withCode('%controller%', $controllerName)
             );
         }
         // if ($middleware !== null) {
@@ -106,6 +110,7 @@ function route(
         //         )
         //     );
         // }
+        $isBind = $item instanceof BindInterface;
         $itemView = $isBind
             ? $item->view()
             : '';
@@ -119,7 +124,7 @@ function route(
         $route = $route->withEndpoint(
             new Endpoint(
                 $method,
-                bind($controller, $itemView)
+                bind($controllerName, $itemView)
             )
         );
     }
@@ -156,4 +161,16 @@ function bind(
         new HttpControllerName($controllerName),
         $view
     );
+}
+
+/**
+ * @return class-string HttpControllerInterface
+ */
+function controllerName(BindInterface|string $item): string
+{
+    if (is_string($item)) {
+        $item = bind($item);
+    }
+
+    return $item->controllerName();
 }
