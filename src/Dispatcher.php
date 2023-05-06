@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
-use Chevere\Http\Exceptions\HttpMethodNotAllowedException;
+use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Message\Message;
 use Chevere\Router\Exceptions\NotFoundException;
 use Chevere\Router\Interfaces\BindInterface;
@@ -52,7 +52,7 @@ final class Dispatcher implements DispatcherInterface
                         ->withCode('%uri%', $uri)
                 ),
             GroupCountBased::METHOD_NOT_ALLOWED =>
-                throw new HttpMethodNotAllowedException(
+                throw new MethodNotAllowedException(
                     (new Message('Method %method% is not in the list of allowed methods: %allowed%'))
                         ->withCode('%method%', $httpMethod)
                         ->withCode('%allowed%', implode(', ', $allowed))

@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Router\Interfaces\IdentifierInterface;
-use Chevere\String\AssertString;
+use Chevere\String\StringAssert;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 
 final class Identifier implements IdentifierInterface
@@ -26,9 +26,9 @@ final class Identifier implements IdentifierInterface
         private string $group,
         private string $id
     ) {
-        (new AssertString($group))
+        (new StringAssert($group))
             ->notCtypeSpace();
-        (new AssertString($id))
+        (new StringAssert($id))
             ->notEmpty()
             ->notCtypeSpace();
     }

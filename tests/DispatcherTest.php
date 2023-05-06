@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
-use Chevere\Http\Exceptions\HttpMethodNotAllowedException;
+use Chevere\Http\Exceptions\MethodNotAllowedException;
 use function Chevere\Router\bind;
 use Chevere\Router\Dispatcher;
 use Chevere\Router\Exceptions\NotFoundException;
@@ -47,7 +47,7 @@ final class DispatcherTest extends TestCase
         $routeCollector = $this->getRouteCollector();
         $routeCollector->addRoute('GET', '/', 'test');
         $routeDispatcher = new Dispatcher($routeCollector);
-        $this->expectException(HttpMethodNotAllowedException::class);
+        $this->expectException(MethodNotAllowedException::class);
         $routeDispatcher->dispatch('Asdf', '/');
     }
 
