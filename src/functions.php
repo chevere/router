@@ -15,7 +15,9 @@ namespace Chevere\Router;
 
 use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Http\Interfaces\MethodInterface;
+use Chevere\Http\Interfaces\MiddlewareInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
+use function Chevere\Http\middlewares;
 use Chevere\HttpController\HttpControllerName;
 use Chevere\HttpController\Interfaces\HttpControllerNameInterface;
 use function Chevere\Message\message;
@@ -44,13 +46,13 @@ function routes(RouteInterface ...$routes): RoutesInterface
  *
  * @param string $path Route path.
  * @param string $name If not provided it will be same as the route path.
- * @param MiddlewaresInterface $middleware HTTP server middlewares.
+ * @param MiddlewaresInterface|class-string<MiddlewareInterface> $middleware HTTP server middlewares.
  * @param BindInterface|string ...$bind Binding for HTTP controllers `GET: bind(HttpController::class, 'view'), POST: ClassName, PUT: ...`.
  */
 function route(
     string $path,
     string $name = '',
-    MiddlewaresInterface $middleware = null,
+    MiddlewaresInterface|string $middleware = null,
     BindInterface|string ...$bind
 ): RouteInterface {
     $name = $name === '' ? $path : $name;
@@ -118,15 +120,18 @@ function route(
                 new Bind($controllerName, $itemView)
             )
         );
-        if ($middleware !== null) {
-            $route = $route->withMiddlewares(
-                $route->middlewares()->withPrepend(
-                    ...iterator_to_array(
-                        $middleware->getIterator()
-                    )
+        $middleware = match (true) {
+            is_string($middleware) => middlewares($middleware),
+            $middleware === null => middlewares(),
+            default => $middleware,
+        };
+        $route = $route->withMiddlewares(
+            $route->middlewares()->withPrepend(
+                ...iterator_to_array(
+                    $middleware->getIterator()
                 )
-            );
-        }
+            )
+        );
     }
 
     return $route;
