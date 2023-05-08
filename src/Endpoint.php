@@ -29,7 +29,7 @@ final class Endpoint implements EndpointInterface, DescribedInterface
         private MethodInterface $method,
         private BindInterface $bind
     ) {
-        $this->description = $bind->controllerName()::description();
+        $this->description = $bind->controllerName()->__toString()::description();
         if ($this->description === '') {
             $this->description = $method->description();
         }

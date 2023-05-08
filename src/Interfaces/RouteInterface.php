@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Router\Interfaces;
 
 use Chevere\Http\Interfaces\MethodInterface;
+use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\Router\Exceptions\EndpointConflictException;
 use Chevere\Router\Exceptions\WildcardConflictException;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
@@ -60,4 +61,8 @@ interface RouteInterface
      * Provides access to the endpoints instance.
      */
     public function endpoints(): EndpointsInterface;
+
+    public function withMiddlewares(MiddlewaresInterface $middlewares): self;
+
+    public function middlewares(): MiddlewaresInterface;
 }

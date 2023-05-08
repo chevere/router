@@ -59,7 +59,7 @@ final class FunctionsTest extends TestCase
         $this->assertCount(1, $route->endpoints());
         $this->assertSame(
             $controller,
-            $route->endpoints()->get($method)->bind()->controllerName()
+            $route->endpoints()->get($method)->bind()->controllerName()->__toString()
         );
     }
 

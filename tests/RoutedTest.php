@@ -29,6 +29,6 @@ final class RoutedTest extends TestCase
         ];
         $routed = new Routed(bind($controller), $arguments);
         $this->assertSame($arguments, $routed->arguments());
-        $this->assertSame($controller, $routed->bind()->controllerName());
+        $this->assertSame($controller, $routed->bind()->controllerName()->__toString());
     }
 }

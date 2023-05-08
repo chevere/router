@@ -14,7 +14,9 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\Http\Methods\GetMethod;
+use Chevere\Http\MiddlewareName;
 use Chevere\Http\Middlewares;
+use Chevere\HttpController\HttpControllerName;
 use Chevere\Router\Bind;
 use Chevere\Router\Endpoint;
 use Chevere\Router\Path;
@@ -72,50 +74,46 @@ final class RoutesTest extends TestCase
         $foo->withRoutesFrom($foo);
     }
 
-    // public function testWithMiddleware(): void
-    // {
-    //     $name = 'test';
-    //     $route = (new Route(
-    //         name: $name,
-    //         path: new Path('/some-path')
-    //     ));
-    //     $foo = new MiddlewareOne();
-    //     $bar = new MiddlewareTwo();
-    //     $baz = new MiddlewareThree();
-    //     $route = $route->withEndpoint(
-    //         new Endpoint(
-    //             new GetMethod(),
-    //             new Bind(
-    //                 (new ControllerNoParameters())->withMiddlewares(
-    //                     new Middlewares($foo)
-    //                 ),
-    //                 'view'
-    //             )
-    //         )
-    //     );
-
-    //     $routes = (new Routes())->withAdded($route);
-    //     $routesWith = $routes
-    //         ->withAppendMiddleware($bar, $baz);
-    //     $this->assertNotSame($routes, $routesWith);
-    //     $middlewares = $routesWith->get('/some-path')->endpoints()->get('GET')
-    //         ->bind()->controllerName()->middlewares();
-    //     $this->assertSame([0, 1, 2], $middlewares->keys());
-    //     $this->assertSame(
-    //         [$foo, $bar, $baz],
-    //         iterator_to_array($middlewares->getIterator())
-    //     );
-    //     $routesWith = $routes
-    //         ->withPrependMiddleware($bar, $baz);
-    //     $this->assertNotSame($routes, $routesWith);
-    //     $middlewares = $routesWith->get('/some-path')->endpoints()->get('GET')
-    //         ->bind()->controllerName()->middlewares();
-    //     $this->assertSame([0, 1, 2], $middlewares->keys());
-    //     $this->assertSame(
-    //         [$bar, $baz, $foo],
-    //         iterator_to_array($middlewares->getIterator())
-    //     );
-    // }
+    public function testWithMiddlewares(): void
+    {
+        $name = 'test';
+        $route = (new Route(
+            name: $name,
+            path: new Path('/some-path')
+        ));
+        $one = new MiddlewareName(MiddlewareOne::class);
+        $two = new MiddlewareName(MiddlewareTwo::class);
+        $three = new MiddlewareName(MiddlewareThree::class);
+        $endpoint = new Endpoint(
+            new GetMethod(),
+            new Bind(
+                new HttpControllerName(ControllerNoParameters::class),
+                'view'
+            )
+        );
+        $middlewares = new Middlewares($one);
+        $route = $route
+            ->withMiddlewares($middlewares)
+            ->withEndpoint($endpoint);
+        $routes = (new Routes())->withAdded($route);
+        $routesWith = $routes->withAppendMiddleware($two, $three);
+        $this->assertNotSame($routes, $routesWith);
+        $middlewares = $routesWith->get('/some-path')->middlewares();
+        $this->assertSame([0, 1, 2], $middlewares->keys());
+        $this->assertSame(
+            [$one, $two, $three],
+            iterator_to_array($middlewares->getIterator())
+        );
+        $routesWith = $routes
+            ->withPrependMiddleware($two, $three);
+        $this->assertNotSame($routes, $routesWith);
+        $middlewares = $routesWith->get('/some-path')->middlewares();
+        $this->assertSame([0, 1, 2], $middlewares->keys());
+        $this->assertSame(
+            [$two, $three, $one],
+            iterator_to_array($middlewares->getIterator())
+        );
+    }
 
     public function testWithAddedNameCollision(): void
     {

@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Http\Interfaces\MethodInterface;
+use Chevere\Http\Interfaces\MiddlewaresInterface;
+use Chevere\Http\Middlewares;
 use Chevere\Message\Message;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
 use Chevere\Router\Exceptions\EndpointConflictException;
@@ -33,11 +35,14 @@ final class Route implements RouteInterface
 
     private EndpointsInterface $endpoints;
 
+    private MiddlewaresInterface $middlewares;
+
     public function __construct(
         private PathInterface $path,
         private string $name,
     ) {
         $this->endpoints = new Endpoints();
+        $this->middlewares = new Middlewares();
     }
 
     public function name(): string
@@ -61,7 +66,7 @@ final class Route implements RouteInterface
         foreach ($new->path->wildcards() as $wildcard) {
             $new->assertWildcardEndpoint($wildcard, $endpoint);
             /** @var StringParameterInterface $parameter */
-            $parameter = $endpoint->bind()->controllerName()::getParameters()
+            $parameter = $endpoint->bind()->controllerName()->__toString()::getParameters()
                 ->get(strval($wildcard));
             $parameterMatch = $parameter->regex()->noDelimitersNoAnchors();
             $wildcardMatch = strval($wildcard->match());
@@ -75,7 +80,7 @@ final class Route implements RouteInterface
                         ->withCode('%parameter%', '{' . strval($wildcard) . '}')
                         ->withCode('%match%', $wildcardMatch)
                         ->withCode('%controllerMatch%', $parameterMatch)
-                        ->withCode('%controller%', $endpoint->bind()->controllerName())
+                        ->withCode('%controller%', $endpoint->bind()->controllerName()->__toString())
                 );
             }
         }
@@ -100,6 +105,19 @@ final class Route implements RouteInterface
         return $this->endpoints;
     }
 
+    public function withMiddlewares(MiddlewaresInterface $middlewares): RouteInterface
+    {
+        $new = clone $this;
+        $new->middlewares = $middlewares;
+
+        return $new;
+    }
+
+    public function middlewares(): MiddlewaresInterface
+    {
+        return $this->middlewares;
+    }
+
     private function assertUnique(EndpointInterface $endpoint): void
     {
         $key = $endpoint->method()->name();
@@ -117,12 +135,12 @@ final class Route implements RouteInterface
             return;
         }
         /** @var StringParameterInterface $parameter */
-        foreach ($this->firstEndpoint->bind()->controllerName()::getParameters() as $name => $parameter) {
+        foreach ($this->firstEndpoint->bind()->controllerName()->__toString()::getParameters() as $name => $parameter) {
             $match = $parameter->regex()->__toString();
 
             try {
                 /** @var StringParameterInterface $string */
-                $string = $endpoint->bind()->controllerName()::getParameters()->get($name);
+                $string = $endpoint->bind()->controllerName()->__toString()::getParameters()->get($name);
                 $controllerMatch = $string->regex()->__toString();
             } catch(OutOfBoundsException) {
                 $controllerMatch = '<none>';
@@ -133,8 +151,8 @@ final class Route implements RouteInterface
                         ->withCode('%parameter%', $name)
                         ->withCode('%match%', $match)
                         ->withCode('%controllerMatch%', $controllerMatch)
-                        ->withCode('%controller%', $endpoint->bind()->controllerName())
-                        ->withCode('%firstController%', $this->firstEndpoint->bind()->controllerName())
+                        ->withCode('%controller%', $endpoint->bind()->controllerName()->__toString())
+                        ->withCode('%firstController%', $this->firstEndpoint->bind()->controllerName()->__toString())
                 );
             }
         }
@@ -142,12 +160,12 @@ final class Route implements RouteInterface
 
     private function assertWildcardEndpoint(WildcardInterface $wildcard, EndpointInterface $endpoint): void
     {
-        $parameters = $endpoint->bind()->controllerName()::getParameters();
+        $parameters = $endpoint->bind()->controllerName()->__toString()::getParameters();
         if (count($parameters) === 0) {
             throw new InvalidArgumentException(
                 (new Message("Invalid route %path% binding with %controller% which doesn't accept any parameter"))
                     ->withCode('%path%', $this->path->__toString())
-                    ->withCode('%controller%', $endpoint->bind()->controllerName())
+                    ->withCode('%controller%', $endpoint->bind()->controllerName()->__toString())
                     ->withCode('%wildcard%', $wildcard->__toString())
             );
         }
@@ -157,7 +175,7 @@ final class Route implements RouteInterface
                 (new Message('Route %path% must bind to one of the known %controller% parameters: %parameters%'))
                     ->withCode('%path%', $this->path->__toString())
                     ->withCode('%wildcard%', $wildcard->__toString())
-                    ->withCode('%controller%', $endpoint->bind()->controllerName())
+                    ->withCode('%controller%', $endpoint->bind()->controllerName()->__toString())
                     ->withCode('%parameters%', implode(', ', $parameters->keys()))
             );
         }

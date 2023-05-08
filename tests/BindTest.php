@@ -28,7 +28,7 @@ final class BindTest extends TestCase
             new HttpControllerName($controller),
             $view
         );
-        $this->assertSame($controller, $bind->controllerName());
+        $this->assertSame($controller, $bind->controllerName()->__toString());
         $this->assertSame($view, $bind->view());
     }
 }

@@ -13,18 +13,15 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Chevere\HttpController\Interfaces\HttpControllerInterface;
+use Chevere\HttpController\Interfaces\HttpControllerNameInterface;
 
 /**
- * Describes the component in charge of binding a HttpControllerInterface
+ * Describes the component in charge of binding a HttpControllerNameInterface
  * to a view.
  */
 interface BindInterface
 {
-    /**
-     * @return class-string HttpControllerInterface
-     */
-    public function controllerName(): string;
+    public function controllerName(): HttpControllerNameInterface;
 
     public function view(): string;
 }

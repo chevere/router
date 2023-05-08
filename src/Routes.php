@@ -16,13 +16,13 @@ namespace Chevere\Router;
 use Chevere\DataStructure\Interfaces\MapInterface;
 use Chevere\DataStructure\Map;
 use Chevere\DataStructure\Traits\MapTrait;
+use Chevere\Http\Interfaces\MiddlewareNameInterface;
 use Chevere\Message\Message;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use Chevere\Throwable\Errors\TypeError;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
-use Psr\Http\Server\MiddlewareInterface;
 
 final class Routes implements RoutesInterface
 {
@@ -67,7 +67,7 @@ final class Routes implements RoutesInterface
         return $new;
     }
 
-    public function withPrependMiddleware(MiddlewareInterface ...$middleware): RoutesInterface
+    public function withPrependMiddleware(MiddlewareNameInterface ...$middleware): RoutesInterface
     {
         $new = clone $this;
         $new->addMiddleware('withPrepend', ...$middleware);
@@ -75,7 +75,7 @@ final class Routes implements RoutesInterface
         return $new;
     }
 
-    public function withAppendMiddleware(MiddlewareInterface ...$middleware): RoutesInterface
+    public function withAppendMiddleware(MiddlewareNameInterface ...$middleware): RoutesInterface
     {
         $new = clone $this;
         $new->addMiddleware('withAppend', ...$middleware);
@@ -98,24 +98,25 @@ final class Routes implements RoutesInterface
         return $this->map->get($path);
     }
 
-    private function addMiddleware(string $method, MiddlewareInterface ...$middleware): void
+    private function addMiddleware(string $method, MiddlewareNameInterface ...$middleware): void
     {
-        // foreach ($this->getIterator() as $name => $route) {
-        //     foreach ($route->endpoints() as $endpoint) {
-        //         $bind = $endpoint->bind();
-        //         $finalMiddlewares = $bind->controllerName()->middlewares()->{$method}(
-        //             ...$middleware
-        //         );
-        //         $controller = $bind->controllerName()->withMiddlewares($finalMiddlewares);
-        //         $bind = new Bind($controller, $bind->view());
-        //         $route = $route
-        //             ->withoutEndpoint($endpoint->method())
-        //             ->withEndpoint(new Endpoint($endpoint->method(), $bind));
-        //     }
-        //     $this->map = $this->map->withPut(...[
-        //         $name => $route,
-        //     ]);
-        // }
+        foreach ($this->getIterator() as $name => $route) {
+            foreach ($route->endpoints() as $endpoint) {
+                $bind = $endpoint->bind();
+                $finalMiddlewares = $route->middlewares()->{$method}(
+                    ...$middleware
+                );
+                $controllerName = $bind->controllerName();
+                $bind = new Bind($controllerName, $bind->view());
+                $route = $route
+                    ->withoutEndpoint($endpoint->method())
+                    ->withEndpoint(new Endpoint($endpoint->method(), $bind))
+                    ->withMiddlewares($finalMiddlewares);
+            }
+            $this->map = $this->map->withPut(...[
+                $name => $route,
+            ]);
+        }
     }
 
     private function assertNoOverflow(string $path, RouteInterface $route): void
