@@ -14,8 +14,6 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Http\Interfaces\MethodInterface;
-use Chevere\Http\Interfaces\MiddlewaresInterface;
-use Chevere\Http\Middlewares;
 use Chevere\Message\Message;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
 use Chevere\Router\Exceptions\EndpointConflictException;
@@ -35,14 +33,11 @@ final class Route implements RouteInterface
 
     private EndpointsInterface $endpoints;
 
-    private MiddlewaresInterface $middlewares;
-
     public function __construct(
         private PathInterface $path,
         private string $name,
     ) {
         $this->endpoints = new Endpoints();
-        $this->middlewares = new Middlewares();
     }
 
     public function name(): string
@@ -103,19 +98,6 @@ final class Route implements RouteInterface
     public function endpoints(): EndpointsInterface
     {
         return $this->endpoints;
-    }
-
-    public function withMiddlewares(MiddlewaresInterface $middlewares): RouteInterface
-    {
-        $new = clone $this;
-        $new->middlewares = $middlewares;
-
-        return $new;
-    }
-
-    public function middlewares(): MiddlewaresInterface
-    {
-        return $this->middlewares;
     }
 
     private function assertUnique(EndpointInterface $endpoint): void

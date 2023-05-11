@@ -114,24 +114,21 @@ function route(
         };
         /** @var MethodInterface $method */
         $method = new $method();
-        $route = $route->withEndpoint(
-            new Endpoint(
-                $method,
-                bind($controllerName->__toString(), $itemView)
-            )
-        );
         $middleware = match (true) {
             is_string($middleware) => middlewares($middleware),
             $middleware === null => middlewares(),
             default => $middleware,
         };
-        $route = $route->withMiddlewares(
-            $route->middlewares()->withPrepend(
+        if ($item instanceof BindInterface) {
+            $middleware = $middleware->withAppend(
                 ...iterator_to_array(
-                    $middleware->getIterator()
+                    $item->middlewares()
                 )
-            )
-        );
+            );
+        }
+        $bind = bind($controllerName->__toString(), $itemView, $middleware);
+        $endpoint = new Endpoint($method, $bind);
+        $route = $route->withEndpoint($endpoint);
     }
 
     return $route;
