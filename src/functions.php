@@ -159,17 +159,17 @@ function router(RoutesInterface ...$routes): RouterInterface
  */
 function bind(
     string $controller,
-    string|MiddlewaresInterface $middlewares = null,
+    string|MiddlewaresInterface $middleware = null,
     string $view = '',
 ): BindInterface {
     $controller = new HttpControllerName($controller);
-    $middlewares = match (true) {
-        is_string($middlewares) => middlewares($middlewares),
-        $middlewares === null => middlewares(),
-        default => $middlewares,
+    $middleware = match (true) {
+        is_string($middleware) => middlewares($middleware),
+        $middleware === null => middlewares(),
+        default => $middleware,
     };
 
-    return new Bind($controller, $middlewares, $view);
+    return new Bind($controller, $middleware, $view);
 }
 
 function controllerName(BindInterface|string $item): HttpControllerNameInterface
