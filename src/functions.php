@@ -52,8 +52,8 @@ function routes(RouteInterface ...$routes): RoutesInterface
 function route(
     string $path,
     string $name = '',
-    MiddlewaresInterface|string $middleware = null,
-    BindInterface|string ...$bind
+    string|MiddlewaresInterface $middleware = null,
+    string|BindInterface ...$bind
 ): RouteInterface {
     $name = $name === '' ? $path : $name;
     $routePath = new Path($path);
@@ -117,7 +117,7 @@ function route(
         $route = $route->withEndpoint(
             new Endpoint(
                 $method,
-                new Bind($controllerName, $itemView)
+                bind($controllerName->__toString(), $itemView)
             )
         );
         $middleware = match (true) {
@@ -144,9 +144,10 @@ function router(RoutesInterface ...$routes): RouterInterface
 {
     $router = new Router();
     foreach ($routes as $group => $items) {
-        $group = ! is_numeric($group)
-            ? strval($group)
-            : '';
+        $group = match (true) {
+            is_numeric($group) => '',
+            default => strval($group)
+        };
         foreach ($items as $route) {
             $router = $router->withAddedRoute($route, $group);
         }
@@ -156,16 +157,21 @@ function router(RoutesInterface ...$routes): RouterInterface
 }
 
 /**
- * @param string $name HTTP controller name
+ * @param string $httpController HTTP controller name
  */
 function bind(
-    string $name,
-    string $view = ''
+    string $httpController,
+    string $view = '',
+    string|MiddlewaresInterface $middlewares = null
 ): BindInterface {
-    return new Bind(
-        new HttpControllerName($name),
-        $view
-    );
+    $controller = new HttpControllerName($httpController);
+    $middlewares = match (true) {
+        is_string($middlewares) => middlewares($middlewares),
+        $middlewares === null => middlewares(),
+        default => $middlewares,
+    };
+
+    return new Bind($controller, $view, $middlewares);
 }
 
 function controllerName(BindInterface|string $item): HttpControllerNameInterface

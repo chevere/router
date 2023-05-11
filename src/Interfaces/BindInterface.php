@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
+use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\HttpController\Interfaces\HttpControllerNameInterface;
 
 /**
@@ -24,4 +25,8 @@ interface BindInterface
     public function controllerName(): HttpControllerNameInterface;
 
     public function view(): string;
+
+    public function middlewares(): MiddlewaresInterface;
+
+    public function withMiddlewares(MiddlewaresInterface $middlewares): self;
 }

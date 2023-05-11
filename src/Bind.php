@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
+use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\HttpController\Interfaces\HttpControllerNameInterface;
 use Chevere\Router\Interfaces\BindInterface;
 
@@ -20,7 +21,8 @@ final class Bind implements BindInterface
 {
     public function __construct(
         private HttpControllerNameInterface $controllerName,
-        private string $view = ''
+        private string $view,
+        private MiddlewaresInterface $middlewares
     ) {
     }
 
@@ -32,5 +34,18 @@ final class Bind implements BindInterface
     public function view(): string
     {
         return $this->view;
+    }
+
+    public function middlewares(): MiddlewaresInterface
+    {
+        return $this->middlewares;
+    }
+
+    public function withMiddlewares(MiddlewaresInterface $middlewares): BindInterface
+    {
+        $new = clone $this;
+        $new->middlewares = $middlewares;
+
+        return $new;
     }
 }

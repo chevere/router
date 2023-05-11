@@ -16,6 +16,7 @@ namespace Chevere\Tests;
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Http\MiddlewareName;
 use Chevere\Http\Middlewares;
+use function Chevere\Http\middlewares;
 use Chevere\HttpController\HttpControllerName;
 use Chevere\Router\Bind;
 use Chevere\Router\Endpoint;
@@ -84,12 +85,10 @@ final class RoutesTest extends TestCase
         $one = new MiddlewareName(MiddlewareOne::class);
         $two = new MiddlewareName(MiddlewareTwo::class);
         $three = new MiddlewareName(MiddlewareThree::class);
+        $controllerName = new HttpControllerName(ControllerNoParameters::class);
         $endpoint = new Endpoint(
             new GetMethod(),
-            new Bind(
-                new HttpControllerName(ControllerNoParameters::class),
-                'view'
-            )
+            new Bind($controllerName, 'view', middlewares())
         );
         $middlewares = new Middlewares($one);
         $route = $route

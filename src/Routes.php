@@ -107,7 +107,7 @@ final class Routes implements RoutesInterface
                     ...$middleware
                 );
                 $controllerName = $bind->controllerName();
-                $bind = new Bind($controllerName, $bind->view());
+                $bind = new Bind($controllerName, $bind->view(), $finalMiddlewares);
                 $route = $route
                     ->withoutEndpoint($endpoint->method())
                     ->withEndpoint(new Endpoint($endpoint->method(), $bind))
