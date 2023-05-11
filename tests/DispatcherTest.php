@@ -35,7 +35,7 @@ final class DispatcherTest extends TestCase
     public function testFound(): void
     {
         $routeCollector = $this->getRouteCollector();
-        $bind = bind(ControllerWithParameters::class, 'view');
+        $bind = bind(ControllerWithParameters::class);
         $routeCollector->addRoute('GET', '/', $bind);
         $routeDispatcher = new Dispatcher($routeCollector);
         $bindDispatch = $routeDispatcher->dispatch('GET', '/')->bind();

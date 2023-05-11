@@ -19,6 +19,7 @@ use Chevere\Http\Interfaces\MiddlewareInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
 use function Chevere\Http\middlewares;
 use Chevere\HttpController\HttpControllerName;
+use Chevere\HttpController\Interfaces\HttpControllerInterface;
 use Chevere\HttpController\Interfaces\HttpControllerNameInterface;
 use function Chevere\Message\message;
 use Chevere\Message\Message;
@@ -126,7 +127,7 @@ function route(
                 )
             );
         }
-        $bind = bind($controllerName->__toString(), $itemView, $middleware);
+        $bind = bind($controllerName->__toString(), $middleware, $itemView);
         $endpoint = new Endpoint($method, $bind);
         $route = $route->withEndpoint($endpoint);
     }
@@ -154,21 +155,21 @@ function router(RoutesInterface ...$routes): RouterInterface
 }
 
 /**
- * @param string $httpController HTTP controller name
+ * @param string $controller HttpControllerInterface HTTP controller name
  */
 function bind(
-    string $httpController,
+    string $controller,
+    string|MiddlewaresInterface $middlewares = null,
     string $view = '',
-    string|MiddlewaresInterface $middlewares = null
 ): BindInterface {
-    $controller = new HttpControllerName($httpController);
+    $controller = new HttpControllerName($controller);
     $middlewares = match (true) {
         is_string($middlewares) => middlewares($middlewares),
         $middlewares === null => middlewares(),
         default => $middlewares,
     };
 
-    return new Bind($controller, $view, $middlewares);
+    return new Bind($controller, $middlewares, $view);
 }
 
 function controllerName(BindInterface|string $item): HttpControllerNameInterface

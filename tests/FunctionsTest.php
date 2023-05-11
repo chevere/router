@@ -97,7 +97,7 @@ final class FunctionsTest extends TestCase
             ],
             [
                 [
-                    'GET' => bind($controller, 'test'),
+                    'GET' => bind(controller: $controller, view: 'test'),
                 ],
                 'test/GET',
             ],

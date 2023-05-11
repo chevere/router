@@ -21,8 +21,8 @@ final class Bind implements BindInterface
 {
     public function __construct(
         private HttpControllerNameInterface $controllerName,
+        private MiddlewaresInterface $middlewares,
         private string $view,
-        private MiddlewaresInterface $middlewares
     ) {
     }
 
