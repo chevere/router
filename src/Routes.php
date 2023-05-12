@@ -102,14 +102,14 @@ final class Routes implements RoutesInterface
     {
         foreach ($this->getIterator() as $name => $route) {
             foreach ($route->endpoints() as $endpoint) {
-                $bind = $endpoint->bind();
-                $finalMiddlewares = $bind->middlewares()->{$method}(
+                $finalMiddlewares = $endpoint->bind()->middlewares()->{$method}(
                     ...$middleware
                 );
-                $bind = $bind->withMiddlewares($finalMiddlewares);
+                $bind = $endpoint->bind()->withMiddlewares($finalMiddlewares);
+                $finalEndpoint = new Endpoint($endpoint->method(), $bind);
                 $route = $route
                     ->withoutEndpoint($endpoint->method())
-                    ->withEndpoint(new Endpoint($endpoint->method(), $bind));
+                    ->withEndpoint($finalEndpoint);
             }
             $this->map = $this->map->withPut(...[
                 $name => $route,
