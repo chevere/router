@@ -30,20 +30,20 @@ interface RoutesInterface extends MappedInterface
     public const EXCEPTION_CODE_TAKEN_PATH = 100;
 
     /**
+     * Return an instance with the specified `$route` added.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the specified `$routes` added.
+     */
+    public function withRoute(RouteInterface ...$route): self;
+
+    /**
      * Return an instance with the specified `$routes` added.
      *
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified `$routes` added.
      */
-    public function withAdded(RouteInterface ...$route): self;
-
-    /**
-     * Return an instance with the specified `$routes` from another instance added.
-     *
-     * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified `$routes` from another instance added.
-     */
-    public function withRoutesFrom(self ...$routes): self;
+    public function withRoutes(self ...$routes): self;
 
     /**
      * Return an instance with the specified `$middleware` prepended to each route.

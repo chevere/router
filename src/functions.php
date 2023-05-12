@@ -39,7 +39,7 @@ use TypeError;
  */
 function routes(RouteInterface ...$routes): RoutesInterface
 {
-    return (new Routes())->withAdded(...$routes);
+    return (new Routes())->withRoute(...$routes);
 }
 
 /**

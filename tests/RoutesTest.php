@@ -41,7 +41,7 @@ final class RoutesTest extends TestCase
         ));
         $key = $route->path()->regex()->noDelimiters();
         $routes = new Routes();
-        $routesWithAdded = $routes->withAdded($route);
+        $routesWithAdded = $routes->withRoute($route);
         $this->assertNotSame($routes, $routesWithAdded);
         $this->assertTrue($routesWithAdded->has($key));
         $this->assertSame($route, $routesWithAdded->get($key));
@@ -59,19 +59,19 @@ final class RoutesTest extends TestCase
             new Path('/test-2'),
             'test-2'
         ));
-        $foo = (new Routes())->withAdded($routeFoo);
-        $bar = (new Routes())->withAdded($routeBar);
-        $fooWithEmpty = $foo->withRoutesFrom();
+        $foo = (new Routes())->withRoute($routeFoo);
+        $bar = (new Routes())->withRoute($routeBar);
+        $fooWithEmpty = $foo->withRoutes();
         $this->assertNotSame($foo, $fooWithEmpty);
-        $fooWithBar = $foo->withRoutesFrom($bar);
-        $barWithFoo = $bar->withRoutesFrom($foo);
+        $fooWithBar = $foo->withRoutes($bar);
+        $barWithFoo = $bar->withRoutes($foo);
         $this->assertNotSame($foo, $fooWithBar);
         $this->assertNotSame($bar, $barWithFoo);
         $this->assertNotSame($fooWithBar, $barWithFoo);
         $this->assertSame(['/test', '/test-2'], $fooWithBar->keys());
         $this->assertSame(['/test-2', '/test'], $barWithFoo->keys());
         $this->expectException(OverflowException::class);
-        $foo->withRoutesFrom($foo);
+        $foo->withRoutes($foo);
     }
 
     public function testWithMiddlewares(): void
@@ -91,7 +91,7 @@ final class RoutesTest extends TestCase
             new Bind($controllerName, $middlewares, 'view')
         );
         $route = $route->withEndpoint($endpoint);
-        $routes = (new Routes())->withAdded($route);
+        $routes = (new Routes())->withRoute($route);
         $routesWith = $routes->withAppendMiddleware($two, $three);
         $this->assertNotSame($routes, $routesWith);
         $middlewares = $routesWith->get('/some-path')->endpoints()->get('GET')->bind()->middlewares();
@@ -117,10 +117,10 @@ final class RoutesTest extends TestCase
             name: $name,
             path: new Path('/some-path')
         );
-        $routes = (new Routes())->withAdded($route);
+        $routes = (new Routes())->withRoute($route);
         $this->expectException(OverflowException::class);
         $this->expectExceptionCode(Routes::EXCEPTION_CODE_TAKEN_NAME);
-        $routes->withAdded(
+        $routes->withRoute(
             new Route(
                 name: $name,
                 path: new Path('/some-alt-path')
@@ -135,10 +135,10 @@ final class RoutesTest extends TestCase
             name: 'test',
             path: $path
         );
-        $routes = (new Routes())->withAdded($route);
+        $routes = (new Routes())->withRoute($route);
         $this->expectException(OverflowException::class);
         $this->expectExceptionCode(Routes::EXCEPTION_CODE_TAKEN_PATH);
-        $routes->withAdded(
+        $routes->withRoute(
             new Route(
                 name: 'test-2',
                 path: $path

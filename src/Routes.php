@@ -36,7 +36,7 @@ final class Routes implements RoutesInterface
      */
     private MapInterface $names;
 
-    public function withAdded(RouteInterface ...$route): RoutesInterface
+    public function withRoute(RouteInterface ...$route): RoutesInterface
     {
         $new = clone $this;
         $new->names ??= new Map();
@@ -55,12 +55,12 @@ final class Routes implements RoutesInterface
         return $new;
     }
 
-    public function withRoutesFrom(RoutesInterface ...$routes): RoutesInterface
+    public function withRoutes(RoutesInterface ...$routes): RoutesInterface
     {
         $new = clone $this;
         foreach ($routes as $item) {
             foreach ($item as $route) {
-                $new = $new->withAdded($route);
+                $new = $new->withRoute($route);
             }
         }
 

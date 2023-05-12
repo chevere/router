@@ -43,7 +43,7 @@ final class Router implements RouterInterface
         $this->assertHasEndpoints($route);
         $new = clone $this;
         $new->index = $new->index->withAddedRoute($route, $group);
-        $new->routes = $new->routes->withAdded($route);
+        $new->routes = $new->routes->withRoute($route);
         foreach ($route->endpoints() as $endpoint) {
             $new->routeCollector->addRoute(
                 $endpoint->method()::name(),
