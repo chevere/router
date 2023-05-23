@@ -16,7 +16,7 @@ namespace Chevere\Router;
 use Chevere\DataStructure\Interfaces\MapInterface;
 use Chevere\DataStructure\Map;
 use Chevere\DataStructure\Traits\MapTrait;
-use Chevere\Http\Interfaces\MiddlewareNameInterface;
+use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\Message\Message;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
@@ -67,18 +67,18 @@ final class Routes implements RoutesInterface
         return $new;
     }
 
-    public function withPrependMiddleware(MiddlewareNameInterface ...$middleware): RoutesInterface
+    public function withPrependMiddleware(MiddlewaresInterface $middleware): RoutesInterface
     {
         $new = clone $this;
-        $new->addMiddleware('withPrepend', ...$middleware);
+        $new->addMiddleware('withPrepend', $middleware);
 
         return $new;
     }
 
-    public function withAppendMiddleware(MiddlewareNameInterface ...$middleware): RoutesInterface
+    public function withAppendMiddleware(MiddlewaresInterface $middleware): RoutesInterface
     {
         $new = clone $this;
-        $new->addMiddleware('withAppend', ...$middleware);
+        $new->addMiddleware('withAppend', $middleware);
 
         return $new;
     }
@@ -98,12 +98,12 @@ final class Routes implements RoutesInterface
         return $this->map->get($path);
     }
 
-    private function addMiddleware(string $method, MiddlewareNameInterface ...$middleware): void
+    private function addMiddleware(string $method, MiddlewaresInterface $middleware): void
     {
         foreach ($this->getIterator() as $name => $route) {
             foreach ($route->endpoints() as $endpoint) {
                 $finalMiddlewares = $endpoint->bind()->middlewares()->{$method}(
-                    ...$middleware
+                    ...$middleware->getIterator()
                 );
                 $bind = $endpoint->bind()->withMiddlewares($finalMiddlewares);
                 $finalEndpoint = new Endpoint($endpoint->method(), $bind);

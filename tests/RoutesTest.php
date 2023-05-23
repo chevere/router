@@ -16,6 +16,7 @@ namespace Chevere\Tests;
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Http\MiddlewareName;
 use Chevere\Http\Middlewares;
+use function Chevere\Http\middlewares;
 use Chevere\HttpController\HttpControllerName;
 use Chevere\Router\Bind;
 use Chevere\Router\Endpoint;
@@ -92,21 +93,25 @@ final class RoutesTest extends TestCase
         );
         $route = $route->withEndpoint($endpoint);
         $routes = (new Routes())->withRoute($route);
-        $routesWith = $routes->withAppendMiddleware($two, $three);
-        $this->assertNotSame($routes, $routesWith);
-        $middlewares = $routesWith->get('/some-path')->endpoints()->get('GET')->bind()->middlewares();
-        $this->assertSame([0, 1, 2], $middlewares->keys());
-        $this->assertSame(
-            [$one, $two, $three],
-            iterator_to_array($middlewares->getIterator())
+        $routesWith = $routes->withAppendMiddleware(
+            middlewares(MiddlewareTwo::class, MiddlewareThree::class)
         );
-        $routesWith = $routes->withPrependMiddleware($two, $three);
         $this->assertNotSame($routes, $routesWith);
         $middlewares = $routesWith->get('/some-path')->endpoints()->get('GET')->bind()->middlewares();
         $this->assertSame([0, 1, 2], $middlewares->keys());
-        $this->assertSame(
+        $this->assertEquals(
+            [$one, $two, $three],
+            iterator_to_array($middlewares)
+        );
+        $routesWith = $routes->withPrependMiddleware(
+            middlewares(MiddlewareTwo::class, MiddlewareThree::class)
+        );
+        $this->assertNotSame($routes, $routesWith);
+        $middlewares = $routesWith->get('/some-path')->endpoints()->get('GET')->bind()->middlewares();
+        $this->assertSame([0, 1, 2], $middlewares->keys());
+        $this->assertEquals(
             [$two, $three, $one],
-            iterator_to_array($middlewares->getIterator())
+            iterator_to_array($middlewares)
         );
     }
 
