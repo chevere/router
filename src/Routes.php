@@ -44,12 +44,8 @@ final class Routes implements RoutesInterface
             $id = $item->path()->regex()->noDelimiters();
             $new->assertNoOverflow($id, $item);
             $new->names = $new->names
-                ->withPut(...[
-                    $item->name() => $id,
-                ]);
-            $new->map = $new->map->withPut(...[
-                $id => $item,
-            ]);
+                ->withPut($item->name(), $id);
+            $new->map = $new->map->withPut($id, $item);
         }
 
         return $new;
@@ -111,9 +107,7 @@ final class Routes implements RoutesInterface
                     ->withoutEndpoint($endpoint->method())
                     ->withEndpoint($finalEndpoint);
             }
-            $this->map = $this->map->withPut(...[
-                $name => $route,
-            ]);
+            $this->map = $this->map->withPut($name, $route);
         }
     }
 

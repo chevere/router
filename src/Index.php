@@ -66,20 +66,14 @@ final class Index implements IndexInterface
                     ->withCode('%group%', $groupName)
             );
         }
-        $new->identifiersMap = $new->identifiersMap->withPut(...[
-            $id => $identifier,
-        ]);
-        $new->groupsIndex = $new->groupsIndex->withPut(...[
-            $id => $group,
-        ]);
+        $new->identifiersMap = $new->identifiersMap->withPut($id, $identifier);
+        $new->groupsIndex = $new->groupsIndex->withPut($id, $group);
         $names = [];
         if ($new->groupsMap->has($group)) {
             $names = $new->groupsMap->get($group);
         }
         $names[] = $id;
-        $new->groupsMap = $new->groupsMap->withPut(...[
-            $group => $names,
-        ]);
+        $new->groupsMap = $new->groupsMap->withPut($group, $names);
 
         return $new;
     }

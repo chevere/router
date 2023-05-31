@@ -31,9 +31,7 @@ final class Wildcards implements WildcardsInterface
     {
         $new = clone $this;
         $new->map = $new->map
-            ->withPut(...[
-                $wildcard->__toString() => $wildcard,
-            ]);
+            ->withPut($wildcard->__toString(), $wildcard);
 
         return $new;
     }
