@@ -13,12 +13,12 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\_resources;
 
-use Chevere\Http\Interfaces\MiddlewareInterface;
+use Chevere\Http\Interfaces\MiddlewareErrorInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-abstract class Middleware implements MiddlewareInterface
+abstract class Middleware implements MiddlewareErrorInterface
 {
     public static function statusError(): int
     {

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\_resources;
 
-use Chevere\HttpController\HttpController;
+use Chevere\Http\HttpController;
 
 final class ControllerNoParameters extends HttpController
 {

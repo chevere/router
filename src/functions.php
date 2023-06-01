@@ -14,13 +14,12 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Http\Exceptions\MethodNotAllowedException;
+use Chevere\Http\HttpControllerName;
+use Chevere\Http\Interfaces\HttpControllerInterface;
+use Chevere\Http\Interfaces\HttpControllerNameInterface;
 use Chevere\Http\Interfaces\MethodInterface;
-use Chevere\Http\Interfaces\MiddlewareInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
 use function Chevere\Http\middlewares;
-use Chevere\HttpController\HttpControllerName;
-use Chevere\HttpController\Interfaces\HttpControllerInterface;
-use Chevere\HttpController\Interfaces\HttpControllerNameInterface;
 use function Chevere\Message\message;
 use Chevere\Message\Message;
 use Chevere\Parameter\Interfaces\ParametersInterface;
@@ -32,6 +31,7 @@ use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
+use Psr\Http\Server\MiddlewareInterface;
 use TypeError;
 
 /**
@@ -47,13 +47,13 @@ function routes(RouteInterface ...$routes): RoutesInterface
  *
  * @param string $path Route path.
  * @param string $name If not provided it will be same as the route path.
- * @param MiddlewaresInterface|class-string<MiddlewareInterface> $middleware HTTP server middlewares.
+ * @param null|MiddlewaresInterface|class-string<MiddlewareInterface> $middleware HTTP server middlewares.
  * @param BindInterface|string ...$bind Binding for HTTP controllers `GET: bind(HttpController::class, 'view'), POST: ClassName, PUT: ...`.
  */
 function route(
     string $path,
     string $name = '',
-    string|MiddlewaresInterface $middleware = null,
+    null|string|MiddlewaresInterface $middleware = null,
     string|BindInterface ...$bind
 ): RouteInterface {
     $name = $name === '' ? $path : $name;

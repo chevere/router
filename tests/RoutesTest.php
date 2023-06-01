@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
+use Chevere\Http\HttpControllerName;
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Http\MiddlewareName;
 use Chevere\Http\Middlewares;
 use function Chevere\Http\middlewares;
-use Chevere\HttpController\HttpControllerName;
 use Chevere\Router\Bind;
 use Chevere\Router\Endpoint;
 use Chevere\Router\Path;

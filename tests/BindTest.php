@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
+use Chevere\Http\HttpControllerName;
 use function Chevere\Http\middlewares;
-use Chevere\HttpController\HttpControllerName;
 use Chevere\Router\Bind;
 use Chevere\Tests\_resources\ControllerWithParameters;
 use PHPUnit\Framework\TestCase;
