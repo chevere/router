@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\_resources;
 
-use Chevere\Http\HttpController;
+use Chevere\Http\Controller;
 
-final class ControllerNotExportable extends HttpController
+final class ControllerNotExportable extends Controller
 {
     private $resource;
 

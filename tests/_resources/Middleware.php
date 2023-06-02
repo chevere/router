@@ -13,20 +13,17 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\_resources;
 
-use Chevere\Http\Interfaces\MiddlewareErrorInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-abstract class Middleware implements MiddlewareErrorInterface
+abstract class Middleware implements MiddlewareInterface
 {
-    public static function statusError(): int
-    {
-        return 400;
-    }
-
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-    {
+    public function process(
+        ServerRequestInterface $request,
+        RequestHandlerInterface $handler
+    ): ResponseInterface {
         return $handler->handle($request);
     }
 }

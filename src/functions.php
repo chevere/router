@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
+use Chevere\Http\ControllerName;
 use Chevere\Http\Exceptions\MethodNotAllowedException;
-use Chevere\Http\HttpControllerName;
+use Chevere\Http\Interfaces\ControllerNameInterface;
 use Chevere\Http\Interfaces\HttpControllerInterface;
-use Chevere\Http\Interfaces\HttpControllerNameInterface;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
 use function Chevere\Http\middlewares;
@@ -162,7 +162,7 @@ function bind(
     string|MiddlewaresInterface $middleware = null,
     string $view = '',
 ): BindInterface {
-    $controller = new HttpControllerName($controller);
+    $controller = new ControllerName($controller);
     $middleware = match (true) {
         is_string($middleware) => middlewares($middleware),
         $middleware === null => middlewares(),
@@ -172,7 +172,7 @@ function bind(
     return new Bind($controller, $middleware, $view);
 }
 
-function controllerName(BindInterface|string $item): HttpControllerNameInterface
+function controllerName(BindInterface|string $item): ControllerNameInterface
 {
     if (is_string($item)) {
         $item = bind($item);

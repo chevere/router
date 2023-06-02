@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
-use Chevere\Http\HttpControllerName;
+use Chevere\Http\ControllerName;
 use function Chevere\Http\middlewares;
 use Chevere\Router\Bind;
 use Chevere\Tests\_resources\ControllerWithParameters;
@@ -25,7 +25,7 @@ final class BindTest extends TestCase
     {
         $controller = ControllerWithParameters::class;
         $view = 'test';
-        $controllerName = new HttpControllerName($controller);
+        $controllerName = new ControllerName($controller);
         $middlewares = middlewares();
         $bind = new Bind($controllerName, $middlewares, $view);
         $this->assertSame($controllerName, $bind->controllerName());
@@ -37,7 +37,7 @@ final class BindTest extends TestCase
     {
         $controller = ControllerWithParameters::class;
         $view = 'test';
-        $controllerName = new HttpControllerName($controller);
+        $controllerName = new ControllerName($controller);
         $middlewares = middlewares();
         $bind = new Bind($controllerName, $middlewares, $view);
         $middlewaresAlt = middlewares();

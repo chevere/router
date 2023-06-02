@@ -13,20 +13,20 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
-use Chevere\Http\Interfaces\HttpControllerNameInterface;
+use Chevere\Http\Interfaces\ControllerNameInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\Router\Interfaces\BindInterface;
 
 final class Bind implements BindInterface
 {
     public function __construct(
-        private HttpControllerNameInterface $controllerName,
+        private ControllerNameInterface $controllerName,
         private MiddlewaresInterface $middlewares,
         private string $view,
     ) {
     }
 
-    public function controllerName(): HttpControllerNameInterface
+    public function controllerName(): ControllerNameInterface
     {
         return $this->controllerName;
     }

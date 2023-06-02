@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace Chevere\Tests\_resources;
 
 use Chevere\Attribute\StringAttribute;
-use Chevere\Http\HttpController;
+use Chevere\Http\Controller;
 
-final class ControllerWithParameters extends HttpController
+final class ControllerWithParameters extends Controller
 {
     public function run(
         #[StringAttribute('/\w+/')]

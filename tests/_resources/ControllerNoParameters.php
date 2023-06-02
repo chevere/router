@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\_resources;
 
-use Chevere\Http\HttpController;
+use Chevere\Http\Controller;
 
-final class ControllerNoParameters extends HttpController
+final class ControllerNoParameters extends Controller
 {
     public function run(): array
     {
