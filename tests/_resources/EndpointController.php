@@ -13,19 +13,17 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\_resources;
 
+use Chevere\Attribute\StringRegex;
 use Chevere\Http\Controller;
 
-final class ControllerNotExportable extends Controller
+final class EndpointController extends Controller
 {
-    private $resource;
-
-    public function run(): array
-    {
+    public function run(
+        #[StringRegex('/[\w]+/')]
+        string $name,
+        #[StringRegex('/[0-9]+/')]
+        string $id
+    ): array {
         return [];
-    }
-
-    public function setUpBefore(): void
-    {
-        $this->resource = fopen('php://output', 'r+');
     }
 }

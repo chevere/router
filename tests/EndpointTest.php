@@ -16,7 +16,7 @@ namespace Chevere\Tests;
 use Chevere\Http\Methods\GetMethod;
 use function Chevere\Router\bind;
 use Chevere\Router\Endpoint;
-use Chevere\Tests\_resources\EndpointTestController;
+use Chevere\Tests\_resources\EndpointController;
 use PHPUnit\Framework\TestCase;
 
 final class EndpointTest extends TestCase
@@ -24,7 +24,7 @@ final class EndpointTest extends TestCase
     public function testConstruct(): void
     {
         $method = new GetMethod();
-        $controller = EndpointTestController::class;
+        $controller = EndpointController::class;
         $bind = bind($controller);
         $endpoint = new Endpoint($method, $bind);
         $this->assertSame($method, $endpoint->method());

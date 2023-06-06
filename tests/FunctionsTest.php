@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\Http\Exceptions\MethodNotAllowedException;
-use Chevere\Http\Middlewares;
 use Chevere\Parameter\StringParameter;
 use function Chevere\Router\bind;
+use Chevere\Router\Exceptions\WildcardInvalidException;
 use Chevere\Router\Exceptions\WildcardNotFoundException;
 use Chevere\Router\Interfaces\EndpointInterface;
 use function Chevere\Router\route;
@@ -24,9 +24,7 @@ use function Chevere\Router\router;
 use function Chevere\Router\routes;
 use Chevere\Tests\_resources\ControllerNoParameters;
 use Chevere\Tests\_resources\ControllerWithParameters;
-use Chevere\Tests\_resources\MiddlewareOne;
-use Chevere\Tests\_resources\MiddlewareThree;
-use Chevere\Tests\_resources\MiddlewareTwo;
+use Chevere\Tests\_resources\WrongController;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
@@ -137,38 +135,24 @@ final class FunctionsTest extends TestCase
         );
     }
 
-    // public function testFunctionRouteMiddleware(): void
-    // {
-    //     $controller = ControllerNoParameters::class;
-    //     $middleware = new Middlewares(
-    //         new MiddlewareOne(),
-    //         new MiddlewareTwo(),
-    //         new MiddlewareThree(),
-    //     );
-    //     $route = route(
-    //         path: '/test',
-    //         middleware: $middleware,
-    //         GET: bind($controller),
-    //     );
-    //     $controllerWithMiddleware = $route->endpoints()->get('GET')->bind()->controllerName();
-    //     $this->assertEquals(
-    //         $middleware,
-    //         $controllerWithMiddleware->middlewares()
-    //     );
-    // }
-
-    public function testFunctionRouteBadPath(): void
+    public function testFunctionRouteInvalidPath(): void
     {
         $controller = ControllerNoParameters::class;
         $this->expectException(InvalidArgumentException::class);
         route('test', 'name', GET: bind($controller));
     }
 
-    public function testFunctionRouteBadHttpMethod(): void
+    public function testFunctionRouteInvalidMethod(): void
     {
         $controller = ControllerNoParameters::class;
         $this->expectException(MethodNotAllowedException::class);
         route('/test/', 'name', TEST: bind($controller));
+    }
+
+    public function testFunctionRouteInvalidController(): void
+    {
+        $this->expectException(WildcardInvalidException::class);
+        route(path: '/{id}', GET: bind(WrongController::class));
     }
 
     public function testFunctionRoutes(): void
