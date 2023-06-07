@@ -67,8 +67,9 @@ final class IndexTest extends TestCase
     public function testWithAddedRoute(): void
     {
         $groupName = '';
-        $path = '/path';
+        $path = '/path/{id}/{name}';
         $route = route($path);
+        $pathName = $route->path()->regex()->noDelimiters();
         $withEndpoint = $route->withEndpoint(
             new Endpoint(new GetMethod(), bind(ControllerWithParameters::class))
         );
@@ -77,34 +78,35 @@ final class IndexTest extends TestCase
         $indexWithAddedRoute = $index
             ->withAddedRoute($withEndpoint, $groupName);
         $this->assertNotSame($index, $indexWithAddedRoute);
-        $this->assertTrue($indexWithAddedRoute->hasRouteName($path));
+        $this->assertTrue($indexWithAddedRoute->hasRouteName($pathName));
         $this->assertInstanceOf(
             IdentifierInterface::class,
-            $indexWithAddedRoute->getRouteIdentifier($path)
+            $indexWithAddedRoute->getRouteIdentifier($pathName)
         );
         $this->assertTrue($indexWithAddedRoute->hasGroup($groupName));
         $this->assertSame(
-            [$path],
+            [$pathName],
             $indexWithAddedRoute->getGroupRouteNames($groupName)
         );
         $this->assertSame(
             $groupName,
-            $indexWithAddedRoute->getRouteGroup($path)
+            $indexWithAddedRoute->getRouteGroup($pathName)
         );
         $this->assertSame([
-            $path => [
+            $pathName => [
                 'group' => $groupName,
-                'name' => $path,
+                'name' => $pathName,
             ],
         ], $indexWithAddedRoute->toArray());
-        $path2 = '/path-2';
+        $path2 = '/path-2/{id}/{name}';
         $route2 = route($path2);
+        $path2Name = $route2->path()->regex()->noDelimiters();
         $route2 = $route2->withEndpoint(
             new Endpoint(new GetMethod(), bind(ControllerWithParameters::class))
         );
         $withAnotherAddedRoute = $indexWithAddedRoute->withAddedRoute($route2, $groupName);
         $this->assertSame(
-            [$path, $path2],
+            [$pathName, $path2Name],
             $withAnotherAddedRoute->getGroupRouteNames($groupName)
         );
         $this->assertCount(2, $withAnotherAddedRoute->toArray());
@@ -113,7 +115,7 @@ final class IndexTest extends TestCase
     public function testWithAddedAlready(): void
     {
         $repo = 'repository';
-        $route = route('/path')
+        $route = route('/path/{id}/{name}')
             ->withEndpoint(
                 new Endpoint(new GetMethod(), bind(ControllerWithParameters::class))
             );

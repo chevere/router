@@ -15,6 +15,8 @@ namespace Chevere\Router;
 
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Message\Message;
+use function Chevere\Message\message;
+use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
 use Chevere\Router\Exceptions\EndpointConflictException;
 use Chevere\Router\Exceptions\WildcardConflictException;
@@ -58,11 +60,13 @@ final class Route implements RouteInterface
         }
         $new->assertUnique($endpoint);
         $new->assertNoConflict($endpoint);
+        $controllerFqn = $endpoint->bind()->controllerName()->__toString();
+        $parameters = $controllerFqn::getParameters();
+        $new->assertWildcardBounds($parameters, $controllerFqn);
         foreach ($new->path->wildcards() as $wildcard) {
             $new->assertWildcardEndpoint($wildcard, $endpoint);
             /** @var StringParameterInterface $parameter */
-            $parameter = $endpoint->bind()->controllerName()->__toString()::getParameters()
-                ->get(strval($wildcard));
+            $parameter = $parameters->get(strval($wildcard));
             $parameterMatch = $parameter->regex()->noDelimitersNoAnchors();
             $wildcardMatch = strval($wildcard->match());
             $wildcardString = strval($wildcard);
@@ -98,6 +102,24 @@ final class Route implements RouteInterface
     public function endpoints(): EndpointsInterface
     {
         return $this->endpoints;
+    }
+
+    private function assertWildcardBounds(ParametersInterface $parameters, string $controller): void
+    {
+        $diff = array_diff(
+            $parameters->keys(),
+            $this->path->wildcards()->keys()
+        );
+        if ($diff === []) {
+            return;
+        }
+
+        throw new OutOfBoundsException(
+            message('Unmatched path %path% parameter(s) %parameters% for %controller%')
+                ->withCode('%parameters%', implode(', ', $diff))
+                ->withCode('%path%', $this->path->__toString())
+                ->withStrong('%controller%', $controller)
+        );
     }
 
     private function assertUnique(EndpointInterface $endpoint): void
@@ -149,16 +171,6 @@ final class Route implements RouteInterface
                     ->withCode('%path%', $this->path->__toString())
                     ->withCode('%controller%', $endpoint->bind()->controllerName()->__toString())
                     ->withCode('%wildcard%', $wildcard->__toString())
-            );
-        }
-
-        if (! $parameters->has($wildcard->__toString())) {
-            throw new OutOfBoundsException(
-                (new Message('Route %path% must bind to one of the known %controller% parameters: %parameters%'))
-                    ->withCode('%path%', $this->path->__toString())
-                    ->withCode('%wildcard%', $wildcard->__toString())
-                    ->withCode('%controller%', $endpoint->bind()->controllerName()->__toString())
-                    ->withCode('%parameters%', implode(', ', $parameters->keys()))
             );
         }
     }
