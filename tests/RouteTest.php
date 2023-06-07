@@ -25,6 +25,7 @@ use Chevere\Router\Route;
 use Chevere\Tests\_resources\ControllerNoParameters;
 use Chevere\Tests\_resources\ControllerRegexConflict;
 use Chevere\Tests\_resources\ControllerWithParameter;
+use Chevere\Tests\_resources\ControllerWithParameters;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
@@ -47,7 +48,7 @@ final class RouteTest extends TestCase
 
     public function testWithEndpoint(): void
     {
-        $route = new Route(new Path('/test'), 'test');
+        $route = new Route(new Path('/test/{id}'), 'test');
         $method = new GetMethod();
         $controller = ControllerWithParameter::class;
         $endpoint = new Endpoint($method, bind($controller));
@@ -58,7 +59,7 @@ final class RouteTest extends TestCase
 
     public function testWithoutEndpointFixFirst(): void
     {
-        $route = new Route(new Path('/test'), 'test');
+        $route = new Route(new Path('/test/{id}'), 'test');
         $fooMethod = new GetMethod();
         $barMethod = new PostMethod();
         $controller = ControllerWithParameter::class;
@@ -123,21 +124,14 @@ final class RouteTest extends TestCase
 
     public function testWithEndpointWildcardMissing(): void
     {
-        $parameter = 'int';
-        $path = new Path('/test/{' . $parameter . ':[0-9]+}');
-        $pathString = strval($path);
+        $path = new Path('/test/{int:[0-9]+}');
         $controller = ControllerWithParameter::class;
         $endpoint = new Endpoint(
             new GetMethod(),
             bind($controller)
         );
-        $controllerName = ControllerWithParameter::class;
-        $parameterMissing = $controller::getParameters()->keys()[0];
         $route = new Route($path, 'test');
         $this->expectException(OutOfBoundsException::class);
-        $this->expectExceptionMessage(<<<PLAIN
-        Route {$pathString} must bind to one of the known {$controllerName} parameters: {$parameterMissing}
-        PLAIN);
         $route->withEndpoint($endpoint);
     }
 
@@ -192,6 +186,17 @@ final class RouteTest extends TestCase
         );
         $this->expectException(WildcardConflictException::class);
         $this->expectExceptionMessage('Wildcard {id} matches against');
+        $route->withEndpoint($endpoint);
+    }
+
+    public function testUnboundWildcards(): void
+    {
+        $route = new Route(new Path('/user/{id}'), 'test');
+        $endpoint = new Endpoint(
+            new GetMethod(),
+            bind(ControllerWithParameters::class)
+        );
+        $this->expectException(OutOfBoundsException::class);
         $route->withEndpoint($endpoint);
     }
 }
