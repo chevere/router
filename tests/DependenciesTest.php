@@ -16,7 +16,6 @@ namespace Chevere\Tests;
 use function Chevere\Router\bind;
 use Chevere\Router\Dependencies;
 use function Chevere\Router\route;
-use function Chevere\Router\router;
 use function Chevere\Router\routes;
 use Chevere\Tests\_resources\ControllerWithParameter;
 use Chevere\Tests\_resources\MiddlewareOne;
@@ -28,8 +27,8 @@ final class DependenciesTest extends TestCase
 {
     public function testEmpty(): void
     {
-        $router = router();
-        $dependencies = new Dependencies($router);
+        $routes = routes();
+        $dependencies = new Dependencies($routes);
         $this->assertSame([], $dependencies->toArray());
         $this->assertCount(0, $dependencies);
         $this->expectException(OutOfBoundsException::class);
@@ -38,16 +37,14 @@ final class DependenciesTest extends TestCase
 
     public function testEndpoint(): void
     {
-        $router = router(
-            routes(
-                route(
-                    middleware: MiddlewareOne::class,
-                    path: '/{id}',
-                    GET: bind(ControllerWithParameter::class, MiddlewareTwo::class)
-                )
+        $routes = routes(
+            route(
+                middleware: MiddlewareOne::class,
+                path: '/{id}',
+                GET: bind(ControllerWithParameter::class, MiddlewareTwo::class)
             )
         );
-        $dependencies = new Dependencies($router);
+        $dependencies = new Dependencies($routes);
         $this->assertCount(2, $dependencies);
         $this->assertSame(
             [
@@ -57,6 +54,6 @@ final class DependenciesTest extends TestCase
             $dependencies->keys()
         );
         $dependency = $dependencies->toArray()[ControllerWithParameter::class]['dependency'];
-        $this->assertFalse($dependency['isRequired']);
+        $this->assertFalse($dependency['required']);
     }
 }

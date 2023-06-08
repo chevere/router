@@ -19,7 +19,7 @@ use Chevere\Parameter\Interfaces\ParametersInterface;
 use function Chevere\Parameter\methodParameters;
 use Chevere\Router\Interfaces\DependenciesInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
-use Chevere\Router\Interfaces\RouterInterface;
+use Chevere\Router\Interfaces\RoutesInterface;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 
 final class Dependencies implements DependenciesInterface
@@ -35,11 +35,11 @@ final class Dependencies implements DependenciesInterface
     private array $array;
 
     public function __construct(
-        RouterInterface $router
+        RoutesInterface $routes
     ) {
         $this->array = [];
         $this->map = new Map();
-        foreach ($router->routes() as $route) {
+        foreach ($routes as $route) {
             foreach ($route->endpoints() as $endpoint) {
                 $controller = $endpoint->bind()->controllerName()->__toString();
                 $this->handleParameters($controller);
@@ -80,7 +80,7 @@ final class Dependencies implements DependenciesInterface
         $array = [];
         foreach ($parameters as $name => $parameter) {
             $array[$name] = $parameter->schema() + [
-                'isRequired' => $parameters->isRequired($name),
+                'required' => $parameters->isRequired($name),
             ];
         }
         $this->array[$className] = $array;
