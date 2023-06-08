@@ -15,4 +15,8 @@ namespace Chevere\Tests\_resources;
 
 final class MiddlewareOne extends Middleware
 {
+    public function __construct(
+        private string $value = 'default'
+    ) {
+    }
 }

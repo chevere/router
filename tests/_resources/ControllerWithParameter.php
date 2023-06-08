@@ -18,6 +18,11 @@ use Chevere\Http\Controller;
 
 final class ControllerWithParameter extends Controller
 {
+    public function __construct(
+        private string $dependency = 'default'
+    ) {
+    }
+
     public function run(
         #[StringRegex('/[0-9]+/')]
         string $id
