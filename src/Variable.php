@@ -22,7 +22,7 @@ final class Variable implements VariableInterface
 {
     public function __construct(
         private string $name,
-        private  VariableRegexInterface $match
+        private VariableRegexInterface $regex
     ) {
         $this->assertName();
     }
@@ -34,7 +34,7 @@ final class Variable implements VariableInterface
 
     public function regex(): VariableRegexInterface
     {
-        return $this->match;
+        return $this->regex;
     }
 
     private function assertName(): void
