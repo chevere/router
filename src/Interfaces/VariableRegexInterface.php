@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Chevere\Regex\Interfaces\RegexInterface;
 use Stringable;
 
 /**
@@ -21,5 +20,5 @@ use Stringable;
  */
 interface VariableRegexInterface extends Stringable
 {
-    public function regex(): RegexInterface;
+    public function noDelimiters(): string;
 }

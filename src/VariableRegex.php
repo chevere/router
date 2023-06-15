@@ -37,9 +37,9 @@ final class VariableRegex implements VariableRegexInterface
         return $this->string;
     }
 
-    public function regex(): RegexInterface
+    public function noDelimiters(): string
     {
-        return $this->regex;
+        return $this->regex->noDelimiters();
     }
 
     private function assertRegexNoCapture(): void
