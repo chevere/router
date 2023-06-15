@@ -67,7 +67,7 @@ final class Route implements RouteInterface
             /** @var StringParameterInterface $parameter */
             $parameter = $parameters->get(strval($variable));
             $parameterRegex = $parameter->regex()->noDelimitersNoAnchors();
-            $variableRegex = strval($variable->variableRegex());
+            $variableRegex = strval($variable->regex());
             $variableString = strval($variable);
             if (strpos(strval($this->path), $variableString . '}') !== false) {
                 $variableRegex = $parameterRegex; // @codeCoverageIgnore

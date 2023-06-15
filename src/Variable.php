@@ -32,7 +32,7 @@ final class Variable implements VariableInterface
         return $this->name;
     }
 
-    public function variableRegex(): VariableRegexInterface
+    public function regex(): VariableRegexInterface
     {
         return $this->match;
     }
