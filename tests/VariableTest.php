@@ -39,6 +39,6 @@ final class VariableTest extends TestCase
         $match = new VariableRegex('[a-z]+');
         $variable = new Variable($name, $match);
         $this->assertSame($name, $variable->__toString());
-        $this->assertSame($match, $variable->match());
+        $this->assertSame($match, $variable->variableRegex());
     }
 }

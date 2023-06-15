@@ -21,8 +21,5 @@ use Stringable;
  */
 interface VariableRegexInterface extends Stringable
 {
-    /**
-     * Returns the match starting with `^` and ending `$`.
-     */
     public function regex(): RegexInterface;
 }

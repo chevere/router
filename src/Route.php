@@ -24,7 +24,6 @@ use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\EndpointsInterface;
 use Chevere\Router\Interfaces\PathInterface;
 use Chevere\Router\Interfaces\RouteInterface;
-use Chevere\Router\Interfaces\VariableInterface;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
@@ -64,21 +63,21 @@ final class Route implements RouteInterface
         $parameters = $controllerFqn::getParameters();
         $new->assertVariableBounds($parameters, $controllerFqn);
         foreach ($new->path->variables() as $variable) {
-            $new->assertVariableEndpoint($variable, $endpoint);
+            $new->assertEndpoint($endpoint);
             /** @var StringParameterInterface $parameter */
             $parameter = $parameters->get(strval($variable));
-            $parameterMatch = $parameter->regex()->noDelimitersNoAnchors();
-            $variableMatch = strval($variable->match());
+            $parameterRegex = $parameter->regex()->noDelimitersNoAnchors();
+            $variableRegex = strval($variable->variableRegex());
             $variableString = strval($variable);
             if (strpos(strval($this->path), $variableString . '}') !== false) {
-                $variableMatch = $parameterMatch; // @codeCoverageIgnore
+                $variableRegex = $parameterRegex; // @codeCoverageIgnore
             }
-            if ($parameterMatch !== $variableMatch) {
+            if ($parameterRegex !== $variableRegex) {
                 throw new VariableConflictException(
-                    (new Message('Variable %parameter% matches against %match% which is incompatible with the match %controllerMatch% defined by %controller%'))
+                    (new Message('Variable %parameter% matches against %match% which is incompatible with the match %controllerRegex% defined by %controller%'))
                         ->withCode('%parameter%', '{' . strval($variable) . '}')
-                        ->withCode('%match%', $variableMatch)
-                        ->withCode('%controllerMatch%', $parameterMatch)
+                        ->withCode('%match%', $variableRegex)
+                        ->withCode('%controllerRegex%', $parameterRegex)
                         ->withCode('%controller%', $endpoint->bind()->controllerName()->__toString())
                 );
             }
@@ -145,16 +144,16 @@ final class Route implements RouteInterface
             try {
                 /** @var StringParameterInterface $string */
                 $string = $endpoint->bind()->controllerName()->__toString()::getParameters()->get($name);
-                $controllerMatch = $string->regex()->__toString();
+                $controllerRegex = $string->regex()->__toString();
             } catch(OutOfBoundsException) {
-                $controllerMatch = '<none>';
+                $controllerRegex = '<none>';
             }
-            if ($match !== $controllerMatch) {
+            if ($match !== $controllerRegex) {
                 throw new EndpointConflictException(
-                    (new Message('Controller parameter %parameter% first defined at %firstController% matches against %match% which is incompatible with the match %controllerMatch% defined by %controller%'))
+                    (new Message('Controller parameter %parameter% first defined at %firstController% matches against %match% which is incompatible with the match %controllerRegex% defined by %controller%'))
                         ->withCode('%parameter%', $name)
                         ->withCode('%match%', $match)
-                        ->withCode('%controllerMatch%', $controllerMatch)
+                        ->withCode('%controllerRegex%', $controllerRegex)
                         ->withCode('%controller%', $endpoint->bind()->controllerName()->__toString())
                         ->withCode('%firstController%', $this->firstEndpoint->bind()->controllerName()->__toString())
                 );
@@ -162,7 +161,7 @@ final class Route implements RouteInterface
         }
     }
 
-    private function assertVariableEndpoint(VariableInterface $variable, EndpointInterface $endpoint): void
+    private function assertEndpoint(EndpointInterface $endpoint): void
     {
         $parameters = $endpoint->bind()->controllerName()->__toString()::getParameters();
         if (count($parameters) === 0) {

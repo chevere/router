@@ -24,5 +24,5 @@ interface VariableInterface extends Stringable
 
     public const ACCEPT_CHARS_REGEX = '/^' . self::ACCEPT_CHARS . '+$/i';
 
-    public function match(): VariableRegexInterface;
+    public function variableRegex(): VariableRegexInterface;
 }
