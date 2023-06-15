@@ -13,42 +13,42 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
-use Chevere\Router\WildcardMatch;
+use Chevere\Router\VariableRegex;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\UnexpectedValueException;
 use PHPUnit\Framework\TestCase;
 
-final class WildcardMatchTest extends TestCase
+final class VariableRegexTest extends TestCase
 {
     public function testConstructInvalidArgument(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new WildcardMatch('#');
+        new VariableRegex('#');
     }
 
     public function testConstructInvalidCaptureGroup(): void
     {
         $this->expectException(UnexpectedValueException::class);
-        new WildcardMatch('te(s)t');
+        new VariableRegex('te(s)t');
     }
 
     public function testConstructWithAnchorStart(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new WildcardMatch('^error');
+        new VariableRegex('^error');
     }
 
     public function testConstructWithAnchorEnd(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new WildcardMatch('error$');
+        new VariableRegex('error$');
     }
 
     public function testConstruct(): void
     {
         $string = '[a-z]+';
-        $wildcardMatch = new WildcardMatch($string);
-        $this->assertSame($string, $wildcardMatch->__toString());
-        $this->assertSame('^' . $string . '$', $wildcardMatch->anchored());
+        $variableRegex = new VariableRegex($string);
+        $this->assertSame($string, $variableRegex->__toString());
+        $this->assertSame('^' . $string . '$', $variableRegex->regex()->noDelimiters());
     }
 }

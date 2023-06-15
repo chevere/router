@@ -18,7 +18,7 @@ use Chevere\Http\Methods\PostMethod;
 use function Chevere\Router\bind;
 use Chevere\Router\Endpoint;
 use Chevere\Router\Exceptions\EndpointConflictException;
-use Chevere\Router\Exceptions\WildcardConflictException;
+use Chevere\Router\Exceptions\VariableConflictException;
 use Chevere\Router\Path;
 use function Chevere\Router\route;
 use Chevere\Router\Route;
@@ -82,7 +82,7 @@ final class RouteTest extends TestCase
         $route->withoutEndpoint($method);
     }
 
-    public function testWithWildcard(): void
+    public function testWithVariable(): void
     {
         $route = new Route(new Path('/test/{id}'), 'test');
         $method = new GetMethod();
@@ -92,7 +92,7 @@ final class RouteTest extends TestCase
         $route->withEndpoint($endpoint);
     }
 
-    public function testWithWildcardStrict(): void
+    public function testWithVariableStrict(): void
     {
         $route = new Route(new Path('/test/{id:[0-9]+}'), 'test');
         $method = new GetMethod();
@@ -102,7 +102,7 @@ final class RouteTest extends TestCase
         $route->withEndpoint($endpoint);
     }
 
-    public function testWithEndpointWrongWildcard(): void
+    public function testWithEndpointWrongVariable(): void
     {
         $route = new Route(new Path('/test/{foo}'), 'test');
         $method = new GetMethod();
@@ -122,7 +122,7 @@ final class RouteTest extends TestCase
         $route->withEndpoint($endpoint);
     }
 
-    public function testWithEndpointWildcardMissing(): void
+    public function testWithEndpointVariableMissing(): void
     {
         $path = new Path('/test/{int:[0-9]+}');
         $controller = ControllerWithParameter::class;
@@ -135,7 +135,7 @@ final class RouteTest extends TestCase
         $route->withEndpoint($endpoint);
     }
 
-    public function testWithEndpointWildcardParameter(): void
+    public function testWithEndpointVariableParameter(): void
     {
         $path = new Path('/test/{id:[0-9]+}');
         $route = new Route($path, 'test');
@@ -177,19 +177,19 @@ final class RouteTest extends TestCase
         $route->withEndpoint($endpoint2);
     }
 
-    public function testWithEndpointWildcardConflict(): void
+    public function testWithEndpointVariableConflict(): void
     {
         $route = new Route(new Path('/test/{id:\w+}'), 'test');
         $endpoint = new Endpoint(
             new GetMethod(),
             bind(ControllerWithParameter::class)
         );
-        $this->expectException(WildcardConflictException::class);
-        $this->expectExceptionMessage('Wildcard {id} matches against');
+        $this->expectException(VariableConflictException::class);
+        $this->expectExceptionMessage('Variable {id} matches against');
         $route->withEndpoint($endpoint);
     }
 
-    public function testUnboundWildcards(): void
+    public function testUnboundVariables(): void
     {
         $route = new Route(new Path('/user/{id}'), 'test');
         $endpoint = new Endpoint(

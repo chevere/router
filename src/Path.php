@@ -17,7 +17,7 @@ use Chevere\Message\Message;
 use Chevere\Regex\Interfaces\RegexInterface;
 use Chevere\Regex\Regex;
 use Chevere\Router\Interfaces\PathInterface;
-use Chevere\Router\Interfaces\WildcardsInterface;
+use Chevere\Router\Interfaces\VariablesInterface;
 use Chevere\Router\Parsers\StrictStd;
 use Chevere\Throwable\Exceptions\LogicException;
 use FastRoute\DataGenerator\GroupCountBased as DataGenerator;
@@ -33,7 +33,7 @@ final class Path implements PathInterface
 
     private RegexInterface $regex;
 
-    private WildcardsInterface $wildcards;
+    private VariablesInterface $variables;
 
     private string $handle;
 
@@ -55,15 +55,15 @@ final class Path implements PathInterface
         }
         // @codeCoverageIgnoreEnd
         $this->setHandle();
-        $this->wildcards = new Wildcards();
+        $this->variables = new Variables();
         $routerData = array_values(array_filter($dataGenerator->getData()));
         foreach ($this->data as $value) {
             if (! is_array($value)) {
                 continue;
             }
-            $this->wildcards = $this->wildcards
+            $this->variables = $this->variables
                 ->withPut(
-                    new Wildcard($value[0], new WildcardMatch($value[1]))
+                    new Variable($value[0], new VariableRegex($value[1]))
                 );
         }
         $this->regex = new Regex(
@@ -76,9 +76,9 @@ final class Path implements PathInterface
         return $this->route;
     }
 
-    public function wildcards(): WildcardsInterface
+    public function variables(): VariablesInterface
     {
-        return $this->wildcards;
+        return $this->variables;
     }
 
     public function regex(): RegexInterface

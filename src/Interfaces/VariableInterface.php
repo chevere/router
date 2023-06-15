@@ -16,16 +16,13 @@ namespace Chevere\Router\Interfaces;
 use Stringable;
 
 /**
- * Describes the component in charge of defining a route wildcard.
+ * Describes the component in charge of defining a variable.
  */
-interface WildcardInterface extends Stringable
+interface VariableInterface extends Stringable
 {
     public const ACCEPT_CHARS = '([a-z\_][\w_]*?)';
 
     public const ACCEPT_CHARS_REGEX = '/^' . self::ACCEPT_CHARS . '+$/i';
 
-    /**
-     * Provides access to the match instance.
-     */
-    public function match(): WildcardMatchInterface;
+    public function match(): VariableRegexInterface;
 }

@@ -18,21 +18,15 @@ namespace Chevere\Router\Interfaces;
  */
 interface DecoratorInterface
 {
-    /**
-     * Provides access to the route name.
-     */
     public function locator(): LocatorInterface;
 
     /**
-     * Return an instance with the specified `$wildcards` instance.
+     * Return an instance with the specified `variables` instance.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified `$wildcards` instance.
+     * an instance that contains the specified `variables` instance.
      */
-    public function withWildcards(WildcardsInterface $wildcards): self;
+    public function withVariables(VariablesInterface $variables): self;
 
-    /**
-     * Provides access to the route wildcards.
-     */
-    public function wildcards(): WildcardsInterface;
+    public function variables(): VariablesInterface;
 }

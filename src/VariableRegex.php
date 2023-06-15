@@ -14,21 +14,22 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Message\Message;
+use Chevere\Regex\Interfaces\RegexInterface;
 use Chevere\Regex\Regex;
-use Chevere\Router\Interfaces\WildcardMatchInterface;
+use Chevere\Router\Interfaces\VariableRegexInterface;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\UnexpectedValueException;
 
-final class WildcardMatch implements WildcardMatchInterface
+final class VariableRegex implements VariableRegexInterface
 {
-    private string $anchored;
+    private RegexInterface $regex;
 
     public function __construct(
         private string $string
     ) {
         $this->assertFormat();
+        $this->regex = new Regex('#^' . $this->string . '$#');
         $this->assertRegexNoCapture();
-        $this->anchored = '^' . $this->string . '$';
     }
 
     public function __toString(): string
@@ -36,15 +37,14 @@ final class WildcardMatch implements WildcardMatchInterface
         return $this->string;
     }
 
-    public function anchored(): string
+    public function regex(): RegexInterface
     {
-        return $this->anchored;
+        return $this->regex;
     }
 
     private function assertRegexNoCapture(): void
     {
-        $regex = new Regex('#' . $this->string . '#');
-        $string = $regex->__toString();
+        $string = $this->regex->__toString();
         if (strpos($string, '(') !== false) {
             throw new UnexpectedValueException(
                 (new Message('Provided expression %match% contains capture groups'))

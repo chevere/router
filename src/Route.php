@@ -19,12 +19,12 @@ use function Chevere\Message\message;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
 use Chevere\Router\Exceptions\EndpointConflictException;
-use Chevere\Router\Exceptions\WildcardConflictException;
+use Chevere\Router\Exceptions\VariableConflictException;
 use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\EndpointsInterface;
 use Chevere\Router\Interfaces\PathInterface;
 use Chevere\Router\Interfaces\RouteInterface;
-use Chevere\Router\Interfaces\WildcardInterface;
+use Chevere\Router\Interfaces\VariableInterface;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
@@ -62,22 +62,22 @@ final class Route implements RouteInterface
         $new->assertNoConflict($endpoint);
         $controllerFqn = $endpoint->bind()->controllerName()->__toString();
         $parameters = $controllerFqn::getParameters();
-        $new->assertWildcardBounds($parameters, $controllerFqn);
-        foreach ($new->path->wildcards() as $wildcard) {
-            $new->assertWildcardEndpoint($wildcard, $endpoint);
+        $new->assertVariableBounds($parameters, $controllerFqn);
+        foreach ($new->path->variables() as $variable) {
+            $new->assertVariableEndpoint($variable, $endpoint);
             /** @var StringParameterInterface $parameter */
-            $parameter = $parameters->get(strval($wildcard));
+            $parameter = $parameters->get(strval($variable));
             $parameterMatch = $parameter->regex()->noDelimitersNoAnchors();
-            $wildcardMatch = strval($wildcard->match());
-            $wildcardString = strval($wildcard);
-            if (strpos(strval($this->path), $wildcardString . '}') !== false) {
-                $wildcardMatch = $parameterMatch; // @codeCoverageIgnore
+            $variableMatch = strval($variable->match());
+            $variableString = strval($variable);
+            if (strpos(strval($this->path), $variableString . '}') !== false) {
+                $variableMatch = $parameterMatch; // @codeCoverageIgnore
             }
-            if ($parameterMatch !== $wildcardMatch) {
-                throw new WildcardConflictException(
-                    (new Message('Wildcard %parameter% matches against %match% which is incompatible with the match %controllerMatch% defined by %controller%'))
-                        ->withCode('%parameter%', '{' . strval($wildcard) . '}')
-                        ->withCode('%match%', $wildcardMatch)
+            if ($parameterMatch !== $variableMatch) {
+                throw new VariableConflictException(
+                    (new Message('Variable %parameter% matches against %match% which is incompatible with the match %controllerMatch% defined by %controller%'))
+                        ->withCode('%parameter%', '{' . strval($variable) . '}')
+                        ->withCode('%match%', $variableMatch)
                         ->withCode('%controllerMatch%', $parameterMatch)
                         ->withCode('%controller%', $endpoint->bind()->controllerName()->__toString())
                 );
@@ -104,11 +104,11 @@ final class Route implements RouteInterface
         return $this->endpoints;
     }
 
-    private function assertWildcardBounds(ParametersInterface $parameters, string $controller): void
+    private function assertVariableBounds(ParametersInterface $parameters, string $controller): void
     {
         $diff = array_diff(
             $parameters->keys(),
-            $this->path->wildcards()->keys()
+            $this->path->variables()->keys()
         );
         if ($diff === []) {
             return;
@@ -162,7 +162,7 @@ final class Route implements RouteInterface
         }
     }
 
-    private function assertWildcardEndpoint(WildcardInterface $wildcard, EndpointInterface $endpoint): void
+    private function assertVariableEndpoint(VariableInterface $variable, EndpointInterface $endpoint): void
     {
         $parameters = $endpoint->bind()->controllerName()->__toString()::getParameters();
         if (count($parameters) === 0) {
@@ -170,7 +170,6 @@ final class Route implements RouteInterface
                 (new Message("Invalid route %path% binding with %controller% which doesn't accept any parameter"))
                     ->withCode('%path%', $this->path->__toString())
                     ->withCode('%controller%', $endpoint->bind()->controllerName()->__toString())
-                    ->withCode('%wildcard%', $wildcard->__toString())
             );
         }
     }

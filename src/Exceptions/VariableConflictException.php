@@ -16,8 +16,8 @@ namespace Chevere\Router\Exceptions;
 use Chevere\Throwable\Exception;
 
 /**
- * Exception thrown when detecting a route wildcard conflict.
+ * Exception thrown when detecting a variable conflict.
  */
-final class WildcardConflictException extends Exception
+final class VariableConflictException extends Exception
 {
 }

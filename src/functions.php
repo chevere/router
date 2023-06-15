@@ -23,8 +23,8 @@ use function Chevere\Http\middlewares;
 use function Chevere\Message\message;
 use Chevere\Message\Message;
 use Chevere\Parameter\Interfaces\ParametersInterface;
-use Chevere\Router\Exceptions\WildcardInvalidException;
-use Chevere\Router\Exceptions\WildcardNotFoundException;
+use Chevere\Router\Exceptions\VariableInvalidException;
+use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\BindInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\RouteInterface;
@@ -61,32 +61,32 @@ function route(
     $route = (new Route(new Path($path), $name));
     foreach ($bind as $item) {
         $controllerName = controllerName($item);
-        foreach ($routePath->wildcards()->keys() as $wildcard) {
-            $wildcardBracket = <<<STRING
-            {{$wildcard}}
+        foreach ($routePath->variables()->keys() as $variable) {
+            $variableBracket = <<<STRING
+            {{$variable}}
             STRING;
 
             try {
                 /** @var ParametersInterface $parameters */
                 $parameters = $controllerName->__toString()::getParameters();
-                $stringParameter = $parameters->getString($wildcard);
+                $stringParameter = $parameters->getString($variable);
             } catch (OutOfBoundsException) {
-                throw new WildcardNotFoundException(
-                    message('Wildcard %wildcard% does not exists in controller %controller%')
-                        ->withCode('%wildcard%', $wildcardBracket)
+                throw new VariableNotFoundException(
+                    message('Variable %variable% does not exists in controller %controller%')
+                        ->withCode('%variable%', $variableBracket)
                         ->withCode('%controller%', $controllerName->__toString())
                 );
             } catch(TypeError) {
-                throw new WildcardInvalidException(
-                    message('Wildcard %wildcard% is not a string parameter in controller %controller%')
-                        ->withCode('%wildcard%', $wildcardBracket)
+                throw new VariableInvalidException(
+                    message('Variable %variable% is not a string parameter in controller %controller%')
+                        ->withCode('%variable%', $variableBracket)
                         ->withCode('%controller%', $controllerName->__toString())
                 );
             }
             $path = str_replace(
-                $wildcardBracket,
+                $variableBracket,
                 <<<STRING
-                {{$wildcard}:{$stringParameter->regex()->noDelimitersNoAnchors()}}
+                {{$variable}:{$stringParameter->regex()->noDelimitersNoAnchors()}}
                 STRING,
                 $path
             );

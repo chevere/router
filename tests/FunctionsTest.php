@@ -16,8 +16,8 @@ namespace Chevere\Tests;
 use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Parameter\StringParameter;
 use function Chevere\Router\bind;
-use Chevere\Router\Exceptions\WildcardInvalidException;
-use Chevere\Router\Exceptions\WildcardNotFoundException;
+use Chevere\Router\Exceptions\VariableInvalidException;
+use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\EndpointInterface;
 use function Chevere\Router\route;
 use function Chevere\Router\router;
@@ -102,20 +102,20 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function testFunctionRouteWildcardNotFound(): void
+    public function testFunctionVariableNotFound(): void
     {
-        $this->expectException(WildcardNotFoundException::class);
+        $this->expectException(VariableNotFoundException::class);
         $this->expectExceptionMessage(
-            'Wildcard {wildcard} does not exists in controller '
+            'Variable {variable} does not exists in controller '
             . ControllerNoParameters::class
         );
         route(
-            path: '/test/{wildcard}',
+            path: '/test/{variable}',
             GET: bind(ControllerNoParameters::class),
         );
     }
 
-    public function testFunctionRouteWildcard(): void
+    public function testFunctionVariable(): void
     {
         $controller = ControllerWithParameters::class;
         /** @var StringParameter $id */
@@ -151,7 +151,7 @@ final class FunctionsTest extends TestCase
 
     public function testFunctionRouteInvalidController(): void
     {
-        $this->expectException(WildcardInvalidException::class);
+        $this->expectException(VariableInvalidException::class);
         route(path: '/{id}', GET: bind(WrongController::class));
     }
 

@@ -15,7 +15,7 @@ namespace Chevere\Tests;
 
 use Chevere\Router\Decorator;
 use Chevere\Router\Locator;
-use Chevere\Router\Wildcards;
+use Chevere\Router\Variables;
 use PHPUnit\Framework\TestCase;
 
 final class DecoratorTest extends TestCase
@@ -25,19 +25,19 @@ final class DecoratorTest extends TestCase
         $locator = new Locator('repo', '/path');
         $decorator = new Decorator($locator);
         $this->assertSame($locator, $decorator->locator());
-        $this->assertCount(0, $decorator->wildcards());
+        $this->assertCount(0, $decorator->variables());
     }
 
-    public function testWithWildcard(): void
+    public function testWithVariables(): void
     {
-        $wildcards = new Wildcards();
+        $variables = new Variables();
         $decorator = new Decorator(new Locator('repo', '/path'));
-        $decoratorWithWildcards = $decorator
-            ->withWildcards($wildcards);
-        $this->assertNotSame($decorator, $decoratorWithWildcards);
+        $decoratorWithVariables = $decorator
+            ->withVariables($variables);
+        $this->assertNotSame($decorator, $decoratorWithVariables);
         $this->assertEquals(
-            $wildcards,
-            $decoratorWithWildcards->wildcards()
+            $variables,
+            $decoratorWithVariables->variables()
         );
     }
 }

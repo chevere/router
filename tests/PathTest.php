@@ -35,8 +35,8 @@ final class PathTest extends TestCase
     {
         $string = '/path/{id:\d+}/it/{var}';
         $path = new Path($string);
-        $this->assertTrue($path->wildcards()->has('id'));
-        $this->assertTrue($path->wildcards()->has('var'));
+        $this->assertTrue($path->variables()->has('id'));
+        $this->assertTrue($path->variables()->has('var'));
         $this->assertSame('/path/{id}/it/{var}', $path->handle());
         $this->assertSame(
             '~^(?|/path/(\d+)/it/([^/]+))$~',
@@ -45,7 +45,7 @@ final class PathTest extends TestCase
         $this->assertSame($string, $path->__toString());
     }
 
-    public function testConstructNoWildcards(): void
+    public function testConstructNoVariables(): void
     {
         $string = '/path';
         $path = new Path($string);

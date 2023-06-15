@@ -15,23 +15,23 @@ namespace Chevere\Router;
 
 use Chevere\DataStructure\Traits\MapToArrayTrait;
 use Chevere\DataStructure\Traits\MapTrait;
-use Chevere\Router\Interfaces\WildcardInterface;
-use Chevere\Router\Interfaces\WildcardsInterface;
+use Chevere\Router\Interfaces\VariableInterface;
+use Chevere\Router\Interfaces\VariablesInterface;
 
-final class Wildcards implements WildcardsInterface
+final class Variables implements VariablesInterface
 {
     /**
-     * @template-use MapTrait<WildcardInterface>
+     * @template-use MapTrait<VariableInterface>
      */
     use MapTrait;
 
     use MapToArrayTrait;
 
-    public function withPut(WildcardInterface $wildcard): WildcardsInterface
+    public function withPut(VariableInterface $variable): VariablesInterface
     {
         $new = clone $this;
         $new->map = $new->map
-            ->withPut($wildcard->__toString(), $wildcard);
+            ->withPut($variable->__toString(), $variable);
 
         return $new;
     }
@@ -41,9 +41,9 @@ final class Wildcards implements WildcardsInterface
         return $this->map->has($name);
     }
 
-    public function get(string $name): WildcardInterface
+    public function get(string $name): VariableInterface
     {
-        /** @var WildcardInterface */
+        /** @var VariableInterface */
         return $this->map->get($name);
     }
 }

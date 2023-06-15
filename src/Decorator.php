@@ -15,22 +15,22 @@ namespace Chevere\Router;
 
 use Chevere\Router\Interfaces\DecoratorInterface;
 use Chevere\Router\Interfaces\LocatorInterface;
-use Chevere\Router\Interfaces\WildcardsInterface;
+use Chevere\Router\Interfaces\VariablesInterface;
 
 final class Decorator implements DecoratorInterface
 {
-    private WildcardsInterface $wildcards;
+    private VariablesInterface $variables;
 
     public function __construct(
         private LocatorInterface $locator
     ) {
-        $this->wildcards = new Wildcards();
+        $this->variables = new Variables();
     }
 
-    public function withWildcards(WildcardsInterface $wildcards): DecoratorInterface
+    public function withVariables(VariablesInterface $variables): DecoratorInterface
     {
         $new = clone $this;
-        $new->wildcards = $wildcards;
+        $new->variables = $variables;
 
         return $new;
     }
@@ -40,8 +40,8 @@ final class Decorator implements DecoratorInterface
         return $this->locator;
     }
 
-    public function wildcards(): WildcardsInterface
+    public function variables(): VariablesInterface
     {
-        return $this->wildcards;
+        return $this->variables;
     }
 }

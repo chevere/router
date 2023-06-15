@@ -16,8 +16,8 @@ namespace Chevere\Router\Exceptions;
 use Chevere\Throwable\Exception;
 
 /**
- * Exception thrown when the wildcard doesn't exists.
+ * Exception thrown when the variable contains invalid chars.
  */
-final class WildcardNotFoundException extends Exception
+final class VariableInvalidException extends Exception
 {
 }

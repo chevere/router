@@ -15,7 +15,7 @@ namespace Chevere\Router\Interfaces;
 
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Router\Exceptions\EndpointConflictException;
-use Chevere\Router\Exceptions\WildcardConflictException;
+use Chevere\Router\Exceptions\VariableConflictException;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
@@ -42,7 +42,7 @@ interface RouteInterface
      * @throws EndpointConflictException
      * @throws InvalidArgumentException
      * @throws OutOfBoundsException
-     * @throws WildcardConflictException
+     * @throws VariableConflictException
      */
     public function withEndpoint(EndpointInterface $endpoint): self;
 

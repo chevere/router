@@ -14,15 +14,15 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Message\Message;
-use Chevere\Router\Exceptions\WildcardInvalidException;
-use Chevere\Router\Interfaces\WildcardInterface;
-use Chevere\Router\Interfaces\WildcardMatchInterface;
+use Chevere\Router\Exceptions\VariableInvalidException;
+use Chevere\Router\Interfaces\VariableInterface;
+use Chevere\Router\Interfaces\VariableRegexInterface;
 
-final class Wildcard implements WildcardInterface
+final class Variable implements VariableInterface
 {
     public function __construct(
         private string $name,
-        private  WildcardMatchInterface $match
+        private  VariableRegexInterface $match
     ) {
         $this->assertName();
     }
@@ -32,15 +32,15 @@ final class Wildcard implements WildcardInterface
         return $this->name;
     }
 
-    public function match(): WildcardMatchInterface
+    public function match(): VariableRegexInterface
     {
         return $this->match;
     }
 
     private function assertName(): void
     {
-        if (! preg_match(WildcardInterface::ACCEPT_CHARS_REGEX, $this->name)) {
-            throw new WildcardInvalidException(
+        if (! preg_match(VariableInterface::ACCEPT_CHARS_REGEX, $this->name)) {
+            throw new VariableInvalidException(
                 (new Message('String %string% must contain only alphanumeric and underscore characters'))
                     ->withCode('%string%', $this->name)
             );
