@@ -13,7 +13,7 @@
     ],
     "require": {
         "chevere/chevere": "^3.0",
-        "chevere/http": "^0.1",
+        "chevere/http": "^0.2.x-dev",
         "nikic/fast-route": "^1.3"
     },
     "require-dev": {

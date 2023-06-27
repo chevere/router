@@ -15,6 +15,8 @@ namespace Chevere\Tests\_resources;
 
 use Chevere\Action\Traits\ActionTrait;
 use Chevere\Http\Interfaces\ControllerInterface;
+use Chevere\Parameter\Interfaces\ArgumentsInterface;
+
 use function Chevere\Parameter\arrayp;
 use function Chevere\Parameter\arrayString;
 use Chevere\Parameter\Interfaces\ArrayStringParameterInterface;
@@ -63,14 +65,14 @@ final class WrongController implements ControllerInterface
         return new self();
     }
 
-    public function query(): array
+    public function query(): ?ArgumentsInterface
     {
-        return [];
+        return null;
     }
 
-    public function body(): array
+    public function body(): ?ArgumentsInterface
     {
-        return [];
+        return null;
     }
 
     public function files(): array
