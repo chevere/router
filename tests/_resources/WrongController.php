@@ -17,6 +17,7 @@ use Chevere\Action\Traits\ActionTrait;
 use Chevere\Http\Interfaces\ControllerInterface;
 use Chevere\Parameter\Interfaces\ArgumentsInterface;
 
+use function Chevere\Parameter\arguments;
 use function Chevere\Parameter\arrayp;
 use function Chevere\Parameter\arrayString;
 use Chevere\Parameter\Interfaces\ArrayStringParameterInterface;
@@ -65,14 +66,20 @@ final class WrongController implements ControllerInterface
         return new self();
     }
 
-    public function query(): ?ArgumentsInterface
+    public function query(): ArgumentsInterface
     {
-        return null;
+        return arguments(
+            static::acceptQuery()->parameters(),
+            []
+        );
     }
 
-    public function body(): ?ArgumentsInterface
+    public function body(): ArgumentsInterface
     {
-        return null;
+        return arguments(
+            static::acceptBody()->parameters(),
+            []
+        );
     }
 
     public function files(): array
