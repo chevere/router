@@ -13,26 +13,36 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
+use Chevere\Attributes\Description;
 use Chevere\Common\Interfaces\DescribedInterface;
 use Chevere\Common\Traits\DescribedTrait;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Router\Interfaces\BindInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
+use ReflectionClass;
+
+use function Chevere\Attribute\getAttribute;
 
 final class Endpoint implements EndpointInterface, DescribedInterface
 {
-    use DescribedTrait;
-
-    private ?string $description;
+    private string $description;
 
     public function __construct(
         private MethodInterface $method,
         private BindInterface $bind
     ) {
-        $this->description = $bind->controllerName()->__toString()::description();
+        $reflection = new ReflectionClass($this->bind->controllerName()->__toString());
+        /** @var Description */
+        $description = getAttribute($reflection, Description::class);
+        $this->description = strval($description);
         if ($this->description === '') {
             $this->description = $method->description();
         }
+    }
+
+    public function description(): string
+    {
+        return $this->description;
     }
 
     public function method(): MethodInterface

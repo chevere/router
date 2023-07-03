@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\_resources;
 
-use Chevere\Attribute\StringRegex;
+use Chevere\Attributes\Regex;
 use Chevere\Http\Controller;
 
 final class ArticleGetController extends Controller
 {
     public function run(
-        #[StringRegex('/\d+/')]
+        #[Regex('/\d+/')]
         string $id
     ): array {
         return [];

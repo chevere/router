@@ -13,15 +13,15 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\_resources;
 
-use Chevere\Attribute\StringRegex;
+use Chevere\Attributes\Regex;
 use Chevere\Http\Controller;
 
 final class EndpointController extends Controller
 {
     public function run(
-        #[StringRegex('/[\w]+/')]
+        #[Regex('/[\w]+/')]
         string $name,
-        #[StringRegex('/[0-9]+/')]
+        #[Regex('/[0-9]+/')]
         string $id
     ): array {
         return [];

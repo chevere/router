@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\_resources;
 
-use Chevere\Attribute\StringRegex;
+use Chevere\Attributes\Regex;
 use Chevere\Http\Controller;
 
 final class ControllerWithParameter extends Controller
@@ -24,7 +24,7 @@ final class ControllerWithParameter extends Controller
     }
 
     public function run(
-        #[StringRegex('/[0-9]+/')]
+        #[Regex('/[0-9]+/')]
         string $id
     ): array {
         return [];
