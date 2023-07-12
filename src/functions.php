@@ -21,6 +21,8 @@ use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
 use function Chevere\Http\middlewares;
 use function Chevere\Message\message;
+use function Chevere\Parameter\methodParameters;
+
 use Chevere\Message\Message;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Router\Exceptions\VariableInvalidException;
@@ -68,7 +70,7 @@ function route(
 
             try {
                 /** @var ParametersInterface $parameters */
-                $parameters = $controllerName->__toString()::getParameters();
+                $parameters = methodParameters($controllerName->__toString(), 'run');
                 $stringParameter = $parameters->getString($variable);
             } catch (OutOfBoundsException) {
                 throw new VariableNotFoundException(

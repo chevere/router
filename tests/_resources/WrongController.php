@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\_resources;
 
+use Chevere\Action\Action;
 use Chevere\Action\Traits\ActionTrait;
 use Chevere\Http\Interfaces\ControllerInterface;
 use Chevere\Parameter\Interfaces\ArgumentsInterface;
@@ -23,17 +24,11 @@ use function Chevere\Parameter\arrayString;
 use Chevere\Parameter\Interfaces\ArrayStringParameterInterface;
 use Chevere\Parameter\Interfaces\ArrayTypeParameterInterface;
 
-final class WrongController implements ControllerInterface
+final class WrongController extends Action implements ControllerInterface
 {
-    use ActionTrait;
-
     public function run(int $id): array
     {
         return [];
-    }
-
-    public function assert(): void
-    {
     }
 
     public static function acceptQuery(): ArrayStringParameterInterface

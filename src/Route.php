@@ -16,6 +16,8 @@ namespace Chevere\Router;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Message\Message;
 use function Chevere\Message\message;
+use function Chevere\Parameter\methodParameters;
+
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
 use Chevere\Router\Exceptions\EndpointConflictException;
@@ -60,7 +62,7 @@ final class Route implements RouteInterface
         $new->assertUnique($endpoint);
         $new->assertNoConflict($endpoint);
         $controllerFqn = $endpoint->bind()->controllerName()->__toString();
-        $parameters = $controllerFqn::getParameters();
+        $parameters = methodParameters($controllerFqn, 'run');
         $new->assertVariableBounds($parameters, $controllerFqn);
         foreach ($new->path->variables() as $variable) {
             $new->assertEndpoint($endpoint);
@@ -137,13 +139,15 @@ final class Route implements RouteInterface
         if (count($this->endpoints()) === 0) {
             return;
         }
+        $firstControllerName = $this->firstEndpoint->bind()->controllerName()->__toString();
+        $parameters = methodParameters($firstControllerName, 'run');
         /** @var StringParameterInterface $parameter */
-        foreach ($this->firstEndpoint->bind()->controllerName()->__toString()::getParameters() as $name => $parameter) {
+        foreach ($parameters as $name => $parameter) {
             $match = $parameter->regex()->__toString();
 
             try {
-                /** @var StringParameterInterface $string */
-                $string = $endpoint->bind()->controllerName()->__toString()::getParameters()->get($name);
+                $controllerName = $endpoint->bind()->controllerName()->__toString();
+                $string = methodParameters($controllerName, 'run')->getString($name);
                 $controllerRegex = $string->regex()->__toString();
             } catch(OutOfBoundsException) {
                 $controllerRegex = '<none>';
@@ -154,7 +158,7 @@ final class Route implements RouteInterface
                         ->withCode('%parameter%', $name)
                         ->withCode('%match%', $match)
                         ->withCode('%controllerRegex%', $controllerRegex)
-                        ->withCode('%controller%', $endpoint->bind()->controllerName()->__toString())
+                        ->withCode('%controller%', $controllerName)
                         ->withCode('%firstController%', $this->firstEndpoint->bind()->controllerName()->__toString())
                 );
             }
@@ -163,7 +167,7 @@ final class Route implements RouteInterface
 
     private function assertEndpoint(EndpointInterface $endpoint): void
     {
-        $parameters = $endpoint->bind()->controllerName()->__toString()::getParameters();
+        $parameters = methodParameters($endpoint->bind()->controllerName()->__toString(), 'run');
         if (count($parameters) === 0) {
             throw new InvalidArgumentException(
                 (new Message("Invalid route %path% binding with %controller% which doesn't accept any parameter"))

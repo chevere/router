@@ -30,15 +30,5 @@ final class EndpointTest extends TestCase
         $this->assertSame($method, $endpoint->method());
         $this->assertSame($bind, $endpoint->bind());
         $this->assertSame($method->description(), $endpoint->description());
-        $parameters = [];
-        /** @var StringParameterInterface $parameter */
-        foreach ($controller::getParameters() as $name => $parameter) {
-            $parameters[$name] = [
-                'name' => $name,
-                'regex' => $parameter->regex()->__toString(),
-                'description' => $parameter->description(),
-                'isRequired' => $controller::getParameters()->isRequired($name),
-            ];
-        }
     }
 }

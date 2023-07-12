@@ -15,6 +15,8 @@ namespace Chevere\Tests;
 
 use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Parameter\StringParameter;
+
+use function Chevere\Parameter\methodParameters;
 use function Chevere\Router\bind;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
@@ -118,10 +120,9 @@ final class FunctionsTest extends TestCase
     public function testFunctionVariable(): void
     {
         $controller = ControllerWithParameters::class;
-        /** @var StringParameter $id */
-        $id = $controller::getParameters()->get('id');
-        /** @var StringParameter $name */
-        $name = $controller::getParameters()->get('name');
+        $parameters = methodParameters($controller, 'run');
+        $id = $parameters->getString('id');
+        $name = $parameters->getString('name');
         $route = route(
             path: '/test/{id}/{name}',
             GET: bind($controller),
