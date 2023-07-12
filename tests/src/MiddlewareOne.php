@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Tests\_resources;
+namespace Chevere\Tests\src;
 
 final class MiddlewareOne extends Middleware
 {

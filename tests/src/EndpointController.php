@@ -11,14 +11,19 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Tests\_resources;
+namespace Chevere\Tests\src;
 
+use Chevere\Attributes\Regex;
 use Chevere\Http\Controller;
 
-final class ControllerNoParameters extends Controller
+final class EndpointController extends Controller
 {
-    public function run(): array
-    {
+    protected function run(
+        #[Regex('/[\w]+/')]
+        string $name,
+        #[Regex('/[0-9]+/')]
+        string $id
+    ): array {
         return [];
     }
 }

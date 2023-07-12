@@ -14,18 +14,18 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\Http\Methods\GetMethod;
-use function Chevere\Router\bind;
 use Chevere\Router\Endpoint;
 use Chevere\Router\Index;
 use Chevere\Router\Interfaces\IdentifierInterface;
 use Chevere\Router\Path;
 use Chevere\Router\Route;
-use function Chevere\Router\route;
 use Chevere\String\Exceptions\CtypeSpaceException;
-use Chevere\Tests\_resources\ControllerWithParameters;
+use Chevere\Tests\src\ControllerWithParameters;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
 use PHPUnit\Framework\TestCase;
+use function Chevere\Router\bind;
+use function Chevere\Router\route;
 
 final class IndexTest extends TestCase
 {

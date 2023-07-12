@@ -11,17 +11,14 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Tests\_resources;
+namespace Chevere\Tests\src;
 
-use Chevere\Attributes\Regex;
 use Chevere\Http\Controller;
 
-final class ArticleGetController extends Controller
+final class ControllerNoParameters extends Controller
 {
-    public function run(
-        #[Regex('/\d+/')]
-        string $id
-    ): array {
+    protected function run(): array
+    {
         return [];
     }
 }

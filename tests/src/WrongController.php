@@ -11,26 +11,19 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Tests\_resources;
+namespace Chevere\Tests\src;
 
 use Chevere\Action\Action;
-use Chevere\Action\Traits\ActionTrait;
 use Chevere\Http\Interfaces\ControllerInterface;
 use Chevere\Parameter\Interfaces\ArgumentsInterface;
-
+use Chevere\Parameter\Interfaces\ArrayStringParameterInterface;
+use Chevere\Parameter\Interfaces\ArrayTypeParameterInterface;
 use function Chevere\Parameter\arguments;
 use function Chevere\Parameter\arrayp;
 use function Chevere\Parameter\arrayString;
-use Chevere\Parameter\Interfaces\ArrayStringParameterInterface;
-use Chevere\Parameter\Interfaces\ArrayTypeParameterInterface;
 
 final class WrongController extends Action implements ControllerInterface
 {
-    public function run(int $id): array
-    {
-        return [];
-    }
-
     public static function acceptQuery(): ArrayStringParameterInterface
     {
         return arrayString();
@@ -78,6 +71,11 @@ final class WrongController extends Action implements ControllerInterface
     }
 
     public function files(): array
+    {
+        return [];
+    }
+
+    protected function run(int $id): array
     {
         return [];
     }

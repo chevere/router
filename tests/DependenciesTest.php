@@ -13,15 +13,15 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
-use function Chevere\Router\bind;
 use Chevere\Router\Dependencies;
-use function Chevere\Router\route;
-use function Chevere\Router\routes;
-use Chevere\Tests\_resources\ControllerWithParameter;
-use Chevere\Tests\_resources\MiddlewareOne;
-use Chevere\Tests\_resources\MiddlewareTwo;
+use Chevere\Tests\src\ControllerWithParameter;
+use Chevere\Tests\src\MiddlewareOne;
+use Chevere\Tests\src\MiddlewareTwo;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
+use function Chevere\Router\bind;
+use function Chevere\Router\route;
+use function Chevere\Router\routes;
 
 final class DependenciesTest extends TestCase
 {

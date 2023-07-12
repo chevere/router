@@ -19,12 +19,7 @@ use Chevere\Http\Interfaces\ControllerNameInterface;
 use Chevere\Http\Interfaces\HttpControllerInterface;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
-use function Chevere\Http\middlewares;
-use function Chevere\Message\message;
-use function Chevere\Parameter\methodParameters;
-
 use Chevere\Message\Message;
-use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\BindInterface;
@@ -35,6 +30,9 @@ use Chevere\Router\Interfaces\RoutesInterface;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Psr\Http\Server\MiddlewareInterface;
 use TypeError;
+use function Chevere\Action\getParameters;
+use function Chevere\Http\middlewares;
+use function Chevere\Message\message;
 
 /**
  * Creates Routes object for all `$routes`.
@@ -69,8 +67,7 @@ function route(
             STRING;
 
             try {
-                /** @var ParametersInterface $parameters */
-                $parameters = methodParameters($controllerName->__toString(), 'run');
+                $parameters = getParameters($controllerName->__toString());
                 $stringParameter = $parameters->getString($variable);
             } catch (OutOfBoundsException) {
                 throw new VariableNotFoundException(
@@ -78,7 +75,7 @@ function route(
                         ->withCode('%variable%', $variableBracket)
                         ->withCode('%controller%', $controllerName->__toString())
                 );
-            } catch(TypeError) {
+            } catch (TypeError) {
                 throw new VariableInvalidException(
                     message('Variable %variable% is not a string parameter in controller %controller%')
                         ->withCode('%variable%', $variableBracket)

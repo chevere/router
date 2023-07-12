@@ -14,21 +14,19 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\Http\Exceptions\MethodNotAllowedException;
-use Chevere\Parameter\StringParameter;
-
-use function Chevere\Parameter\methodParameters;
-use function Chevere\Router\bind;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\EndpointInterface;
+use Chevere\Tests\src\ControllerNoParameters;
+use Chevere\Tests\src\ControllerWithParameters;
+use Chevere\Tests\src\WrongController;
+use Chevere\Throwable\Exceptions\InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
+use function Chevere\Action\getParameters;
+use function Chevere\Router\bind;
 use function Chevere\Router\route;
 use function Chevere\Router\router;
 use function Chevere\Router\routes;
-use Chevere\Tests\_resources\ControllerNoParameters;
-use Chevere\Tests\_resources\ControllerWithParameters;
-use Chevere\Tests\_resources\WrongController;
-use Chevere\Throwable\Exceptions\InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 
 final class FunctionsTest extends TestCase
 {
@@ -120,7 +118,7 @@ final class FunctionsTest extends TestCase
     public function testFunctionVariable(): void
     {
         $controller = ControllerWithParameters::class;
-        $parameters = methodParameters($controller, 'run');
+        $parameters = getParameters($controller);
         $id = $parameters->getString('id');
         $name = $parameters->getString('name');
         $route = route(

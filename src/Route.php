@@ -15,9 +15,6 @@ namespace Chevere\Router;
 
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Message\Message;
-use function Chevere\Message\message;
-use function Chevere\Parameter\methodParameters;
-
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
 use Chevere\Router\Exceptions\EndpointConflictException;
@@ -29,6 +26,8 @@ use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
+use function Chevere\Action\getParameters;
+use function Chevere\Message\message;
 
 final class Route implements RouteInterface
 {
@@ -62,7 +61,7 @@ final class Route implements RouteInterface
         $new->assertUnique($endpoint);
         $new->assertNoConflict($endpoint);
         $controllerFqn = $endpoint->bind()->controllerName()->__toString();
-        $parameters = methodParameters($controllerFqn, 'run');
+        $parameters = getParameters($controllerFqn);
         $new->assertVariableBounds($parameters, $controllerFqn);
         foreach ($new->path->variables() as $variable) {
             $new->assertEndpoint($endpoint);
@@ -140,16 +139,16 @@ final class Route implements RouteInterface
             return;
         }
         $firstControllerName = $this->firstEndpoint->bind()->controllerName()->__toString();
-        $parameters = methodParameters($firstControllerName, 'run');
+        $parameters = getParameters($firstControllerName);
         /** @var StringParameterInterface $parameter */
         foreach ($parameters as $name => $parameter) {
             $match = $parameter->regex()->__toString();
 
             try {
                 $controllerName = $endpoint->bind()->controllerName()->__toString();
-                $string = methodParameters($controllerName, 'run')->getString($name);
+                $string = getParameters($controllerName)->getString($name);
                 $controllerRegex = $string->regex()->__toString();
-            } catch(OutOfBoundsException) {
+            } catch (OutOfBoundsException) {
                 $controllerRegex = '<none>';
             }
             if ($match !== $controllerRegex) {
@@ -167,7 +166,7 @@ final class Route implements RouteInterface
 
     private function assertEndpoint(EndpointInterface $endpoint): void
     {
-        $parameters = methodParameters($endpoint->bind()->controllerName()->__toString(), 'run');
+        $parameters = getParameters($endpoint->bind()->controllerName()->__toString());
         if (count($parameters) === 0) {
             throw new InvalidArgumentException(
                 (new Message("Invalid route %path% binding with %controller% which doesn't accept any parameter"))

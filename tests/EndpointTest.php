@@ -14,10 +14,10 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\Http\Methods\GetMethod;
-use function Chevere\Router\bind;
 use Chevere\Router\Endpoint;
-use Chevere\Tests\_resources\EndpointController;
+use Chevere\Tests\src\EndpointController;
 use PHPUnit\Framework\TestCase;
+use function Chevere\Router\bind;
 
 final class EndpointTest extends TestCase
 {

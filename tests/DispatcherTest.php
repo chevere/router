@@ -14,14 +14,14 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\Http\Exceptions\MethodNotAllowedException;
-use function Chevere\Router\bind;
 use Chevere\Router\Dispatcher;
 use Chevere\Router\Exceptions\NotFoundException;
 use Chevere\Router\Parsers\StrictStd;
-use Chevere\Tests\_resources\ControllerWithParameters;
+use Chevere\Tests\src\ControllerWithParameters;
 use FastRoute\DataGenerator\GroupCountBased;
 use FastRoute\RouteCollector;
 use PHPUnit\Framework\TestCase;
+use function Chevere\Router\bind;
 
 final class DispatcherTest extends TestCase
 {

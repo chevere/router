@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
-use function Chevere\Router\bind;
 use Chevere\Router\Routed;
-use Chevere\Tests\_resources\ControllerWithParameters;
+use Chevere\Tests\src\ControllerWithParameters;
 use PHPUnit\Framework\TestCase;
+use function Chevere\Router\bind;
 
 final class RoutedTest extends TestCase
 {

@@ -15,21 +15,21 @@ namespace Chevere\Tests;
 
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Http\Methods\PostMethod;
-use function Chevere\Router\bind;
 use Chevere\Router\Endpoint;
 use Chevere\Router\Exceptions\EndpointConflictException;
 use Chevere\Router\Exceptions\VariableConflictException;
 use Chevere\Router\Path;
-use function Chevere\Router\route;
 use Chevere\Router\Route;
-use Chevere\Tests\_resources\ControllerNoParameters;
-use Chevere\Tests\_resources\ControllerRegexConflict;
-use Chevere\Tests\_resources\ControllerWithParameter;
-use Chevere\Tests\_resources\ControllerWithParameters;
+use Chevere\Tests\src\ControllerNoParameters;
+use Chevere\Tests\src\ControllerRegexConflict;
+use Chevere\Tests\src\ControllerWithParameter;
+use Chevere\Tests\src\ControllerWithParameters;
 use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
 use PHPUnit\Framework\TestCase;
+use function Chevere\Router\bind;
+use function Chevere\Router\route;
 
 final class RouteTest extends TestCase
 {

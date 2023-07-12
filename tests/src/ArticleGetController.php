@@ -11,8 +11,17 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Tests\_resources;
+namespace Chevere\Tests\src;
 
-final class MiddlewareThree extends Middleware
+use Chevere\Attributes\Regex;
+use Chevere\Http\Controller;
+
+final class ArticleGetController extends Controller
 {
+    protected function run(
+        #[Regex('/\d+/')]
+        string $id
+    ): array {
+        return [];
+    }
 }

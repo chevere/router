@@ -17,19 +17,19 @@ use Chevere\Http\ControllerName;
 use Chevere\Http\Methods\GetMethod;
 use Chevere\Http\MiddlewareName;
 use Chevere\Http\Middlewares;
-use function Chevere\Http\middlewares;
 use Chevere\Router\Bind;
 use Chevere\Router\Endpoint;
 use Chevere\Router\Path;
 use Chevere\Router\Route;
 use Chevere\Router\Routes;
-use Chevere\Tests\_resources\ControllerNoParameters;
-use Chevere\Tests\_resources\MiddlewareOne;
-use Chevere\Tests\_resources\MiddlewareThree;
-use Chevere\Tests\_resources\MiddlewareTwo;
+use Chevere\Tests\src\ControllerNoParameters;
+use Chevere\Tests\src\MiddlewareOne;
+use Chevere\Tests\src\MiddlewareThree;
+use Chevere\Tests\src\MiddlewareTwo;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Chevere\Throwable\Exceptions\OverflowException;
 use PHPUnit\Framework\TestCase;
+use function Chevere\Http\middlewares;
 
 final class RoutesTest extends TestCase
 {

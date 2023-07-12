@@ -14,14 +14,14 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\Http\Methods\GetMethod;
-use function Chevere\Router\bind;
 use Chevere\Router\Endpoint;
 use Chevere\Router\Exceptions\WithoutEndpointsException;
-use function Chevere\Router\route;
 use Chevere\Router\Router;
-use Chevere\Tests\_resources\ControllerWithParameters;
+use Chevere\Tests\src\ControllerWithParameters;
 use FastRoute\RouteCollector;
 use PHPUnit\Framework\TestCase;
+use function Chevere\Router\bind;
+use function Chevere\Router\route;
 
 final class RouterTest extends TestCase
 {

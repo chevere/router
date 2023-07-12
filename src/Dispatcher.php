@@ -46,17 +46,15 @@ final class Dispatcher implements DispatcherInterface
 
         return match ($status) {
             GroupCountBased::FOUND => new Routed($handler, $arguments),
-            GroupCountBased::NOT_FOUND =>
-                throw new NotFoundException(
-                    (new Message('No route found for %uri%'))
-                        ->withCode('%uri%', $uri)
-                ),
-            GroupCountBased::METHOD_NOT_ALLOWED =>
-                throw new MethodNotAllowedException(
-                    (new Message('Method %method% is not in the list of allowed methods: %allowed%'))
-                        ->withCode('%method%', $httpMethod)
-                        ->withCode('%allowed%', implode(', ', $allowed))
-                ),
+            GroupCountBased::NOT_FOUND => throw new NotFoundException(
+                (new Message('No route found for %uri%'))
+                    ->withCode('%uri%', $uri)
+            ),
+            GroupCountBased::METHOD_NOT_ALLOWED => throw new MethodNotAllowedException(
+                (new Message('Method %method% is not in the list of allowed methods: %allowed%'))
+                    ->withCode('%method%', $httpMethod)
+                    ->withCode('%allowed%', implode(', ', $allowed))
+            ),
             // @codeCoverageIgnoreStart
             default => throw new LogicException(
                 (new Message('Unknown router status code %status%'))

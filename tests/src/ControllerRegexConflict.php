@@ -11,8 +11,17 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Tests\_resources;
+namespace Chevere\Tests\src;
 
-final class MiddlewareTwo extends Middleware
+use Chevere\Attributes\Regex;
+use Chevere\Http\Controller;
+
+final class ControllerRegexConflict extends Controller
 {
+    protected function run(
+        #[Regex('/\W+/')]
+        string $id
+    ): array {
+        return [];
+    }
 }

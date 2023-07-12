@@ -15,12 +15,10 @@ namespace Chevere\Router;
 
 use Chevere\Attributes\Description;
 use Chevere\Common\Interfaces\DescribedInterface;
-use Chevere\Common\Traits\DescribedTrait;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Router\Interfaces\BindInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
 use ReflectionClass;
-
 use function Chevere\Attribute\getAttribute;
 
 final class Endpoint implements EndpointInterface, DescribedInterface
@@ -32,7 +30,7 @@ final class Endpoint implements EndpointInterface, DescribedInterface
         private BindInterface $bind
     ) {
         $reflection = new ReflectionClass($this->bind->controllerName()->__toString());
-        /** @var Description */
+        /** @var Description $description */
         $description = getAttribute($reflection, Description::class);
         $this->description = strval($description);
         if ($this->description === '') {

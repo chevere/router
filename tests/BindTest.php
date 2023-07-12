@@ -14,10 +14,10 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\Http\ControllerName;
-use function Chevere\Http\middlewares;
 use Chevere\Router\Bind;
-use Chevere\Tests\_resources\ControllerWithParameters;
+use Chevere\Tests\src\ControllerWithParameters;
 use PHPUnit\Framework\TestCase;
+use function Chevere\Http\middlewares;
 
 final class BindTest extends TestCase
 {
