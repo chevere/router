@@ -43,6 +43,9 @@ final class Identifier implements IdentifierInterface
         return $this->id;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function toArray(): array
     {
         return [

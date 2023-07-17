@@ -115,12 +115,14 @@ final class Index implements IndexInterface
         return $this->groupsIndex->get($name);
     }
 
+    /**
+     * @return array<string, array<string, string>>
+     */
     public function toArray(): array
     {
         $array = [];
-        /** @var IdentifierInterface $routeIdentifier */
-        foreach ($this->identifiersMap as $routePath => $routeIdentifier) {
-            $array[$routePath] = $routeIdentifier->toArray();
+        foreach ($this->identifiersMap as $path => $identifier) {
+            $array[$path] = $identifier->toArray();
         }
 
         return $array;
