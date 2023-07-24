@@ -61,6 +61,7 @@ function route(
     $route = (new Route(new Path($path), $name));
     foreach ($bind as $item) {
         $controllerName = controllerName($item);
+        $controllerName->__toString()::assert();
         foreach ($routePath->variables()->keys() as $variable) {
             $variableBracket = <<<STRING
             {{$variable}}
