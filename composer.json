@@ -12,7 +12,7 @@
         }
     ],
     "require": {
-        "chevere/chevere": "^3.1.x-dev",
+        "chevere/chevere": "^3.1",
         "chevere/http": "^0.2.x-dev",
         "nikic/fast-route": "^1.3"
     },
@@ -61,3 +61,4 @@
         "cs-update": "Update Chevere code style definition",
         "cs-fix": "Update Chevere code style definition"
     }
+}
