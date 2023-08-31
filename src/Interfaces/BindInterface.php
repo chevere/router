@@ -28,5 +28,7 @@ interface BindInterface
 
     public function middlewares(): MiddlewaresInterface;
 
+    public function withView(string $view): self;
+
     public function withMiddlewares(MiddlewaresInterface $middlewares): self;
 }

@@ -16,9 +16,10 @@ namespace Chevere\Router;
 use Chevere\Http\ControllerName;
 use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Http\Interfaces\ControllerNameInterface;
-use Chevere\Http\Interfaces\HttpControllerInterface;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
+use Chevere\Http\MiddlewareName;
+use Chevere\Http\Middlewares;
 use Chevere\Message\Message;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
@@ -115,19 +116,19 @@ function route(
         };
         /** @var MethodInterface $method */
         $method = new $method();
-        $middleware = match (true) {
+        $middlewares = match (true) {
             is_string($middleware) => middlewares($middleware),
             $middleware === null => middlewares(),
             default => $middleware,
         };
         if ($item instanceof BindInterface) {
-            $middleware = $middleware->withAppend(
+            $middlewares = $middlewares->withAppend(
                 ...iterator_to_array(
                     $item->middlewares()
                 )
             );
         }
-        $bind = bind($controllerName->__toString(), $middleware, $itemView);
+        $bind = (new Bind($controllerName, $middlewares))->withView($itemView);
         $endpoint = new Endpoint($method, $bind);
         $route = $route->withEndpoint($endpoint);
     }
@@ -155,21 +156,21 @@ function router(RoutesInterface ...$routes): RouterInterface
 }
 
 /**
- * @param string $controller HttpControllerInterface HTTP controller name
+ * @param string $controller HTTP controller name
+ * @param string $middleware HTTP middleware name
  */
-function bind(
-    string $controller,
-    string|MiddlewaresInterface $middleware = null,
-    string $view = '',
-): BindInterface {
-    $controller = new ControllerName($controller);
-    $middleware = match (true) {
-        is_string($middleware) => middlewares($middleware),
-        $middleware === null => middlewares(),
-        default => $middleware,
-    };
+function bind(string $controller, string ...$middleware): BindInterface
+{
+    $controllerName = new ControllerName($controller);
+    $middlewares = new Middlewares();
+    foreach ($middleware as $name) {
+        $middlewares = $middlewares
+            ->withAppend(
+                new MiddlewareName($name)
+            );
+    }
 
-    return new Bind($controller, $middleware, $view);
+    return new Bind($controllerName, $middlewares);
 }
 
 function controllerName(BindInterface|string $item): ControllerNameInterface

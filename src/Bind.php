@@ -19,11 +19,13 @@ use Chevere\Router\Interfaces\BindInterface;
 
 final class Bind implements BindInterface
 {
+    private string $view;
+
     public function __construct(
         private ControllerNameInterface $controllerName,
         private MiddlewaresInterface $middlewares,
-        private string $view,
     ) {
+        $this->view = '';
     }
 
     public function controllerName(): ControllerNameInterface
@@ -39,6 +41,14 @@ final class Bind implements BindInterface
     public function middlewares(): MiddlewaresInterface
     {
         return $this->middlewares;
+    }
+
+    public function withView(string $view): BindInterface
+    {
+        $new = clone $this;
+        $new->view = $view;
+
+        return $new;
     }
 
     public function withMiddlewares(MiddlewaresInterface $middlewares): BindInterface
