@@ -43,6 +43,46 @@ function routes(RouteInterface ...$routes): RoutesInterface
     return (new Routes())->withRoute(...$routes);
 }
 
+function getPath(string $path, string|BindInterface ...$bind): string
+{
+    $routePath = new Path($path);
+    foreach ($bind as $item) {
+        $controllerName = (string) controllerName($item);
+        $controllerName::assert();
+        foreach ($routePath->variables()->keys() as $variable) {
+            $variableBracket = <<<STRING
+            {{$variable}}
+            STRING;
+
+            try {
+                $parameters = getParameters($controllerName);
+                $stringParameter = $parameters->getString($variable);
+            } catch (OutOfBoundsException) {
+                throw new VariableNotFoundException(
+                    message('Variable %variable% does not exists in controller %controller%')
+                        ->withCode('%variable%', $variableBracket)
+                        ->withCode('%controller%', $controllerName)
+                );
+            } catch (TypeError) {
+                throw new VariableInvalidException(
+                    message('Variable %variable% is not a string parameter in controller %controller%')
+                        ->withCode('%variable%', $variableBracket)
+                        ->withCode('%controller%', $controllerName)
+                );
+            }
+            $path = str_replace(
+                $variableBracket,
+                <<<STRING
+                {{$variable}:{$stringParameter->regex()->noDelimitersNoAnchors()}}
+                STRING,
+                $path
+            );
+        }
+    }
+
+    return $path;
+}
+
 /**
  * Creates Route binding.
  *
@@ -58,42 +98,8 @@ function route(
     string|BindInterface ...$bind
 ): RouteInterface {
     $name = $name === '' ? $path : $name;
-    $routePath = new Path($path);
-    $route = (new Route(new Path($path), $name));
-    foreach ($bind as $item) {
-        $controllerName = controllerName($item);
-        $controllerName->__toString()::assert();
-        foreach ($routePath->variables()->keys() as $variable) {
-            $variableBracket = <<<STRING
-            {{$variable}}
-            STRING;
-
-            try {
-                $parameters = getParameters($controllerName->__toString());
-                $stringParameter = $parameters->getString($variable);
-            } catch (OutOfBoundsException) {
-                throw new VariableNotFoundException(
-                    message('Variable %variable% does not exists in controller %controller%')
-                        ->withCode('%variable%', $variableBracket)
-                        ->withCode('%controller%', $controllerName->__toString())
-                );
-            } catch (TypeError) {
-                throw new VariableInvalidException(
-                    message('Variable %variable% is not a string parameter in controller %controller%')
-                        ->withCode('%variable%', $variableBracket)
-                        ->withCode('%controller%', $controllerName->__toString())
-                );
-            }
-            $path = str_replace(
-                $variableBracket,
-                <<<STRING
-                {{$variable}:{$stringParameter->regex()->noDelimitersNoAnchors()}}
-                STRING,
-                $path
-            );
-        }
-    }
-    $route = (new Route(new Path($path), $name));
+    $path = getPath($path, ...$bind);
+    $route = new Route(new Path($path), $name);
     foreach ($bind as $method => $item) {
         $controllerName = controllerName($item);
         $httpMethod = strval($method);

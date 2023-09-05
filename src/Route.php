@@ -75,7 +75,11 @@ final class Route implements RouteInterface
             }
             if ($parameterRegex !== $variableRegex) {
                 throw new VariableConflictException(
-                    (new Message('Variable %parameter% matches against %match% which is incompatible with the match %controllerRegex% defined by %controller%'))
+                    (new Message(
+                        <<<MESSAGE
+                        Variable %parameter% matches against %match% which is incompatible with the match %controllerRegex% defined by %controller%
+                        MESSAGE
+                    ))
                         ->withCode('%parameter%', '{' . strval($variable) . '}')
                         ->withCode('%match%', $variableRegex)
                         ->withCode('%controllerRegex%', $parameterRegex)
@@ -153,7 +157,11 @@ final class Route implements RouteInterface
             }
             if ($match !== $controllerRegex) {
                 throw new EndpointConflictException(
-                    (new Message('Controller parameter %parameter% first defined at %firstController% matches against %match% which is incompatible with the match %controllerRegex% defined by %controller%'))
+                    (new Message(
+                        <<<MESSAGE
+                        Controller parameter %parameter% first defined at %firstController% matches against %match% which is incompatible with the match %controllerRegex% defined by %controller%
+                        MESSAGE
+                    ))
                         ->withCode('%parameter%', $name)
                         ->withCode('%match%', $match)
                         ->withCode('%controllerRegex%', $controllerRegex)
