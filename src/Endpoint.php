@@ -14,14 +14,13 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Attributes\Description;
-use Chevere\Common\Interfaces\DescribedInterface;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Router\Interfaces\BindInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
 use ReflectionClass;
 use function Chevere\Attribute\getAttribute;
 
-final class Endpoint implements EndpointInterface, DescribedInterface
+final class Endpoint implements EndpointInterface
 {
     private string $description;
 

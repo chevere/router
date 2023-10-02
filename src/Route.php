@@ -147,10 +147,10 @@ final class Route implements RouteInterface
         /** @var StringParameterInterface $parameter */
         foreach ($parameters as $name => $parameter) {
             $match = $parameter->regex()->__toString();
+            $controllerName = $endpoint->bind()->controllerName()->__toString();
 
             try {
-                $controllerName = $endpoint->bind()->controllerName()->__toString();
-                $string = getParameters($controllerName)->getString($name);
+                $string = getParameters($controllerName)->required($name)->string();
                 $controllerRegex = $string->regex()->__toString();
             } catch (OutOfBoundsException) {
                 $controllerRegex = '<none>';

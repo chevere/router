@@ -56,7 +56,7 @@ function getPath(string $path, string|BindInterface ...$bind): string
 
             try {
                 $parameters = getParameters($controllerName);
-                $stringParameter = $parameters->getString($variable);
+                $stringParameter = $parameters->required($variable)->string();
             } catch (OutOfBoundsException) {
                 throw new VariableNotFoundException(
                     message('Variable %variable% does not exists in controller %controller%')

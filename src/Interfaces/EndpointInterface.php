@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Chevere\Common\Interfaces\DescribedInterface;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Http\Methods\ConnectMethod;
 use Chevere\Http\Methods\DeleteMethod;
@@ -30,7 +29,7 @@ use Chevere\Http\Methods\TraceMethod;
  *
  * Note: Parameters must be automatically determined from known `$controller` parameters.
  */
-interface EndpointInterface extends DescribedInterface
+interface EndpointInterface
 {
     /**
      * Known HTTP methods
@@ -50,4 +49,6 @@ interface EndpointInterface extends DescribedInterface
     public function method(): MethodInterface;
 
     public function bind(): BindInterface;
+
+    public function description(): string;
 }

@@ -119,8 +119,8 @@ final class FunctionsTest extends TestCase
     {
         $controller = ControllerWithParameters::class;
         $parameters = getParameters($controller);
-        $id = $parameters->getString('id');
-        $name = $parameters->getString('name');
+        $id = $parameters->required('id')->string();
+        $name = $parameters->required('name')->string();
         $route = route(
             path: '/test/{id}/{name}',
             GET: bind($controller),
