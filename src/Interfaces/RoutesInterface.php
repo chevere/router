@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Chevere\DataStructure\Interfaces\MappedInterface;
+use Chevere\DataStructure\Interfaces\StringMappedInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Iterator;
@@ -21,9 +21,9 @@ use Iterator;
 /**
  * Describes the component in charge of collecting objects implementing `RouteInterface`.
  *
- * @extends MappedInterface<RouteInterface>
+ * @extends StringMappedInterface<RouteInterface>
  */
-interface RoutesInterface extends MappedInterface
+interface RoutesInterface extends StringMappedInterface
 {
     public const EXCEPTION_CODE_TAKEN_NAME = 110;
 

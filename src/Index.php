@@ -125,6 +125,7 @@ final class Index implements IndexInterface
             $array[$path] = $identifier->toArray();
         }
 
+        /** @phpstan-ignore-next-line */
         return $array;
     }
 }

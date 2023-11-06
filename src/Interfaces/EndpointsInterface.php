@@ -13,16 +13,16 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Chevere\DataStructure\Interfaces\MappedInterface;
+use Chevere\DataStructure\Interfaces\StringMappedInterface;
 use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Iterator;
 
 /**
  * Describes the component in charge of collecting objects implementing `EndpointInterface`.
  *
- * @extends MappedInterface<EndpointInterface>
+ * @extends StringMappedInterface<EndpointInterface>
  */
-interface EndpointsInterface extends MappedInterface
+interface EndpointsInterface extends StringMappedInterface
 {
     /**
      * Return an instance with the specified `$endpoint` defined.

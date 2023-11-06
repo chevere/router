@@ -14,15 +14,15 @@ declare(strict_types=1);
 namespace Chevere\Router\Interfaces;
 
 use Chevere\Common\Interfaces\ToArrayInterface;
-use Chevere\DataStructure\Interfaces\MappedInterface;
+use Chevere\DataStructure\Interfaces\StringMappedInterface;
 use Iterator;
 
 /**
  * Describes the component in charge of collecting objects implementing `VariableInterface`.
  *
- * @extends MappedInterface<VariableInterface>
+ * @extends StringMappedInterface<VariableInterface>
  */
-interface VariablesInterface extends MappedInterface, ToArrayInterface
+interface VariablesInterface extends StringMappedInterface, ToArrayInterface
 {
     /**
      * Return an instance with the specified `$variable`.

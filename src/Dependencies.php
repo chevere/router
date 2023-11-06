@@ -80,7 +80,7 @@ final class Dependencies implements DependenciesInterface
         $array = [];
         foreach ($parameters as $name => $parameter) {
             $array[$name] = $parameter->schema() + [
-                'required' => $parameters->isRequired($name),
+                'required' => $parameters->requiredKeys()->contains($name),
             ];
         }
         $this->array[$className] = $array;
