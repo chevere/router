@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Chevere\Throwable\Exceptions\InvalidArgumentException;
-use Chevere\Throwable\Exceptions\OverflowException;
 use FastRoute\RouteCollector;
+use InvalidArgumentException;
+use OverflowException;
 
 /**
  * Describes the component in charge of handling routing.

@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
-use Chevere\Message\Message;
 use Chevere\Router\Exceptions\WithoutEndpointsException;
 use Chevere\Router\Interfaces\IndexInterface;
 use Chevere\Router\Interfaces\RouteInterface;
@@ -22,6 +21,7 @@ use Chevere\Router\Interfaces\RoutesInterface;
 use Chevere\Router\Parsers\StrictStd;
 use FastRoute\DataGenerator\GroupCountBased;
 use FastRoute\RouteCollector;
+use function Chevere\Message\message;
 
 final class Router implements RouterInterface
 {
@@ -77,8 +77,10 @@ final class Router implements RouterInterface
         }
 
         throw new WithoutEndpointsException(
-            (new Message("Route %path% doesn't contain any endpoint."))
-                ->withCode('%path%', $route->path()->__toString())
+            (string) message(
+                "Route `%path%` doesn't contain any endpoint.",
+                path: $route->path()->__toString()
+            )
         );
     }
 }

@@ -15,7 +15,7 @@ namespace Chevere\Router\Interfaces;
 
 use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Router\Exceptions\NotFoundException;
-use Chevere\Throwable\Exceptions\LogicException;
+use LogicException;
 
 /**
  * Describes the component in charge of dispatch router.

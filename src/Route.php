@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Http\Interfaces\MethodInterface;
-use Chevere\Message\Message;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
 use Chevere\Router\Exceptions\EndpointConflictException;
@@ -23,9 +22,9 @@ use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\EndpointsInterface;
 use Chevere\Router\Interfaces\PathInterface;
 use Chevere\Router\Interfaces\RouteInterface;
-use Chevere\Throwable\Exceptions\InvalidArgumentException;
-use Chevere\Throwable\Exceptions\OutOfBoundsException;
-use Chevere\Throwable\Exceptions\OverflowException;
+use InvalidArgumentException;
+use OutOfBoundsException;
+use OverflowException;
 use function Chevere\Action\getParameters;
 use function Chevere\Message\message;
 
@@ -75,15 +74,15 @@ final class Route implements RouteInterface
             }
             if ($parameterRegex !== $variableRegex) {
                 throw new VariableConflictException(
-                    (new Message(
+                    (string) message(
                         <<<MESSAGE
-                        Variable %parameter% matches against %match% which is incompatible with the match %controllerRegex% defined by %controller%
-                        MESSAGE
-                    ))
-                        ->withCode('%parameter%', '{' . strval($variable) . '}')
-                        ->withCode('%match%', $variableRegex)
-                        ->withCode('%controllerRegex%', $parameterRegex)
-                        ->withCode('%controller%', $endpoint->bind()->controllerName()->__toString())
+                        Variable `%parameter%` matches against `%match%` which is incompatible with the match `%controllerRegex%` defined by `%controller%`
+                        MESSAGE,
+                        parameter: '{' . strval($variable) . '}',
+                        match: $variableRegex,
+                        controllerRegex: $parameterRegex,
+                        controller: $endpoint->bind()->controllerName()->__toString(),
+                    )
                 );
             }
         }
@@ -119,10 +118,12 @@ final class Route implements RouteInterface
         }
 
         throw new OutOfBoundsException(
-            message('Unmatched path %path% parameter(s) %parameters% for %controller%')
-                ->withCode('%parameters%', implode(', ', $diff))
-                ->withCode('%path%', $this->path->__toString())
-                ->withStrong('%controller%', $controller)
+            (string) message(
+                'Unmatched path `%path%` parameter(s) `%parameters%` for **%controller%**',
+                parameters: implode(', ', $diff),
+                path: $this->path->__toString(),
+                controller: $controller,
+            )
         );
     }
 
@@ -131,8 +132,10 @@ final class Route implements RouteInterface
         $key = $endpoint->method()->name();
         if ($this->endpoints->has($key)) {
             throw new OverflowException(
-                (new Message('Endpoint for method %method% has been already added'))
-                    ->withCode('%method%', $key)
+                (string) message(
+                    'Endpoint for method `%method%` has been already added',
+                    method: $key
+                )
             );
         }
     }
@@ -157,16 +160,16 @@ final class Route implements RouteInterface
             }
             if ($match !== $controllerRegex) {
                 throw new EndpointConflictException(
-                    (new Message(
+                    (string) message(
                         <<<MESSAGE
-                        Controller parameter %parameter% first defined at %firstController% matches against %match% which is incompatible with the match %controllerRegex% defined by %controller%
-                        MESSAGE
-                    ))
-                        ->withCode('%parameter%', $name)
-                        ->withCode('%match%', $match)
-                        ->withCode('%controllerRegex%', $controllerRegex)
-                        ->withCode('%controller%', $controllerName)
-                        ->withCode('%firstController%', $this->firstEndpoint->bind()->controllerName()->__toString())
+                        Controller parameter `%parameter%` first defined at `%firstController%` matches against `%match%` which is incompatible with the match `%controllerRegex%` defined by `%controller%`
+                        MESSAGE,
+                        parameter: $name,
+                        match: $match,
+                        controllerRegex: $controllerRegex,
+                        controller: $controllerName,
+                        firstController: $this->firstEndpoint->bind()->controllerName()->__toString(),
+                    )
                 );
             }
         }
@@ -177,9 +180,11 @@ final class Route implements RouteInterface
         $parameters = getParameters($endpoint->bind()->controllerName()->__toString());
         if (count($parameters) === 0) {
             throw new InvalidArgumentException(
-                (new Message("Invalid route %path% binding with %controller% which doesn't accept any parameter"))
-                    ->withCode('%path%', $this->path->__toString())
-                    ->withCode('%controller%', $endpoint->bind()->controllerName()->__toString())
+                (string) message(
+                    "Invalid route` %path% `binding with `%controller%` which doesn't accept any parameter",
+                    path: $this->path->__toString(),
+                    controller: $endpoint->bind()->controllerName()->__toString(),
+                )
             );
         }
     }

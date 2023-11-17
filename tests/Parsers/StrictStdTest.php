@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Tests\Parsers;
 
 use Chevere\Router\Parsers\StrictStd;
-use Chevere\Throwable\Exceptions\InvalidArgumentException;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 final class StrictStdTest extends TestCase

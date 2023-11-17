@@ -26,8 +26,8 @@ use Chevere\Tests\src\ControllerNoParameters;
 use Chevere\Tests\src\MiddlewareOne;
 use Chevere\Tests\src\MiddlewareThree;
 use Chevere\Tests\src\MiddlewareTwo;
-use Chevere\Throwable\Exceptions\OutOfBoundsException;
-use Chevere\Throwable\Exceptions\OverflowException;
+use OutOfBoundsException;
+use OverflowException;
 use PHPUnit\Framework\TestCase;
 use function Chevere\Http\middlewares;
 

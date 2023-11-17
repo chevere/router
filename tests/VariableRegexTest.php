@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\Router\VariableRegex;
-use Chevere\Throwable\Exceptions\InvalidArgumentException;
-use Chevere\Throwable\Exceptions\UnexpectedValueException;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use UnexpectedValueException;
 
 final class VariableRegexTest extends TestCase
 {

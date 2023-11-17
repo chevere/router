@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace Chevere\Router\Interfaces;
 
 use Chevere\Common\Interfaces\ToArrayInterface;
-use Chevere\Throwable\Exceptions\InvalidArgumentException;
-use Chevere\Throwable\Exceptions\OutOfBoundsException;
-use Chevere\Throwable\Exceptions\OverflowException;
+use InvalidArgumentException;
+use OutOfBoundsException;
+use OverflowException;
 
 /**
  * Describes the component in charge of indexing named routes.

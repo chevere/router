@@ -17,8 +17,8 @@ use Chevere\Router\Variable;
 use Chevere\Router\VariableRegex;
 use Chevere\Router\Variables;
 use Chevere\Tests\Helpers\ObjectHelper;
-use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use FastRoute\RouteParser\Std;
+use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 
 final class VariablesTest extends TestCase

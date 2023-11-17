@@ -15,8 +15,8 @@ namespace Chevere\Router\Interfaces;
 
 use Chevere\DataStructure\Interfaces\StringMappedInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
-use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Iterator;
+use OutOfBoundsException;
 
 /**
  * Describes the component in charge of collecting objects implementing `RouteInterface`.

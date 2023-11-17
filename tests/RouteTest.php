@@ -24,9 +24,9 @@ use Chevere\Tests\src\ControllerNoParameters;
 use Chevere\Tests\src\ControllerRegexConflict;
 use Chevere\Tests\src\ControllerWithParameter;
 use Chevere\Tests\src\ControllerWithParameters;
-use Chevere\Throwable\Exceptions\InvalidArgumentException;
-use Chevere\Throwable\Exceptions\OutOfBoundsException;
-use Chevere\Throwable\Exceptions\OverflowException;
+use InvalidArgumentException;
+use OutOfBoundsException;
+use OverflowException;
 use PHPUnit\Framework\TestCase;
 use function Chevere\Router\bind;
 use function Chevere\Router\route;
@@ -162,7 +162,7 @@ final class RouteTest extends TestCase
         $endpoint2 = new Endpoint(new PostMethod(), bind(ControllerRegexConflict::class));
         $route = $route->withEndpoint($endpoint1);
         $this->expectException(EndpointConflictException::class);
-        $this->expectExceptionMessage('incompatible with the match /\W+/');
+        $this->expectExceptionMessage('incompatible with the match `/\W+/`');
         $route->withEndpoint($endpoint2);
     }
 
@@ -173,7 +173,7 @@ final class RouteTest extends TestCase
         $endpoint2 = new Endpoint(new PostMethod(), bind(ControllerNoParameters::class));
         $route = $route->withEndpoint($endpoint1);
         $this->expectException(EndpointConflictException::class);
-        $this->expectExceptionMessage('incompatible with the match <none>');
+        $this->expectExceptionMessage('incompatible with the match `<none>`');
         $route->withEndpoint($endpoint2);
     }
 
@@ -185,7 +185,7 @@ final class RouteTest extends TestCase
             bind(ControllerWithParameter::class)
         );
         $this->expectException(VariableConflictException::class);
-        $this->expectExceptionMessage('Variable {id} matches against');
+        $this->expectExceptionMessage('Variable `{id}` matches against');
         $route->withEndpoint($endpoint);
     }
 

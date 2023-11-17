@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Exceptions;
 
-use Chevere\Throwable\Exception;
+use Exception;
 
 /**
  * Exception thrown when failing to provide a ControllerInterface.

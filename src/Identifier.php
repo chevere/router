@@ -15,7 +15,7 @@ namespace Chevere\Router;
 
 use Chevere\Router\Interfaces\IdentifierInterface;
 use Chevere\String\StringAssert;
-use Chevere\Throwable\Exceptions\InvalidArgumentException;
+use InvalidArgumentException;
 
 final class Identifier implements IdentifierInterface
 {

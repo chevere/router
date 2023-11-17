@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Parsers;
 
-use Chevere\Message\Message;
 use Chevere\Regex\Regex;
-use Chevere\Throwable\Exceptions\InvalidArgumentException;
 use FastRoute\RouteParser\Std;
+use InvalidArgumentException;
 use Throwable;
+use function Chevere\Message\message;
 
 /**
  * Strict version of `FastRoute\RouteParser\Std`, without optional routing.
@@ -40,9 +40,11 @@ final class StrictStd extends Std
         $matches = (new Regex(self::REGEX_PATH))->match($route);
         if ($matches === []) {
             throw new InvalidArgumentException(
-                (new Message("Route %provided% doesn't match regex %regex%"))
-                    ->withCode('%provided%', $route)
-                    ->withCode('%regex%', self::REGEX_PATH)
+                (string) message(
+                    "Route `%provided%` doesn't match regex `%regex%`",
+                    provided: $route,
+                    regex: self::REGEX_PATH,
+                )
             );
         }
 
@@ -51,15 +53,19 @@ final class StrictStd extends Std
         } catch (Throwable $e) { // @codeCoverageIgnoreStart
             throw new InvalidArgumentException(
                 previous: $e,
-                message: (new Message('Unable to parse route %route%'))
-                    ->withCode('%route%', $route),
+                message: (string) message(
+                    'Unable to parse route `%route%`',
+                    route: $route,
+                )
             );
         }
         // @codeCoverageIgnoreEnd
         if (count($datas) > 1) {
             throw new InvalidArgumentException(
-                (new Message('Optional routing at route %route% is forbidden'))
-                    ->withCode('%route%', $route)
+                (string) message(
+                    'Optional routing at route `%route%` is forbidden',
+                    route: $route,
+                )
             );
         }
 

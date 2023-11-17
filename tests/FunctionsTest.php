@@ -20,7 +20,7 @@ use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Tests\src\ControllerNoParameters;
 use Chevere\Tests\src\ControllerWithParameters;
 use Chevere\Tests\src\WrongController;
-use Chevere\Throwable\Exceptions\InvalidArgumentException;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use function Chevere\Action\getParameters;
 use function Chevere\Router\bind;
@@ -106,8 +106,9 @@ final class FunctionsTest extends TestCase
     {
         $this->expectException(VariableNotFoundException::class);
         $this->expectExceptionMessage(
-            'Variable {variable} does not exists in controller '
+            'Variable `{variable}` does not exists in controller `'
             . ControllerNoParameters::class
+            . '`'
         );
         route(
             path: '/test/{variable}',

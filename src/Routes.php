@@ -17,12 +17,12 @@ use Chevere\DataStructure\Interfaces\MapInterface;
 use Chevere\DataStructure\Map;
 use Chevere\DataStructure\Traits\MapTrait;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
-use Chevere\Message\Message;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
-use Chevere\Throwable\Errors\TypeError;
-use Chevere\Throwable\Exceptions\OutOfBoundsException;
-use Chevere\Throwable\Exceptions\OverflowException;
+use OutOfBoundsException;
+use OverflowException;
+use TypeError;
+use function Chevere\Message\message;
 
 final class Routes implements RoutesInterface
 {
@@ -116,15 +116,19 @@ final class Routes implements RoutesInterface
         if ($route->name() !== null && $this->names->has($route->name())) {
             throw new OverflowException(
                 code: static::EXCEPTION_CODE_TAKEN_NAME,
-                message: (new Message('Named route %name% has been already taken.'))
-                    ->withCode('%name%', $route->name())
+                message: (string) message(
+                    'Named route %name% has been already taken.',
+                    name: $route->name()
+                )
             );
         }
         if ($this->map->has($path)) {
             throw new OverflowException(
                 code: static::EXCEPTION_CODE_TAKEN_PATH,
-                message: (new Message('Route %path% has been already taken.'))
-                    ->withCode('%path%', $route->path()->__toString())
+                message: (string) message(
+                    'Route %path% has been already taken.',
+                    path: $route->path()->__toString()
+                )
             );
         }
     }

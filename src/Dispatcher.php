@@ -14,14 +14,14 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Http\Exceptions\MethodNotAllowedException;
-use Chevere\Message\Message;
 use Chevere\Router\Exceptions\NotFoundException;
 use Chevere\Router\Interfaces\BindInterface;
 use Chevere\Router\Interfaces\DispatcherInterface;
 use Chevere\Router\Interfaces\RoutedInterface;
-use Chevere\Throwable\Exceptions\LogicException;
 use FastRoute\Dispatcher\GroupCountBased;
 use FastRoute\RouteCollector;
+use LogicException;
+use function Chevere\Message\message;
 
 final class Dispatcher implements DispatcherInterface
 {
@@ -47,18 +47,24 @@ final class Dispatcher implements DispatcherInterface
         return match ($status) {
             GroupCountBased::FOUND => new Routed($handler, $arguments),
             GroupCountBased::NOT_FOUND => throw new NotFoundException(
-                (new Message('No route found for %uri%'))
-                    ->withCode('%uri%', $uri)
+                (string) message(
+                    'No route found for `%uri%`',
+                    uri: $uri,
+                )
             ),
             GroupCountBased::METHOD_NOT_ALLOWED => throw new MethodNotAllowedException(
-                (new Message('Method %method% is not in the list of allowed methods: %allowed%'))
-                    ->withCode('%method%', $httpMethod)
-                    ->withCode('%allowed%', implode(', ', $allowed))
+                (string) message(
+                    'Method `%method%` is not in the list of allowed methods: `%allowed%`',
+                    method: $httpMethod,
+                    allowed: implode(', ', $allowed),
+                )
             ),
             // @codeCoverageIgnoreStart
             default => throw new LogicException(
-                (new Message('Unknown router status code %status%'))
-                    ->withCode('%status%', strval($status))
+                (string) message(
+                    'Unknown router status code `%status%`',
+                    status: strval($status),
+                )
             ),
             // @codeCoverageIgnoreEnd
         };

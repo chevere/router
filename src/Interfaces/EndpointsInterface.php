@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Chevere\Router\Interfaces;
 
 use Chevere\DataStructure\Interfaces\StringMappedInterface;
-use Chevere\Throwable\Exceptions\OutOfBoundsException;
 use Iterator;
+use OutOfBoundsException;
 
 /**
  * Describes the component in charge of collecting objects implementing `EndpointInterface`.

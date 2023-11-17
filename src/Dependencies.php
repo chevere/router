@@ -19,7 +19,7 @@ use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Router\Interfaces\DependenciesInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
-use Chevere\Throwable\Exceptions\OutOfBoundsException;
+use OutOfBoundsException;
 use function Chevere\Parameter\methodParameters;
 
 final class Dependencies implements DependenciesInterface

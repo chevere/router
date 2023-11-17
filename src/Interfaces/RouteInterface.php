@@ -16,9 +16,9 @@ namespace Chevere\Router\Interfaces;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Router\Exceptions\EndpointConflictException;
 use Chevere\Router\Exceptions\VariableConflictException;
-use Chevere\Throwable\Exceptions\InvalidArgumentException;
-use Chevere\Throwable\Exceptions\OutOfBoundsException;
-use Chevere\Throwable\Exceptions\OverflowException;
+use InvalidArgumentException;
+use OutOfBoundsException;
+use OverflowException;
 
 /**
  * Describes the component in charge of defining a route.

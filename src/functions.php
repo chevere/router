@@ -20,7 +20,6 @@ use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\Http\MiddlewareName;
 use Chevere\Http\Middlewares;
-use Chevere\Message\Message;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\BindInterface;
@@ -28,7 +27,7 @@ use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
-use Chevere\Throwable\Exceptions\OutOfBoundsException;
+use OutOfBoundsException;
 use Psr\Http\Server\MiddlewareInterface;
 use TypeError;
 use function Chevere\Action\getParameters;
@@ -59,15 +58,19 @@ function getPath(string $path, string|BindInterface ...$bind): string
                 $stringParameter = $parameters->required($variable)->string();
             } catch (OutOfBoundsException) {
                 throw new VariableNotFoundException(
-                    message('Variable %variable% does not exists in controller %controller%')
-                        ->withCode('%variable%', $variableBracket)
-                        ->withCode('%controller%', $controllerName)
+                    (string) message(
+                        'Variable `%variable%` does not exists in controller `%controller%`',
+                        variable: $variableBracket,
+                        controller: $controllerName,
+                    )
                 );
             } catch (TypeError) {
                 throw new VariableInvalidException(
-                    message('Variable %variable% is not a string parameter in controller %controller%')
-                        ->withCode('%variable%', $variableBracket)
-                        ->withCode('%controller%', $controllerName)
+                    (string) message(
+                        'Variable `%variable%` is not a string parameter in controller `%controller%`',
+                        variable: $variableBracket,
+                        controller: $controllerName,
+                    )
                 );
             }
             $path = str_replace(
@@ -106,9 +109,11 @@ function route(
         $method = EndpointInterface::KNOWN_METHODS[$method] ?? null;
         if ($method === null) {
             throw new MethodNotAllowedException(
-                message: (new Message('Unknown HTTP method `%provided%` provided for %controller% controller.'))
-                    ->withCode('%provided%', $httpMethod)
-                    ->withCode('%controller%', $controllerName->__toString())
+                (string) message(
+                    'Unknown HTTP method `%provided%` provided for `%controller%` controller.',
+                    provided: $httpMethod,
+                    controller: $controllerName->__toString(),
+                )
             );
         }
         $isBind = $item instanceof BindInterface;

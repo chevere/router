@@ -15,13 +15,13 @@ namespace Chevere\Router;
 
 use Chevere\DataStructure\Interfaces\MapInterface;
 use Chevere\DataStructure\Map;
-use Chevere\Message\Message;
 use Chevere\Router\Interfaces\IdentifierInterface;
 use Chevere\Router\Interfaces\IndexInterface;
 use Chevere\Router\Interfaces\RouteInterface;
-use Chevere\Throwable\Errors\TypeError;
-use Chevere\Throwable\Exceptions\OutOfBoundsException;
-use Chevere\Throwable\Exceptions\OverflowException;
+use OutOfBoundsException;
+use OverflowException;
+use TypeError;
+use function Chevere\Message\message;
 
 final class Index implements IndexInterface
 {
@@ -60,10 +60,12 @@ final class Index implements IndexInterface
             $groupName = $new->groupsIndex->get($id);
 
             throw new OverflowException(
-                (new Message('Route %path% (regex %id%) is already bound to group %group%'))
-                    ->withCode('%path%', $route->path()->__toString())
-                    ->withCode('%id%', $id)
-                    ->withCode('%group%', $groupName)
+                (string) message(
+                    'Route` %path%` (regex `%id%`) is already bound to group `%group%`',
+                    path: $route->path()->__toString(),
+                    id: $id,
+                    group: $groupName
+                )
             );
         }
         $new->identifiersMap = $new->identifiersMap->withPut($id, $identifier);

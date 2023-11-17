@@ -13,15 +13,15 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
-use Chevere\Message\Message;
 use Chevere\Regex\Interfaces\RegexInterface;
 use Chevere\Regex\Regex;
 use Chevere\Router\Interfaces\PathInterface;
 use Chevere\Router\Interfaces\VariablesInterface;
 use Chevere\Router\Parsers\StrictStd;
-use Chevere\Throwable\Exceptions\LogicException;
 use FastRoute\DataGenerator\GroupCountBased as DataGenerator;
+use LogicException;
 use Throwable;
+use function Chevere\Message\message;
 
 final class Path implements PathInterface
 {
@@ -49,8 +49,10 @@ final class Path implements PathInterface
         } catch (Throwable $e) { // @codeCoverageIgnoreStart
             throw new LogicException(
                 previous: $e,
-                message: (new Message('Unable to add route %path%'))
-                    ->withCode('%path%', $this->route),
+                message: (string) message(
+                    'Unable to add route `%path%`',
+                    path: $this->route
+                )
             );
         }
         // @codeCoverageIgnoreEnd

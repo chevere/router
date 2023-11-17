@@ -13,12 +13,12 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
-use Chevere\Message\Message;
 use Chevere\Regex\Interfaces\RegexInterface;
 use Chevere\Regex\Regex;
 use Chevere\Router\Interfaces\VariableRegexInterface;
-use Chevere\Throwable\Exceptions\InvalidArgumentException;
-use Chevere\Throwable\Exceptions\UnexpectedValueException;
+use InvalidArgumentException;
+use UnexpectedValueException;
+use function Chevere\Message\message;
 
 final class VariableRegex implements VariableRegexInterface
 {
@@ -47,8 +47,10 @@ final class VariableRegex implements VariableRegexInterface
         $string = $this->regex->__toString();
         if (strpos($string, '(') !== false) {
             throw new UnexpectedValueException(
-                (new Message('Provided expression %match% contains capture groups'))
-                    ->withCode('%match%', $string)
+                (string) message(
+                    'Provided expression `%match%` contains capture groups',
+                    match: $string
+                )
             );
         }
     }
@@ -57,16 +59,20 @@ final class VariableRegex implements VariableRegexInterface
     {
         if (str_starts_with($this->string, '^')) {
             throw new InvalidArgumentException(
-                (new Message('String %string% must omit the starting anchor %char%'))
-                    ->withCode('%string%', $this->string)
-                    ->withCode('%char%', '^')
+                (string) message(
+                    'String `%string%` must omit the starting anchor `%char%`',
+                    string: $this->string,
+                    char: '^'
+                )
             );
         }
         if (str_ends_with($this->string, '$')) {
             throw new InvalidArgumentException(
-                (new Message('String %string% must omit the ending anchor %char%'))
-                    ->withCode('%string%', $this->string)
-                    ->withCode('%char%', '$')
+                (string) message(
+                    'String `%string%` must omit the ending anchor `%char%`',
+                    string: $this->string,
+                    char: '$'
+                )
             );
         }
     }

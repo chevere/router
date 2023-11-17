@@ -17,7 +17,7 @@ use Chevere\Router\Dependencies;
 use Chevere\Tests\src\ControllerWithParameter;
 use Chevere\Tests\src\MiddlewareOne;
 use Chevere\Tests\src\MiddlewareTwo;
-use Chevere\Throwable\Exceptions\OutOfBoundsException;
+use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 use function Chevere\Router\bind;
 use function Chevere\Router\route;
