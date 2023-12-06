@@ -14,8 +14,6 @@ declare(strict_types=1);
 namespace Chevere\Router\Interfaces;
 
 use FastRoute\RouteCollector;
-use InvalidArgumentException;
-use OverflowException;
 
 /**
  * Describes the component in charge of handling routing.
@@ -27,9 +25,6 @@ interface RouterInterface
      *
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified added `$route`.
-     *
-     * @throws InvalidArgumentException if `$group` is invalid.
-     * @throws OverflowException if `$route` has been already added.
      */
     public function withAddedRoute(RouteInterface $route, string $group): self;
 

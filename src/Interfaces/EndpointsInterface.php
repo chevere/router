@@ -15,7 +15,6 @@ namespace Chevere\Router\Interfaces;
 
 use Chevere\DataStructure\Interfaces\StringMappedInterface;
 use Iterator;
-use OutOfBoundsException;
 
 /**
  * Describes the component in charge of collecting objects implementing `EndpointInterface`.
@@ -47,8 +46,6 @@ interface EndpointsInterface extends StringMappedInterface
 
     /**
      * Provides access to the RouteEndpointInterface identified by `$key`.
-     *
-     * @throws OutOfBoundsException
      */
     public function get(string $key): EndpointInterface;
 

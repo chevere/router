@@ -19,8 +19,8 @@ use Chevere\Router\Index;
 use Chevere\Router\Interfaces\IdentifierInterface;
 use Chevere\Router\Path;
 use Chevere\Router\Route;
-use Chevere\String\Exceptions\CtypeSpaceException;
 use Chevere\Tests\src\ControllerWithParameters;
+use InvalidArgumentException;
 use OutOfBoundsException;
 use OverflowException;
 use PHPUnit\Framework\TestCase;
@@ -60,7 +60,8 @@ final class IndexTest extends TestCase
     {
         $route = new Route(new Path('/'), 'test');
         $routerIndex = new Index();
-        $this->expectException(CtypeSpaceException::class);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid value provided for `$group` argument');
         $routerIndex->withAddedRoute($route, ' ');
     }
 

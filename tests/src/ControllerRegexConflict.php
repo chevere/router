@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\src;
 
-use Chevere\Attributes\Regex;
 use Chevere\Http\Controller;
+use Chevere\Parameter\Attributes\StringAttr;
 
 final class ControllerRegexConflict extends Controller
 {
     protected function run(
-        #[Regex('/\W+/')]
+        #[StringAttr('/\W+/')]
         string $id
     ): array {
         return [];

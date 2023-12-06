@@ -14,11 +14,6 @@ declare(strict_types=1);
 namespace Chevere\Router\Interfaces;
 
 use Chevere\Http\Interfaces\MethodInterface;
-use Chevere\Router\Exceptions\EndpointConflictException;
-use Chevere\Router\Exceptions\VariableConflictException;
-use InvalidArgumentException;
-use OutOfBoundsException;
-use OverflowException;
 
 /**
  * Describes the component in charge of defining a route.
@@ -37,12 +32,6 @@ interface RouteInterface
      *
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified added `$endpoint`.
-     *
-     * @throws OverflowException
-     * @throws EndpointConflictException
-     * @throws InvalidArgumentException
-     * @throws OutOfBoundsException
-     * @throws VariableConflictException
      */
     public function withEndpoint(EndpointInterface $endpoint): self;
 

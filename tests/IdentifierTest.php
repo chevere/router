@@ -14,8 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\Router\Identifier;
-use Chevere\String\Exceptions\CtypeSpaceException;
-use Chevere\String\Exceptions\EmptyException;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 final class IdentifierTest extends TestCase
@@ -35,19 +34,22 @@ final class IdentifierTest extends TestCase
 
     public function testCtypeSpaceGroup(): void
     {
-        $this->expectException(CtypeSpaceException::class);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid value provided for `$group` argument');
         new Identifier('   ', 'some-name');
     }
 
     public function testEmptyName(): void
     {
-        $this->expectException(EmptyException::class);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid value provided for `$id` argument');
         new Identifier('some-group', '');
     }
 
     public function testCtypeSpaceName(): void
     {
-        $this->expectException(CtypeSpaceException::class);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid value provided for `$id` argument');
         new Identifier('some-group', '  ');
     }
 }

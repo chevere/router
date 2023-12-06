@@ -28,10 +28,11 @@ final class BindTest extends TestCase
         $controllerName = new ControllerName($controller);
         $middlewares = middlewares();
         $bind = new Bind($controllerName, $middlewares);
-        $bind = $bind->withView($view);
-        $this->assertSame($controllerName, $bind->controllerName());
-        $this->assertSame($view, $bind->view());
-        $this->assertSame($middlewares, $bind->middlewares());
+        $bindWith = $bind->withView($view);
+        $this->assertNotSame($bind, $bindWith);
+        $this->assertSame($controllerName, $bindWith->controllerName());
+        $this->assertSame($view, $bindWith->view());
+        $this->assertSame($middlewares, $bindWith->middlewares());
     }
 
     public function testWithMiddlewares(): void

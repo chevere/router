@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Chevere\Common\Interfaces\ToArrayInterface;
 use Chevere\DataStructure\Interfaces\StringMappedInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 
@@ -21,7 +20,7 @@ use Chevere\Parameter\Interfaces\ParametersInterface;
  * Describes the component in charge of defining the collection of Router dependencies.
  * @extends StringMappedInterface<ParametersInterface>
  */
-interface DependenciesInterface extends ToArrayInterface, StringMappedInterface
+interface DependenciesInterface extends StringMappedInterface
 {
     public function get(string $className): ParametersInterface;
 

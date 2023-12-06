@@ -117,9 +117,6 @@ final class Index implements IndexInterface
         return $this->groupsIndex->get($name);
     }
 
-    /**
-     * @return array<string, array<string, string>>
-     */
     public function toArray(): array
     {
         $array = [];

@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Router\Interfaces\IdentifierInterface;
-use Chevere\String\StringAssert;
 use InvalidArgumentException;
+use function Chevere\Message\message;
 
 final class Identifier implements IdentifierInterface
 {
@@ -26,11 +26,22 @@ final class Identifier implements IdentifierInterface
         private string $group,
         private string $id
     ) {
-        (new StringAssert($group))
-            ->notCtypeSpace();
-        (new StringAssert($id))
-            ->notEmpty()
-            ->notCtypeSpace();
+        if (ctype_space($group)) {
+            throw new InvalidArgumentException(
+                (string) message(
+                    'Invalid value provided for `%name%` argument',
+                    name: '$group'
+                )
+            );
+        }
+        if (ctype_space($id) || empty($id)) {
+            throw new InvalidArgumentException(
+                (string) message(
+                    'Invalid value provided for `%name%` argument',
+                    name: '$id'
+                )
+            );
+        }
     }
 
     public function group(): string
@@ -43,9 +54,6 @@ final class Identifier implements IdentifierInterface
         return $this->id;
     }
 
-    /**
-     * @return array<string, string>
-     */
     public function toArray(): array
     {
         return [

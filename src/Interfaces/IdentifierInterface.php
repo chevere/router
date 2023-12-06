@@ -13,14 +13,17 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Chevere\Common\Interfaces\ToArrayInterface;
-
 /**
  * Describes the component in charge of describing the route identifier.
  */
-interface IdentifierInterface extends ToArrayInterface
+interface IdentifierInterface
 {
     public function group(): string;
 
     public function id(): string;
+
+    /**
+     * @return array<string, string>
+     */
+    public function toArray(): array;
 }

@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Chevere\Common\Interfaces\ToArrayInterface;
 use Chevere\DataStructure\Interfaces\StringMappedInterface;
 use Iterator;
 
@@ -22,7 +21,7 @@ use Iterator;
  *
  * @extends StringMappedInterface<VariableInterface>
  */
-interface VariablesInterface extends StringMappedInterface, ToArrayInterface
+interface VariablesInterface extends StringMappedInterface
 {
     /**
      * Return an instance with the specified `$variable`.
@@ -48,4 +47,11 @@ interface VariablesInterface extends StringMappedInterface, ToArrayInterface
      * @return Iterator<string , VariableInterface>
      */
     public function getIterator(): Iterator;
+
+    /**
+     * Provides access to an array representation of the instance.
+     *
+     * @return array<string, VariableInterface>
+     */
+    public function toArray(): array;
 }

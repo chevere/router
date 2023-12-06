@@ -16,7 +16,6 @@ namespace Chevere\Router\Interfaces;
 use Chevere\DataStructure\Interfaces\StringMappedInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Iterator;
-use OutOfBoundsException;
 
 /**
  * Describes the component in charge of collecting objects implementing `RouteInterface`.
@@ -68,8 +67,6 @@ interface RoutesInterface extends StringMappedInterface
 
     /**
      * Returns the routable identified by its `$path`.
-     *
-     * @throws OutOfBoundsException
      */
     public function get(string $path): RouteInterface;
 
