@@ -20,7 +20,8 @@ use Chevere\Router\Interfaces\DependenciesInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use OutOfBoundsException;
-use function Chevere\Parameter\methodParameters;
+use ReflectionMethod;
+use function Chevere\Parameter\reflectionToParameters;
 
 final class Dependencies implements DependenciesInterface
 {
@@ -76,7 +77,8 @@ final class Dependencies implements DependenciesInterface
         if (! method_exists($className, '__construct')) {
             return;
         }
-        $parameters = methodParameters($className, '__construct');
+        $reflection = new ReflectionMethod($className, '__construct');
+        $parameters = reflectionToParameters($reflection);
         $array = [];
         foreach ($parameters as $name => $parameter) {
             $array[$name] = $parameter->schema() + [
