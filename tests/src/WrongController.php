@@ -75,7 +75,7 @@ final class WrongController extends Action implements ControllerInterface
         return [];
     }
 
-    protected function run(int $id): array
+    protected function main(int $id): array
     {
         return [];
     }

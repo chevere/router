@@ -18,7 +18,7 @@ use Chevere\Parameter\Attributes\StringAttr;
 
 final class ControllerRegexConflict extends Controller
 {
-    protected function run(
+    protected function main(
         #[StringAttr('/\W+/')]
         string $id
     ): array {

@@ -23,7 +23,7 @@ final class ControllerWithParameter extends Controller
     ) {
     }
 
-    protected function run(
+    protected function main(
         #[StringAttr('/[0-9]+/')]
         string $id
     ): array {

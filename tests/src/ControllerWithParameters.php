@@ -18,7 +18,7 @@ use Chevere\Parameter\Attributes\StringAttr;
 
 final class ControllerWithParameters extends Controller
 {
-    protected function run(
+    protected function main(
         #[StringAttr('/\w+/')]
         string $name,
         #[StringAttr('/\d+/')]

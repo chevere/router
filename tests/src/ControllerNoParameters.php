@@ -17,7 +17,7 @@ use Chevere\Http\Controller;
 
 final class ControllerNoParameters extends Controller
 {
-    protected function run(): array
+    protected function main(): array
     {
         return [];
     }

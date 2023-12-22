@@ -20,7 +20,7 @@ use Chevere\Parameter\Attributes\StringAttr;
 #[Description('Endpoint description')]
 final class ArticleGetController extends Controller
 {
-    protected function run(
+    protected function main(
         #[StringAttr('/\d+/')]
         string $id
     ): array {
