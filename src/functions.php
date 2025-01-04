@@ -37,9 +37,19 @@ use function Chevere\Message\message;
 /**
  * Creates Routes object for all `$routes`.
  */
-function routes(RouteInterface ...$routes): RoutesInterface
+function routes(RouteInterface|RoutesInterface ...$routes): RoutesInterface
 {
-    return (new Routes())->withRoute(...$routes);
+    $object = new Routes();
+    foreach ($routes as $item) {
+        if ($item instanceof RoutesInterface) {
+            $object = $object->with($item);
+
+            continue;
+        }
+        $object = $object->withRoute($item);
+    }
+
+    return $object;
 }
 
 function getPath(string $path, string|BindInterface ...$bind): string

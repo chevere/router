@@ -51,7 +51,7 @@ final class Routes implements RoutesInterface
         return $new;
     }
 
-    public function withRoutes(RoutesInterface ...$routes): RoutesInterface
+    public function with(RoutesInterface ...$routes): RoutesInterface
     {
         $new = clone $this;
         foreach ($routes as $item) {
