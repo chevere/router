@@ -21,5 +21,5 @@ interface DispatcherInterface
     /**
      * Dispatches against the provided HTTP method verb and URI.
      */
-    public function dispatch(string $httpMethod, string $uri): RoutedInterface;
+    public function dispatch(string $httpMethod, string $uri): DispatchInterface;
 }

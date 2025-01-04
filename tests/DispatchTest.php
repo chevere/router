@@ -13,12 +13,12 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
-use Chevere\Router\Routed;
+use Chevere\Router\Dispatch;
 use Chevere\Tests\src\ControllerWithParameters;
 use PHPUnit\Framework\TestCase;
 use function Chevere\Router\bind;
 
-final class RoutedTest extends TestCase
+final class DispatchTest extends TestCase
 {
     public function testConstruct(): void
     {
@@ -27,8 +27,8 @@ final class RoutedTest extends TestCase
             'name' => 'name-value',
             'id' => 'id-value',
         ];
-        $routed = new Routed(bind($controller), $arguments);
-        $this->assertSame($arguments, $routed->arguments());
-        $this->assertSame($controller, $routed->bind()->controllerName()->__toString());
+        $dispatch = new Dispatch(bind($controller), $arguments);
+        $this->assertSame($arguments, $dispatch->arguments());
+        $this->assertSame($controller, $dispatch->bind()->controllerName()->__toString());
     }
 }

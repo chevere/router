@@ -13,15 +13,16 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
+use Psr\Http\Message\ResponseInterface;
+
 /**
- * Describes the component in charge of defining a routed route.
+ * Describes the component in charge of wrap ResponseInterface and its routed result.
  */
 interface RoutedInterface
 {
-    public function bind(): BindInterface;
+    public function response(): ResponseInterface;
 
-    /**
-     * @return array<string, string>
-     */
-    public function arguments(): array;
+    public function view(): string;
+
+    public function raw(): mixed;
 }

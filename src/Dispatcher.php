@@ -17,7 +17,7 @@ use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Router\Exceptions\NotFoundException;
 use Chevere\Router\Interfaces\BindInterface;
 use Chevere\Router\Interfaces\DispatcherInterface;
-use Chevere\Router\Interfaces\RoutedInterface;
+use Chevere\Router\Interfaces\DispatchInterface;
 use FastRoute\Dispatcher\GroupCountBased;
 use FastRoute\RouteCollector;
 use LogicException;
@@ -31,7 +31,7 @@ final class Dispatcher implements DispatcherInterface
     }
 
     // @infection-ignore-all
-    public function dispatch(string $httpMethod, string $uri): RoutedInterface
+    public function dispatch(string $httpMethod, string $uri): DispatchInterface
     {
         $info = (new GroupCountBased($this->routeCollector->getData()))
             ->dispatch($httpMethod, $uri);
@@ -45,7 +45,7 @@ final class Dispatcher implements DispatcherInterface
         $arguments = $info[2] ?? [];
 
         return match ($status) {
-            GroupCountBased::FOUND => new Routed($handler, $arguments),
+            GroupCountBased::FOUND => new Dispatch($handler, $arguments),
             GroupCountBased::NOT_FOUND => throw new NotFoundException(
                 (string) message(
                     'No route found for `%uri%`',

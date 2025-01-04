@@ -13,27 +13,30 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
-use Chevere\Router\Interfaces\BindInterface;
 use Chevere\Router\Interfaces\RoutedInterface;
+use Psr\Http\Message\ResponseInterface;
 
 final class Routed implements RoutedInterface
 {
-    /**
-     * @param array<string, string> $arguments
-     */
     public function __construct(
-        private BindInterface $bind,
-        private array $arguments,
+        private ResponseInterface $response,
+        private string $view,
+        private mixed $raw = null
     ) {
     }
 
-    public function bind(): BindInterface
+    public function response(): ResponseInterface
     {
-        return $this->bind;
+        return $this->response;
     }
 
-    public function arguments(): array
+    public function view(): string
     {
-        return $this->arguments;
+        return $this->view;
+    }
+
+    public function raw(): mixed
+    {
+        return $this->raw;
     }
 }

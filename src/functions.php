@@ -27,7 +27,7 @@ use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\BindInterface;
 use Chevere\Router\Interfaces\DependenciesInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
-use Chevere\Router\Interfaces\ResponseRoutedInterface;
+use Chevere\Router\Interfaces\RoutedInterface;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
@@ -223,15 +223,15 @@ function controllerName(BindInterface|string $item): ControllerNameInterface
 }
 
 /**
- * Executes the routed request returning a ResponseRoutedInterface.
+ * Executes the routed request returning a RoutedInterface instance.
  *
  * @param array<string, mixed> $container Dependency container
  */
-function getResponseRouted(
+function getRouted(
     ServerRequestInterface $request,
     RouterInterface $router,
     array $container,
-): ResponseRoutedInterface {
+): RoutedInterface {
     $path = $request->getUri()->getPath();
     $body = $request->getParsedBody() ?? [];
     if (! isset($container['response'])) {
@@ -265,7 +265,7 @@ function getResponseRouted(
             $responseHeaders[$name] = implode(', ', $values);
         }
     } catch (Throwable $e) {
-        return new ResponseRouted(
+        return new Routed(
             new Response(404),
             isset($routed)
                 ? $routed->bind()->view()
@@ -279,7 +279,7 @@ function getResponseRouted(
         $response = $response->withHeader($name, $value);
     }
     if ($response->hasHeader('Location')) {
-        return new ResponseRouted(
+        return new Routed(
             $response,
             $routed->bind()->view()
         );
@@ -294,7 +294,7 @@ function getResponseRouted(
         try {
             $controller = $controller->withBody((array) $body);
         } catch (Throwable $e) {
-            return new ResponseRouted(
+            return new Routed(
                 new Response(status: 400, reason: $e->getMessage()),
                 $routed->bind()->view(),
             );
@@ -304,14 +304,14 @@ function getResponseRouted(
     try {
         $controllerResponse = $controller->__invoke(...$routed->arguments());
     } catch (ControllerException $e) {
-        return new ResponseRouted(
+        return new Routed(
             new Response(status: $e->getCode(), reason: $e->getMessage()),
             $routed->bind()->view(),
             null
         );
     }
 
-    return new ResponseRouted(
+    return new Routed(
         new Response(
             $controllerStatus,
             array_merge($controllerHeaders, $responseHeaders)

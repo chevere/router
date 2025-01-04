@@ -41,7 +41,7 @@ interface RouterInterface
     /**
      * Provides access to the route collector instance.
      */
-    public function routeCollector(): RouteCollector;
+    public function collector(): RouteCollector;
 
     /**
      * Provides access to the dispatcher instance.

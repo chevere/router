@@ -31,7 +31,7 @@ final class Router implements RouterInterface
 
     private RoutesInterface $routes;
 
-    private RouteCollector $routeCollector;
+    private RouteCollector $collector;
 
     private DispatcherInterface $dispatcher;
 
@@ -41,8 +41,9 @@ final class Router implements RouterInterface
     {
         $this->routes = new Routes();
         $this->index = new Index();
-        $this->routeCollector = new RouteCollector(new StrictStd(), new GroupCountBased());
-        $this->compile();
+        $this->collector = new RouteCollector(new StrictStd(), new GroupCountBased());
+        $this->dispatcher = new Dispatcher($this->collector);
+        $this->dependencies = new Dependencies();
     }
 
     public function withAddedRoute(RouteInterface $route, string $group): RouterInterface
@@ -51,14 +52,14 @@ final class Router implements RouterInterface
         $new = clone $this;
         $new->index = $new->index->withAddedRoute($route, $group);
         $new->routes = $new->routes->withRoute($route);
+        $new->dependencies = $new->dependencies->withAddedRoute($route);
         foreach ($route->endpoints() as $endpoint) {
-            $new->routeCollector->addRoute(
+            $new->collector->addRoute(
                 $endpoint->method()::name(),
                 $route->path()->__toString(),
                 $endpoint->bind(),
             );
         }
-        $new->compile();
 
         return $new;
     }
@@ -73,9 +74,9 @@ final class Router implements RouterInterface
         return $this->routes;
     }
 
-    public function routeCollector(): RouteCollector
+    public function collector(): RouteCollector
     {
-        return $this->routeCollector;
+        return $this->collector;
     }
 
     public function dispatcher(): DispatcherInterface
@@ -100,11 +101,5 @@ final class Router implements RouterInterface
                 path: $route->path()->__toString()
             )
         );
-    }
-
-    private function compile(): void
-    {
-        $this->dispatcher = new Dispatcher($this->routeCollector());
-        $this->dependencies = new Dependencies($this->routes());
     }
 }

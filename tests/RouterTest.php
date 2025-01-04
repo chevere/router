@@ -49,11 +49,11 @@ final class RouterTest extends TestCase
         $this->assertCount(1, $routerWithAddedRoute->routes());
         $this->assertInstanceOf(
             RouteCollector::class,
-            $routerWithAddedRoute->routeCollector()
+            $routerWithAddedRoute->collector()
         );
         $this->assertSame(
             [],
-            $routerWithAddedRoute->routeCollector()->getData()[0]
+            $routerWithAddedRoute->collector()->getData()[0]
         );
         $this->assertSame(
             [
@@ -63,7 +63,7 @@ final class RouterTest extends TestCase
                     'name' => 'name',
                 ],
             ],
-            $routerWithAddedRoute->routeCollector()
+            $routerWithAddedRoute->collector()
                 ->getData()[1]['GET'][0]['routeMap'][3]
         );
     }

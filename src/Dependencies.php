@@ -18,6 +18,7 @@ use Chevere\DataStructure\Traits\MapTrait;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Router\Interfaces\DependenciesInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
+use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use OutOfBoundsException;
 use ReflectionMethod;
@@ -35,18 +36,21 @@ final class Dependencies implements DependenciesInterface
      */
     private array $array;
 
-    public function __construct(
-        RoutesInterface $routes
-    ) {
+    public function __construct(?RoutesInterface $routes = null)
+    {
         $this->array = [];
         $this->map = new Map();
-        foreach ($routes as $route) {
-            foreach ($route->endpoints() as $endpoint) {
-                $controller = $endpoint->bind()->controllerName()->__toString();
-                $this->handleParameters($controller);
-                $this->setMiddleware($endpoint);
-            }
+        foreach ($routes ?? [] as $route) {
+            $this->addRoute($route);
         }
+    }
+
+    public function withAddedRoute(RouteInterface $route): self
+    {
+        $new = clone $this;
+        $new->addRoute($route);
+
+        return $new;
     }
 
     public function has(string $className): bool
@@ -66,6 +70,15 @@ final class Dependencies implements DependenciesInterface
     public function toArray(): array
     {
         return $this->array;
+    }
+
+    private function addRoute(RouteInterface $route): void
+    {
+        foreach ($route->endpoints() as $endpoint) {
+            $controller = $endpoint->bind()->controllerName()->__toString();
+            $this->handleParameters($controller);
+            $this->setMiddleware($endpoint);
+        }
     }
 
     private function setMiddleware(EndpointInterface $endpoint): void
