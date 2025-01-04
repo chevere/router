@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Router\Exceptions\WithoutEndpointsException;
+use Chevere\Router\Interfaces\DependenciesInterface;
+use Chevere\Router\Interfaces\DispatcherInterface;
 use Chevere\Router\Interfaces\IndexInterface;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
@@ -31,11 +33,16 @@ final class Router implements RouterInterface
 
     private RouteCollector $routeCollector;
 
+    private DispatcherInterface $dispatcher;
+
+    private DependenciesInterface $dependencies;
+
     public function __construct()
     {
         $this->routes = new Routes();
         $this->index = new Index();
         $this->routeCollector = new RouteCollector(new StrictStd(), new GroupCountBased());
+        $this->compile();
     }
 
     public function withAddedRoute(RouteInterface $route, string $group): RouterInterface
@@ -51,6 +58,7 @@ final class Router implements RouterInterface
                 $endpoint->bind(),
             );
         }
+        $new->compile();
 
         return $new;
     }
@@ -70,6 +78,16 @@ final class Router implements RouterInterface
         return $this->routeCollector;
     }
 
+    public function dispatcher(): DispatcherInterface
+    {
+        return $this->dispatcher;
+    }
+
+    public function dependencies(): DependenciesInterface
+    {
+        return $this->dependencies;
+    }
+
     private function assertHasEndpoints(RouteInterface $route): void
     {
         if ($route->endpoints()->count() > 0) {
@@ -82,5 +100,11 @@ final class Router implements RouterInterface
                 path: $route->path()->__toString()
             )
         );
+    }
+
+    private function compile(): void
+    {
+        $this->dispatcher = new Dispatcher($this->routeCollector());
+        $this->dependencies = new Dependencies($this->routes());
     }
 }

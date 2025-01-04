@@ -20,11 +20,14 @@ use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Tests\src\ControllerNoParameters;
 use Chevere\Tests\src\ControllerWithParameters;
 use Chevere\Tests\src\MiddlewareOne;
+use Chevere\Tests\src\RedirectIfLogged;
 use Chevere\Tests\src\WrongController;
 use InvalidArgumentException;
+use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use function Chevere\Action\getParameters;
 use function Chevere\Router\bind;
+use function Chevere\Router\getResponseRouted;
 use function Chevere\Router\route;
 use function Chevere\Router\router;
 use function Chevere\Router\routes;
@@ -191,5 +194,36 @@ final class FunctionsTest extends TestCase
         foreach (array_keys($routes) as $key) {
             $this->assertTrue($router->index()->hasGroup($key));
         }
+    }
+
+    public function testGetResponse(): void
+    {
+        $request = new ServerRequest('GET', '/test');
+        $router = router(
+            routes(
+                route(
+                    path: '/test',
+                    GET: bind(ControllerNoParameters::class, middleware: RedirectIfLogged::class)
+                )
+            )
+        );
+        $response = getResponseRouted($request, $router, []);
+        $this->assertSame($response->raw(), null);
+    }
+
+    public function testGetResponseView(): void
+    {
+        $request = new ServerRequest('GET', '/test');
+        $router = router(
+            routes(
+                route(
+                    path: '/test',
+                    GET: bind(ControllerNoParameters::class, 'web/test.twig')
+                )
+            )
+        );
+        $response = getResponseRouted($request, $router, []);
+        $this->assertSame($response->view(), 'web/test.twig');
+        $this->assertSame($response->raw(), []);
     }
 }

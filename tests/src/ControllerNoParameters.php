@@ -13,8 +13,15 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\src;
 
+use Chevere\Http\Attributes\Response;
 use Chevere\Http\Controller;
+use Chevere\Http\Header;
+use Chevere\Http\Status;
 
+#[Response(
+    new Status(200),
+    new Header('Content-Type', 'text/html')
+)]
 final class ControllerNoParameters extends Controller
 {
     protected function main(): array

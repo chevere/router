@@ -14,7 +14,9 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Http\ControllerName;
+use Chevere\Http\Exceptions\ControllerException;
 use Chevere\Http\Exceptions\MethodNotAllowedException;
+use Chevere\Http\Interfaces\ControllerInterface;
 use Chevere\Http\Interfaces\ControllerNameInterface;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
@@ -23,15 +25,26 @@ use Chevere\Http\Middlewares;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\BindInterface;
+use Chevere\Router\Interfaces\DependenciesInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
+use Chevere\Router\Interfaces\ResponseRoutedInterface;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
+use LogicException;
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Nyholm\Psr7\Response;
 use OutOfBoundsException;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use Relay\Relay;
+use Throwable;
 use TypeError;
 use function Chevere\Action\getParameters;
 use function Chevere\Http\middlewares;
+use function Chevere\Http\responseAttribute;
 use function Chevere\Message\message;
 
 /**
@@ -42,7 +55,7 @@ function routes(RouteInterface|RoutesInterface ...$routes): RoutesInterface
     $object = new Routes();
     foreach ($routes as $item) {
         if ($item instanceof RoutesInterface) {
-            $object = $object->with($item);
+            $object = $object->withAddedRoutes($item);
 
             continue;
         }
@@ -207,4 +220,125 @@ function controllerName(BindInterface|string $item): ControllerNameInterface
     }
 
     return $item->controllerName();
+}
+
+/**
+ * Executes the routed request returning a ResponseRoutedInterface.
+ *
+ * @param array<string, mixed> $container Dependency container
+ */
+function getResponseRouted(
+    ServerRequestInterface $request,
+    RouterInterface $router,
+    array $container,
+): ResponseRoutedInterface {
+    $path = $request->getUri()->getPath();
+    $body = $request->getParsedBody() ?? [];
+    if (! isset($container['response'])) {
+        $container['response'] = new Psr17Factory();
+    }
+
+    try {
+        $routed = $router->dispatcher()->dispatch(
+            $request->getMethod(),
+            $path
+        );
+        $queue = [];
+        $middlewares = $routed->bind()->middlewares();
+        foreach ($middlewares as $middlewareName) {
+            $className = (string) $middlewareName;
+            $middlewareArguments = getArguments($router->dependencies(), $className, $container);
+            $queue[$className] = new $className(...$middlewareArguments);
+        }
+        $queue[] = new class() implements MiddlewareInterface {
+            public function process(
+                ServerRequestInterface $request,
+                RequestHandlerInterface $handler
+            ): ResponseInterface {
+                return new Response();
+            }
+        };
+        $relay = new Relay($queue);
+        $response = $relay->handle($request);
+        $responseHeaders = [];
+        foreach ($response->getHeaders() as $name => $values) {
+            $responseHeaders[$name] = implode(', ', $values);
+        }
+    } catch (Throwable $e) {
+        return new ResponseRouted(
+            new Response(404),
+            isset($routed)
+                ? $routed->bind()->view()
+                : '',
+        );
+    }
+    $controllerName = $routed->bind()->controllerName()->__toString();
+    $controllerStatus = responseAttribute($controllerName)->status->primary;
+    $controllerHeaders = responseAttribute($controllerName)->headers->toArray();
+    foreach ($controllerHeaders as $name => $value) {
+        $response = $response->withHeader($name, $value);
+    }
+    if ($response->hasHeader('Location')) {
+        return new ResponseRouted(
+            $response,
+            $routed->bind()->view()
+        );
+    }
+    $container = array_merge($container, [
+        'request' => $request,
+    ]);
+    $controllerArguments = getArguments($router->dependencies(), $controllerName, $container);
+    /** @var ControllerInterface $controller */
+    $controller = new $controllerName(...$controllerArguments);
+    if (in_array($request->getMethod(), ['POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], true)) {
+        try {
+            $controller = $controller->withBody((array) $body);
+        } catch (Throwable $e) {
+            return new ResponseRouted(
+                new Response(status: 400, reason: $e->getMessage()),
+                $routed->bind()->view(),
+            );
+        }
+    }
+
+    try {
+        $controllerResponse = $controller->__invoke(...$routed->arguments());
+    } catch (ControllerException $e) {
+        return new ResponseRouted(
+            new Response(status: $e->getCode(), reason: $e->getMessage()),
+            $routed->bind()->view(),
+            null
+        );
+    }
+
+    return new ResponseRouted(
+        new Response(
+            $controllerStatus,
+            array_merge($controllerHeaders, $responseHeaders)
+        ),
+        $routed->bind()->view(),
+        $controllerResponse
+    );
+}
+
+/**
+ * @param array<string, mixed> $container
+ * @return array<string, mixed>
+ */
+function getArguments(
+    DependenciesInterface $dependencies,
+    string $class,
+    array $container
+): array {
+    $arguments = [];
+    if (! $dependencies->has($class)) {
+        return $arguments;
+    }
+    foreach ($dependencies->get($class)->keys() as $key) {
+        $arguments[$key] = array_key_exists($key, $container)
+            ? $container[$key]
+            : throw new LogicException("Missing container key {$key}");
+    }
+
+    return $arguments;
 }

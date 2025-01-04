@@ -42,4 +42,14 @@ interface RouterInterface
      * Provides access to the route collector instance.
      */
     public function routeCollector(): RouteCollector;
+
+    /**
+     * Provides access to the dispatcher instance.
+     */
+    public function dispatcher(): DispatcherInterface;
+
+    /**
+     * Provides access to the dependencies instance.
+     */
+    public function dependencies(): DependenciesInterface;
 }

@@ -42,7 +42,7 @@ interface RoutesInterface extends StringMappedInterface
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified `$routes` added.
      */
-    public function with(self ...$routes): self;
+    public function withAddedRoutes(self ...$routes): self;
 
     /**
      * Return an instance with the specified `$middleware` prepended to each route.
