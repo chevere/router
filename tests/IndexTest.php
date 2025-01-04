@@ -72,7 +72,10 @@ final class IndexTest extends TestCase
         $route = route($path);
         $pathName = $route->path()->regex()->noDelimiters();
         $withEndpoint = $route->withEndpoint(
-            new Endpoint(new GetMethod(), bind(ControllerWithParameters::class))
+            new Endpoint(
+                new GetMethod(),
+                bind(ControllerWithParameters::class)
+            )
         );
         $this->assertNotSame($route, $withEndpoint);
         $index = new Index();
@@ -103,7 +106,10 @@ final class IndexTest extends TestCase
         $route2 = route($path2);
         $path2Name = $route2->path()->regex()->noDelimiters();
         $route2 = $route2->withEndpoint(
-            new Endpoint(new GetMethod(), bind(ControllerWithParameters::class))
+            new Endpoint(
+                new GetMethod(),
+                bind(ControllerWithParameters::class)
+            )
         );
         $withAnotherAddedRoute = $indexWithAddedRoute->withAddedRoute($route2, $groupName);
         $this->assertSame(
@@ -118,7 +124,10 @@ final class IndexTest extends TestCase
         $repo = 'repository';
         $route = route('/path/{id}/{name}')
             ->withEndpoint(
-                new Endpoint(new GetMethod(), bind(ControllerWithParameters::class))
+                new Endpoint(
+                    new GetMethod(),
+                    bind(ControllerWithParameters::class)
+                )
             );
         $routerIndex = (new Index())->withAddedRoute($route, $repo);
         $this->expectException(OverflowException::class);

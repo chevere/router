@@ -19,13 +19,11 @@ use Chevere\Router\Interfaces\BindInterface;
 
 final class Bind implements BindInterface
 {
-    private string $view;
-
     public function __construct(
         private ControllerNameInterface $controllerName,
         private MiddlewaresInterface $middlewares,
+        private string $view = ''
     ) {
-        $this->view = '';
     }
 
     public function controllerName(): ControllerNameInterface

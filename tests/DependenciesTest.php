@@ -41,7 +41,8 @@ final class DependenciesTest extends TestCase
             route(
                 middleware: MiddlewareOne::class,
                 path: '/{id}',
-                GET: bind(ControllerWithParameter::class, MiddlewareTwo::class)
+                // note: MiddlewareTwo has no dependencies (__construct)
+                GET: bind(ControllerWithParameter::class, middleware: MiddlewareTwo::class)
             )
         );
         $dependencies = new Dependencies($routes);

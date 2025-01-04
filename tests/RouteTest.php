@@ -149,7 +149,10 @@ final class RouteTest extends TestCase
     public function testWithEndpointOverride(): void
     {
         $route = new Route(new Path('/test/{id:[0-9]+}'), 'test');
-        $endpoint = new Endpoint(new GetMethod(), bind(ControllerWithParameter::class));
+        $endpoint = new Endpoint(
+            new GetMethod(),
+            bind(ControllerWithParameter::class)
+        );
         $route = $route->withEndpoint($endpoint);
         $this->expectException(OverflowException::class);
         $route->withEndpoint($endpoint);
@@ -158,8 +161,14 @@ final class RouteTest extends TestCase
     public function testWithEndpointConflictMatch(): void
     {
         $route = new Route(new Path('/test/{id:[0-9]+}'), 'test');
-        $endpoint1 = new Endpoint(new GetMethod(), bind(ControllerWithParameter::class));
-        $endpoint2 = new Endpoint(new PostMethod(), bind(ControllerRegexConflict::class));
+        $endpoint1 = new Endpoint(
+            new GetMethod(),
+            bind(ControllerWithParameter::class)
+        );
+        $endpoint2 = new Endpoint(
+            new PostMethod(),
+            bind(ControllerRegexConflict::class)
+        );
         $route = $route->withEndpoint($endpoint1);
         $this->expectException(EndpointConflictException::class);
         $this->expectExceptionMessage('incompatible with the match `/\W+/`');
@@ -169,8 +178,14 @@ final class RouteTest extends TestCase
     public function testWithEndpointConflictUnmatched(): void
     {
         $route = new Route(new Path('/test/{id:[0-9]+}'), 'test');
-        $endpoint1 = new Endpoint(new GetMethod(), bind(ControllerWithParameter::class));
-        $endpoint2 = new Endpoint(new PostMethod(), bind(ControllerNoParameters::class));
+        $endpoint1 = new Endpoint(
+            new GetMethod(),
+            bind(ControllerWithParameter::class)
+        );
+        $endpoint2 = new Endpoint(
+            new PostMethod(),
+            bind(ControllerNoParameters::class)
+        );
         $route = $route->withEndpoint($endpoint1);
         $this->expectException(EndpointConflictException::class);
         $this->expectExceptionMessage('incompatible with the match `<none>`');

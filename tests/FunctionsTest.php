@@ -19,6 +19,7 @@ use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Tests\src\ControllerNoParameters;
 use Chevere\Tests\src\ControllerWithParameters;
+use Chevere\Tests\src\MiddlewareOne;
 use Chevere\Tests\src\WrongController;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
@@ -49,7 +50,7 @@ final class FunctionsTest extends TestCase
         $arguments = [
             'path' => '/test/',
             'name' => $className,
-            $method => bind($controller),
+            $method => $controller,
         ];
         $route = route(...$arguments);
         $this->assertSame($className, $route->name());
@@ -89,15 +90,15 @@ final class FunctionsTest extends TestCase
             ],
             [
                 [
-                    'GET' => bind($controller),
+                    'GET' => bind($controller, middleware: MiddlewareOne::class),
                 ],
-                'GET',
+                '',
             ],
             [
                 [
-                    'GET' => bind(controller: $controller)->withView('test'),
+                    'GET' => bind($controller, 'test.twig'),
                 ],
-                'test/GET',
+                'test.twig',
             ],
         ];
     }
@@ -112,7 +113,7 @@ final class FunctionsTest extends TestCase
         );
         route(
             path: '/test/{variable}',
-            GET: bind(ControllerNoParameters::class),
+            GET: ControllerNoParameters::class,
         );
     }
 
@@ -124,7 +125,7 @@ final class FunctionsTest extends TestCase
         $name = $parameters->required('name')->string();
         $route = route(
             path: '/test/{id}/{name}',
-            GET: bind($controller),
+            GET: $controller,
         );
         $this->assertSame(
             strtr('/test/{id:%id%}/{name:%name%}', [
@@ -139,20 +140,20 @@ final class FunctionsTest extends TestCase
     {
         $controller = ControllerNoParameters::class;
         $this->expectException(InvalidArgumentException::class);
-        route('test', 'name', GET: bind($controller));
+        route('test', 'name', GET: $controller);
     }
 
     public function testFunctionRouteInvalidMethod(): void
     {
         $controller = ControllerNoParameters::class;
         $this->expectException(MethodNotAllowedException::class);
-        route('/test/', 'name', TEST: bind($controller));
+        route('/test/', 'name', TEST: $controller);
     }
 
     public function testFunctionRouteInvalidController(): void
     {
         $this->expectException(VariableInvalidException::class);
-        route(path: '/{id}', GET: bind(WrongController::class));
+        route(path: '/{id}', GET: WrongController::class);
     }
 
     public function testFunctionRoutes(): void
@@ -162,7 +163,7 @@ final class FunctionsTest extends TestCase
         $route = route(
             name: $name,
             path: $path,
-            GET: bind(ControllerNoParameters::class)
+            GET: ControllerNoParameters::class
         );
         $routes = routes(myRoute: $route);
         $this->assertTrue($routes->has($path));
@@ -175,13 +176,13 @@ final class FunctionsTest extends TestCase
             'web' => routes(
                 route(
                     path: '/',
-                    GET: bind(ControllerNoParameters::class)
+                    GET: ControllerNoParameters::class
                 )
             ),
             'api' => routes(
                 route(
                     path: '/api',
-                    GET: bind(ControllerNoParameters::class)
+                    GET: ControllerNoParameters::class
                 )
             ),
         ];

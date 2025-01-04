@@ -91,8 +91,13 @@ function getPath(string $path, string|BindInterface ...$bind): string
  *
  * @param string $path Route path.
  * @param string $name If not provided it will be same as the route path.
- * @param null|MiddlewaresInterface|class-string<MiddlewareInterface> $middleware HTTP server middlewares.
- * @param BindInterface|string ...$bind Binding for HTTP controllers `GET: bind(HttpController::class, 'view'), POST: ClassName, PUT: ...`.
+ * @param null|MiddlewaresInterface|class-string<MiddlewareInterface> $middleware HTTP server middleware.
+ * @param BindInterface|string ...$bind Binding for HTTP controllers (GET, POST, PUT, DELETE, etc).
+ *
+ * $bind examples:
+ * GET: bind(ClassName, 'view'),
+ * POST: bind(ClassName, middleware: Middleware1::class,...),
+ * PATCH: ClassName,
  */
 function route(
     string $path,
@@ -120,11 +125,6 @@ function route(
         $itemView = $isBind
             ? $item->view()
             : '';
-        $itemView = match (true) {
-            $itemView === '' && $isBind => $httpMethod,
-            $itemView !== '' => "{$itemView}/{$httpMethod}",
-            default => '',
-        };
         /** @var MethodInterface $method */
         $method = new $method();
         $middlewares = match (true) {
@@ -167,27 +167,33 @@ function router(RoutesInterface ...$routes): RouterInterface
 }
 
 /**
+ * Binds a controller to a view and middleware.
+ *
  * @param string $controller HTTP controller name
- * @param string $middleware HTTP middleware name
+ * @param string $view View name, empty string for headless.
+ * @param string $middleware HTTP middleware name(s)
  */
-function bind(string $controller, string ...$middleware): BindInterface
-{
-    $controllerName = new ControllerName($controller);
-    $middlewares = new Middlewares();
+function bind(
+    string $controller,
+    string $view = '',
+    string ...$middleware
+): BindInterface {
+    $middlewares = [];
     foreach ($middleware as $name) {
-        $middlewares = $middlewares
-            ->withAppend(
-                new MiddlewareName($name)
-            );
+        $middlewares[] = new MiddlewareName($name);
     }
 
-    return new Bind($controllerName, $middlewares);
+    return new Bind(
+        new ControllerName($controller),
+        new Middlewares(...$middlewares),
+        $view
+    );
 }
 
 function controllerName(BindInterface|string $item): ControllerNameInterface
 {
     if (is_string($item)) {
-        $item = bind($item);
+        return new ControllerName($item);
     }
 
     return $item->controllerName();
