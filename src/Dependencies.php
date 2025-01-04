@@ -49,6 +49,11 @@ final class Dependencies implements DependenciesInterface
         }
     }
 
+    public function has(string $className): bool
+    {
+        return $this->map->has($className);
+    }
+
     /**
      * @throws OutOfBoundsException
      */

@@ -22,6 +22,8 @@ use Chevere\Parameter\Interfaces\ParametersInterface;
  */
 interface DependenciesInterface extends StringMappedInterface
 {
+    public function has(string $className): bool;
+
     public function get(string $className): ParametersInterface;
 
     /**
