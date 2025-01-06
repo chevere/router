@@ -18,6 +18,7 @@ use Chevere\Http\Interfaces\ControllerInterface;
 use Chevere\Parameter\Interfaces\ArgumentsInterface;
 use Chevere\Parameter\Interfaces\ArrayParameterInterface;
 use Chevere\Parameter\Interfaces\ArrayStringParameterInterface;
+use Psr\Http\Message\ResponseInterface;
 use function Chevere\Parameter\arguments;
 use function Chevere\Parameter\arrayp;
 use function Chevere\Parameter\arrayString;
@@ -73,6 +74,11 @@ final class WrongController extends Action implements ControllerInterface
     public function files(): array
     {
         return [];
+    }
+
+    public function terminate(ResponseInterface $response): ResponseInterface
+    {
+        return $response;
     }
 
     protected function main(int $id): array
