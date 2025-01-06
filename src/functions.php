@@ -34,13 +34,10 @@ use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use Nyholm\Psr7\Factory\Psr17Factory;
-use Nyholm\Psr7\Response;
 use OutOfBoundsException;
 use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use Relay\Relay;
 use Throwable;
 use TypeError;
@@ -246,11 +243,11 @@ function routed(
         );
     } catch (NotFoundException $e) {
         return new Routed(
-            new Response(status: 404, reason: $e->getMessage())
+            $responseFactory->createResponse(404, $e->getMessage())
         );
     } catch (MethodNotAllowedException $e) {
         return new Routed(
-            new Response(status: 405, reason: $e->getMessage())
+            $responseFactory->createResponse(405, $e->getMessage())
         );
     }
 
@@ -261,14 +258,7 @@ function routed(
         $middlewareDependencies = $router->dependencies()->extract($className, $container);
         $queue[$className] = new $className(...$middlewareDependencies);
     }
-    $queue[] = new class() implements MiddlewareInterface {
-        public function process(
-            ServerRequestInterface $request,
-            RequestHandlerInterface $handler
-        ): ResponseInterface {
-            return new Response();
-        }
-    };
+    $queue[] = new RelayHandle($responseFactory);
     $relay = new Relay($queue);
     $response = $relay->handle($request);
     $responseHeaders = [];
@@ -295,7 +285,7 @@ function routed(
             $controller = $controller->withBody((array) $body);
         } catch (Throwable $e) {
             return new Routed(
-                new Response(status: 400, reason: $e->getMessage()),
+                $responseFactory->createResponse(400, $e->getMessage()),
                 $routed->bind()->view(),
             );
         }
@@ -305,14 +295,15 @@ function routed(
         $controllerResponse = $controller->__invoke(...$routed->arguments());
     } catch (ControllerException $e) {
         return new Routed(
-            new Response(status: $e->getCode(), reason: $e->getMessage()),
+            $responseFactory->createResponse($e->getCode(), $e->getMessage()),
             $routed->bind()->view(),
         );
     }
-    $response = new Response(
-        $controllerStatus,
-        array_merge($controllerHeaders, $responseHeaders)
-    );
+    $response = $responseFactory->createResponse($controllerStatus);
+    $headers = array_merge($controllerHeaders, $responseHeaders);
+    foreach ($headers as $name => $value) {
+        $response = $response->withHeader($name, $value);
+    }
 
     return new Routed(
         $controller->terminate($response),
