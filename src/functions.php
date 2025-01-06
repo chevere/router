@@ -303,12 +303,13 @@ function routed(
             null
         );
     }
+    $response = new Response(
+        $controllerStatus,
+        array_merge($controllerHeaders, $responseHeaders)
+    );
 
     return new Routed(
-        new Response(
-            $controllerStatus,
-            array_merge($controllerHeaders, $responseHeaders)
-        ),
+        $controller->terminate($response),
         $routed->bind()->view(),
         $controllerResponse
     );
