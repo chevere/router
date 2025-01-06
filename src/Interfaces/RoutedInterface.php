@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
+use Chevere\Parameter\Interfaces\TypeInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -23,6 +24,8 @@ interface RoutedInterface
     public function response(): ResponseInterface;
 
     public function view(): string;
+
+    public function type(): TypeInterface;
 
     public function raw(): mixed;
 }

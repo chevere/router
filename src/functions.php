@@ -230,7 +230,7 @@ function controllerName(BindInterface|string $item): ControllerNameInterface
 function routed(
     ServerRequestInterface $request,
     RouterInterface $router,
-    array $container,
+    array $container = [],
 ): RoutedInterface {
     $path = $request->getUri()->getPath();
     $body = $request->getParsedBody() ?? [];
