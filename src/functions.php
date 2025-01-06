@@ -55,7 +55,7 @@ function routes(RouteInterface|RoutesInterface ...$routes): RoutesInterface
     $object = new Routes();
     foreach ($routes as $item) {
         if ($item instanceof RoutesInterface) {
-            $object = $object->withAddedRoutes($item);
+            $object = $object->withRoutes($item);
 
             continue;
         }
@@ -223,11 +223,11 @@ function controllerName(BindInterface|string $item): ControllerNameInterface
 }
 
 /**
- * Executes the routed request returning a RoutedInterface instance.
+ * Executes the request on router.
  *
  * @param array<string, mixed> $container Dependency container
  */
-function getRouted(
+function routed(
     ServerRequestInterface $request,
     RouterInterface $router,
     array $container,

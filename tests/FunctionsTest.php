@@ -27,7 +27,7 @@ use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use function Chevere\Action\getParameters;
 use function Chevere\Router\bind;
-use function Chevere\Router\getRouted;
+use function Chevere\Router\routed;
 use function Chevere\Router\route;
 use function Chevere\Router\router;
 use function Chevere\Router\routes;
@@ -207,7 +207,7 @@ final class FunctionsTest extends TestCase
                 )
             )
         );
-        $routed = getRouted($request, $router, []);
+        $routed = routed($request, $router, []);
         $this->assertSame($routed->raw(), null);
     }
 
@@ -222,7 +222,7 @@ final class FunctionsTest extends TestCase
                 )
             )
         );
-        $routed = getRouted($request, $router, []);
+        $routed = routed($request, $router, []);
         $this->assertSame($routed->view(), 'web/test.twig');
         $this->assertSame($routed->raw(), []);
     }

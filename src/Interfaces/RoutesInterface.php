@@ -29,7 +29,7 @@ interface RoutesInterface extends StringMappedInterface
     public const EXCEPTION_CODE_TAKEN_PATH = 100;
 
     /**
-     * Return an instance with the specified `$route` added.
+     * Return an instance with the specified route(s) added.
      *
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified `$routes` added.
@@ -37,12 +37,12 @@ interface RoutesInterface extends StringMappedInterface
     public function withRoute(RouteInterface ...$route): self;
 
     /**
-     * Return an instance with the specified `$routes` added.
+     * Return an instance with the specified collection(s) added.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified `$routes` added.
+     * an instance that contains the specified collection(s) added.
      */
-    public function withAddedRoutes(self ...$routes): self;
+    public function withRoutes(self ...$routes): self;
 
     /**
      * Return an instance with the specified `$middleware` prepended to each route.

@@ -62,17 +62,17 @@ final class RoutesTest extends TestCase
         ));
         $foo = (new Routes())->withRoute($routeFoo);
         $bar = (new Routes())->withRoute($routeBar);
-        $fooWithEmpty = $foo->withAddedRoutes();
+        $fooWithEmpty = $foo->withRoutes();
         $this->assertNotSame($foo, $fooWithEmpty);
-        $fooWithBar = $foo->withAddedRoutes($bar);
-        $barWithFoo = $bar->withAddedRoutes($foo);
+        $fooWithBar = $foo->withRoutes($bar);
+        $barWithFoo = $bar->withRoutes($foo);
         $this->assertNotSame($foo, $fooWithBar);
         $this->assertNotSame($bar, $barWithFoo);
         $this->assertNotSame($fooWithBar, $barWithFoo);
         $this->assertSame(['/test', '/test-2'], $fooWithBar->keys());
         $this->assertSame(['/test-2', '/test'], $barWithFoo->keys());
         $this->expectException(OverflowException::class);
-        $foo->withAddedRoutes($foo);
+        $foo->withRoutes($foo);
     }
 
     public function testWithMiddlewares(): void

@@ -36,6 +36,9 @@ final class Routes implements RoutesInterface
      */
     private MapInterface $names;
 
+    /**
+     * @throws OverflowException
+     */
     public function withRoute(RouteInterface ...$route): RoutesInterface
     {
         $new = clone $this;
@@ -51,7 +54,7 @@ final class Routes implements RoutesInterface
         return $new;
     }
 
-    public function withAddedRoutes(RoutesInterface ...$routes): RoutesInterface
+    public function withRoutes(RoutesInterface ...$routes): RoutesInterface
     {
         $new = clone $this;
         foreach ($routes as $item) {
