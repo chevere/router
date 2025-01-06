@@ -49,8 +49,8 @@ final class Dependencies implements DependenciesInterface
     public function withRoute(RouteInterface ...$route): self
     {
         $new = clone $this;
-        foreach ($route as $route) {
-            $this->addRoute($route);
+        foreach ($route as $item) {
+            $new->addRoute($item);
         }
 
         return $new;
@@ -74,14 +74,17 @@ final class Dependencies implements DependenciesInterface
 
     public function extract(string $className, array $container): array
     {
+        $extracted = [];
         if (! $this->has($className)) {
-            return [];
+            return $extracted;
         }
+        $parameters = $this->get($className);
+        $extracted = array_intersect_key(
+            $container,
+            array_flip($parameters->keys())
+        );
 
-        return (new Arguments(
-            $this->get($className),
-            $container
-        ))->toArray();
+        return (new Arguments($parameters, $extracted))->toArray();
     }
 
     private function addRoute(RouteInterface $route): void

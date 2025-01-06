@@ -24,6 +24,7 @@ use TypeError;
 use function Chevere\Http\middlewares;
 use function Chevere\Router\bind;
 use function Chevere\Router\route;
+use function Chevere\Router\router;
 use function Chevere\Router\routes;
 
 final class DependenciesTest extends TestCase
@@ -44,7 +45,9 @@ final class DependenciesTest extends TestCase
                 GET: bind(ControllerWithParameter::class, middleware: MiddlewareTwo::class)
             )
         );
+        $router = router($routes);
         $dependencies = new Dependencies($routes);
+        $this->assertEquals($dependencies, $router->dependencies());
         $this->assertCount(2, $dependencies->parameters());
         $this->assertSame(
             [
