@@ -225,7 +225,7 @@ function controllerName(BindInterface|string $item): ControllerNameInterface
 /**
  * Executes the request on router.
  *
- * @param array<string, mixed> $container Dependency container
+ * @param array<string, mixed> $container Service container (name => instance).
  */
 function routed(
     ServerRequestInterface $request,
@@ -238,39 +238,30 @@ function routed(
         $container['response'] = new Psr17Factory();
     }
 
-    try {
-        $routed = $router->dispatcher()->dispatch(
-            $request->getMethod(),
-            $path
-        );
-        $queue = [];
-        $middlewares = $routed->bind()->middlewares();
-        foreach ($middlewares as $middlewareName) {
-            $className = (string) $middlewareName;
-            $middlewareDependencies = $router->dependencies()->extract($className, $container);
-            $queue[$className] = new $className(...$middlewareDependencies);
+    $routed = $router->dispatcher()->dispatch(
+        $request->getMethod(),
+        $path
+    );
+    $queue = [];
+    $middlewares = $routed->bind()->middlewares();
+    foreach ($middlewares as $middlewareName) {
+        $className = (string) $middlewareName;
+        $middlewareDependencies = $router->dependencies()->extract($className, $container);
+        $queue[$className] = new $className(...$middlewareDependencies);
+    }
+    $queue[] = new class() implements MiddlewareInterface {
+        public function process(
+            ServerRequestInterface $request,
+            RequestHandlerInterface $handler
+        ): ResponseInterface {
+            return new Response();
         }
-        $queue[] = new class() implements MiddlewareInterface {
-            public function process(
-                ServerRequestInterface $request,
-                RequestHandlerInterface $handler
-            ): ResponseInterface {
-                return new Response();
-            }
-        };
-        $relay = new Relay($queue);
-        $response = $relay->handle($request);
-        $responseHeaders = [];
-        foreach ($response->getHeaders() as $name => $values) {
-            $responseHeaders[$name] = implode(', ', $values);
-        }
-    } catch (Throwable $e) {
-        return new Routed(
-            new Response(404),
-            isset($routed)
-                ? $routed->bind()->view()
-                : '',
-        );
+    };
+    $relay = new Relay($queue);
+    $response = $relay->handle($request);
+    $responseHeaders = [];
+    foreach ($response->getHeaders() as $name => $values) {
+        $responseHeaders[$name] = implode(', ', $values);
     }
     $controllerName = $routed->bind()->controllerName()->__toString();
     $controllerStatus = responseAttribute($controllerName)->status->primary;
@@ -281,7 +272,8 @@ function routed(
     if ($response->hasHeader('Location')) {
         return new Routed(
             $response,
-            $routed->bind()->view()
+            $routed->bind()->view(),
+            null,
         );
     }
     $container = array_merge($container, [
@@ -297,6 +289,7 @@ function routed(
             return new Routed(
                 new Response(status: 400, reason: $e->getMessage()),
                 $routed->bind()->view(),
+                null
             );
         }
     }

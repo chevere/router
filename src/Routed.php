@@ -26,7 +26,7 @@ final class Routed implements RoutedInterface
     public function __construct(
         private ResponseInterface $response,
         private string $view,
-        private mixed $raw = null
+        private mixed $raw
     ) {
         $this->type = new Type(getType($raw));
     }
