@@ -13,23 +13,40 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Chevere\DataStructure\Interfaces\StringMappedInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 
 /**
- * Describes the component in charge of defining the collection of Router dependencies.
- * @extends StringMappedInterface<ParametersInterface>
+ * Describes the component in charge of defining the collection of Router
+ * dependencies which are the parameters required by participants of the
+ * request handling.
+ *
+ * It refers to the parameters indicated at the `__construct` method of the
+ * controller and middleware classes used in routing.
  */
-interface DependenciesInterface extends StringMappedInterface
+interface DependenciesInterface
 {
-    public function withAddedRoute(RouteInterface $route): self;
+    public function withRoute(RouteInterface ...$route): self;
 
+    /**
+     * Provides access to the Parameters instance reflecting the router dependencies.
+     */
+    public function parameters(): ParametersInterface;
+
+    /**
+     * Indicates whether the given class name is a dependency.
+     */
     public function has(string $className): bool;
 
+    /**
+     * Provides access to the parameters (dependencies) for a known class name.
+     */
     public function get(string $className): ParametersInterface;
 
     /**
-     * @return array<string, array<string, array<string, mixed>>>
+     * Provides access to the typed arguments for the given class name and container.
+     *
+     * @param array<string, mixed> $container Service container
+     * @return array<string, mixed> Constructor arguments, taken from the container
      */
-    public function toArray(): array;
+    public function extract(string $className, array $container): array;
 }

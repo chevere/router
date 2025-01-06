@@ -16,9 +16,12 @@ namespace Chevere\Tests;
 use Chevere\Router\Dependencies;
 use Chevere\Tests\src\ControllerWithParameter;
 use Chevere\Tests\src\MiddlewareOne;
+use Chevere\Tests\src\MiddlewareOneConflict;
 use Chevere\Tests\src\MiddlewareTwo;
-use OutOfBoundsException;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use TypeError;
+use function Chevere\Http\middlewares;
 use function Chevere\Router\bind;
 use function Chevere\Router\route;
 use function Chevere\Router\routes;
@@ -29,10 +32,7 @@ final class DependenciesTest extends TestCase
     {
         $routes = routes();
         $dependencies = new Dependencies($routes);
-        $this->assertSame([], $dependencies->toArray());
-        $this->assertCount(0, $dependencies);
-        $this->expectException(OutOfBoundsException::class);
-        $dependencies->get('404');
+        $this->assertCount(0, $dependencies->parameters());
     }
 
     public function testEndpoint(): void
@@ -41,20 +41,42 @@ final class DependenciesTest extends TestCase
             route(
                 middleware: MiddlewareOne::class,
                 path: '/{id}',
-                // note: MiddlewareTwo has no dependencies (__construct)
                 GET: bind(ControllerWithParameter::class, middleware: MiddlewareTwo::class)
             )
         );
         $dependencies = new Dependencies($routes);
-        $this->assertCount(2, $dependencies);
+        $this->assertCount(2, $dependencies->parameters());
         $this->assertSame(
             [
-                ControllerWithParameter::class,
-                MiddlewareOne::class,
+                'dependency', // ControllerWithParameter's dependency
+                'value', // MiddlewareOne's dependency
             ],
-            $dependencies->keys()
+            $dependencies->parameters()->keys()
         );
-        $dependency = $dependencies->toArray()[ControllerWithParameter::class]['dependency'];
-        $this->assertFalse($dependency['required']);
+        $dependencies->parameters()(
+            dependency: 'Controller dependency',
+            value: 'Middleware dependency'
+        );
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            '[dependency]: Argument #1 ($value) must be of type Stringable|string, int given'
+        );
+        $dependencies->parameters()(dependency: 0);
+    }
+
+    public function testIncompatibleDependencies(): void
+    {
+        $routes = routes(
+            route(
+                middleware: middlewares(MiddlewareOne::class, MiddlewareOneConflict::class),
+                path: '/{id}',
+                GET: bind(ControllerWithParameter::class, middleware: MiddlewareTwo::class)
+            )
+        );
+        $this->expectException(TypeError::class);
+        $this->expectExceptionMessage(
+            'Incompatible dependency type for variable `$value` at `Chevere\Tests\src\MiddlewareOneConflict::__construct` previously defined as type `string`'
+        );
+        new Dependencies($routes);
     }
 }

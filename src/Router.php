@@ -52,7 +52,7 @@ final class Router implements RouterInterface
         $new = clone $this;
         $new->index = $new->index->withAddedRoute($route, $group);
         $new->routes = $new->routes->withRoute($route);
-        $new->dependencies = $new->dependencies->withAddedRoute($route);
+        $new->dependencies = $new->dependencies->withRoute($route);
         foreach ($route->endpoints() as $endpoint) {
             $new->collector->addRoute(
                 $endpoint->method()::name(),

@@ -22,6 +22,7 @@ use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\Http\MiddlewareName;
 use Chevere\Http\Middlewares;
+use Chevere\Parameter\Arguments;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\BindInterface;
@@ -31,7 +32,6 @@ use Chevere\Router\Interfaces\RoutedInterface;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
-use LogicException;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use OutOfBoundsException;
@@ -247,8 +247,8 @@ function routed(
         $middlewares = $routed->bind()->middlewares();
         foreach ($middlewares as $middlewareName) {
             $className = (string) $middlewareName;
-            $middlewareArguments = getArguments($router->dependencies(), $className, $container);
-            $queue[$className] = new $className(...$middlewareArguments);
+            $middlewareDependencies = $router->dependencies()->extract($className, $container);
+            $queue[$className] = new $className(...$middlewareDependencies);
         }
         $queue[] = new class() implements MiddlewareInterface {
             public function process(
@@ -287,7 +287,7 @@ function routed(
     $container = array_merge($container, [
         'request' => $request,
     ]);
-    $controllerArguments = getArguments($router->dependencies(), $controllerName, $container);
+    $controllerArguments = $router->dependencies()->extract($controllerName, $container);
     /** @var ControllerInterface $controller */
     $controller = new $controllerName(...$controllerArguments);
     if (in_array($request->getMethod(), ['POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], true)) {
@@ -325,20 +325,14 @@ function routed(
  * @param array<string, mixed> $container
  * @return array<string, mixed>
  */
-function getArguments(
+function getDependencies(
     DependenciesInterface $dependencies,
-    string $class,
+    string $className,
     array $container
 ): array {
-    $arguments = [];
-    if (! $dependencies->has($class)) {
-        return $arguments;
-    }
-    foreach ($dependencies->get($class)->keys() as $key) {
-        $arguments[$key] = array_key_exists($key, $container)
-            ? $container[$key]
-            : throw new LogicException("Missing container key {$key}");
+    if (! $dependencies->has($className)) {
+        return [];
     }
 
-    return $arguments;
+    return (new Arguments($dependencies->get($className), $container))->toArray();
 }
