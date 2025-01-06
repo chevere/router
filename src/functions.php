@@ -23,6 +23,7 @@ use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\Http\MiddlewareName;
 use Chevere\Http\Middlewares;
 use Chevere\Parameter\Arguments;
+use Chevere\Router\Exceptions\NotFoundException;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\BindInterface;
@@ -35,6 +36,7 @@ use Chevere\Router\Interfaces\RoutesInterface;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use OutOfBoundsException;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -230,18 +232,28 @@ function controllerName(BindInterface|string $item): ControllerNameInterface
 function routed(
     ServerRequestInterface $request,
     RouterInterface $router,
+    ResponseFactoryInterface $responseFactory = new Psr17Factory(),
     array $container = [],
 ): RoutedInterface {
     $path = $request->getUri()->getPath();
     $body = $request->getParsedBody() ?? [];
-    if (! isset($container['response'])) {
-        $container['response'] = new Psr17Factory();
+    $container['responseFactory'] = $responseFactory;
+
+    try {
+        $routed = $router->dispatcher()->dispatch(
+            $request->getMethod(),
+            $path
+        );
+    } catch (NotFoundException $e) {
+        return new Routed(
+            new Response(status: 404, reason: $e->getMessage())
+        );
+    } catch (MethodNotAllowedException $e) {
+        return new Routed(
+            new Response(status: 405, reason: $e->getMessage())
+        );
     }
 
-    $routed = $router->dispatcher()->dispatch(
-        $request->getMethod(),
-        $path
-    );
     $queue = [];
     $middlewares = $routed->bind()->middlewares();
     foreach ($middlewares as $middlewareName) {
@@ -270,11 +282,7 @@ function routed(
         $response = $response->withHeader($name, $value);
     }
     if ($response->hasHeader('Location')) {
-        return new Routed(
-            $response,
-            $routed->bind()->view(),
-            null,
-        );
+        return new Routed($response, $routed->bind()->view());
     }
     $container = array_merge($container, [
         'request' => $request,
@@ -289,7 +297,6 @@ function routed(
             return new Routed(
                 new Response(status: 400, reason: $e->getMessage()),
                 $routed->bind()->view(),
-                null
             );
         }
     }
@@ -300,7 +307,6 @@ function routed(
         return new Routed(
             new Response(status: $e->getCode(), reason: $e->getMessage()),
             $routed->bind()->view(),
-            null
         );
     }
     $response = new Response(

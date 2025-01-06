@@ -22,7 +22,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class RedirectIfLogged implements MiddlewareInterface
 {
     public function __construct(
-        private ResponseFactoryInterface $response
+        private ResponseFactoryInterface $responseFactory
     ) {
     }
 
@@ -35,7 +35,7 @@ final class RedirectIfLogged implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        return $this->response
+        return $this->responseFactory
             ->createResponse(200)
             ->withHeader('Location', '/account');
     }
