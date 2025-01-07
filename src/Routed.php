@@ -26,7 +26,7 @@ final class Routed implements RoutedInterface
 
     public function __construct(
         private ResponseInterface $response,
-        private ?BindInterface $bind = null,
+        private BindInterface $bind,
         private mixed $raw = null
     ) {
         $this->type = new Type(getType($raw));
@@ -37,7 +37,7 @@ final class Routed implements RoutedInterface
         return $this->response;
     }
 
-    public function bind(): ?BindInterface
+    public function bind(): BindInterface
     {
         return $this->bind;
     }

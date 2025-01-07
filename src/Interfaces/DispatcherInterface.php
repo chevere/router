@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
+use Psr\Http\Message\ServerRequestInterface;
+
 /**
  * Describes the component in charge of dispatch router.
  */
@@ -21,5 +23,5 @@ interface DispatcherInterface
     /**
      * Dispatches against the provided HTTP method verb and URI.
      */
-    public function dispatch(string $httpMethod, string $uri): DispatchInterface;
+    public function dispatch(ServerRequestInterface $request): DispatchInterface;
 }

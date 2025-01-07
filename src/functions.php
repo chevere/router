@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Http\ControllerName;
+use Chevere\Http\Controllers\MethodNotAllowedController;
+use Chevere\Http\Controllers\NotFoundController;
 use Chevere\Http\Exceptions\ControllerException;
 use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Http\Interfaces\ControllerInterface;
@@ -232,22 +234,20 @@ function routed(
     ResponseFactoryInterface $responseFactory = new Psr17Factory(),
     array $container = [],
 ): RoutedInterface {
-    $path = $request->getUri()->getPath();
     $body = $request->getParsedBody() ?? [];
     $container['responseFactory'] = $responseFactory;
 
     try {
-        $routed = $router->dispatcher()->dispatch(
-            $request->getMethod(),
-            $path
-        );
+        $routed = $router->dispatcher()->dispatch($request);
     } catch (NotFoundException $e) {
         return new Routed(
             $responseFactory->createResponse(404, $e->getMessage()),
+            bind(NotFoundController::class),
         );
     } catch (MethodNotAllowedException $e) {
         return new Routed(
             $responseFactory->createResponse(405, $e->getMessage()),
+            bind(MethodNotAllowedController::class)
         );
     }
 

@@ -20,6 +20,7 @@ use Chevere\Router\Parsers\StrictStd;
 use Chevere\Tests\src\ControllerWithParameters;
 use FastRoute\DataGenerator\GroupCountBased;
 use FastRoute\RouteCollector;
+use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use function Chevere\Router\bind;
 
@@ -29,7 +30,8 @@ final class DispatcherTest extends TestCase
     {
         $routeDispatcher = new Dispatcher($this->getRouteCollector());
         $this->expectException(NotFoundException::class);
-        $routeDispatcher->dispatch('get', '/');
+        $request = new ServerRequest('GET', '/');
+        $routeDispatcher->dispatch($request);
     }
 
     public function testFound(): void
@@ -38,7 +40,8 @@ final class DispatcherTest extends TestCase
         $bind = bind(ControllerWithParameters::class);
         $routeCollector->addRoute('GET', '/', $bind);
         $routeDispatcher = new Dispatcher($routeCollector);
-        $bindDispatch = $routeDispatcher->dispatch('GET', '/')->bind();
+        $request = new ServerRequest('GET', '/');
+        $bindDispatch = $routeDispatcher->dispatch($request)->bind();
         $this->assertSame($bind, $bindDispatch);
     }
 
@@ -48,7 +51,8 @@ final class DispatcherTest extends TestCase
         $routeCollector->addRoute('GET', '/', 'test');
         $routeDispatcher = new Dispatcher($routeCollector);
         $this->expectException(MethodNotAllowedException::class);
-        $routeDispatcher->dispatch('Asdf', '/');
+        $request = new ServerRequest('Asdf', '/');
+        $routeDispatcher->dispatch($request);
     }
 
     private function getRouteCollector(): RouteCollector

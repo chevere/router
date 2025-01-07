@@ -21,6 +21,7 @@ use Chevere\Router\Interfaces\DispatchInterface;
 use FastRoute\Dispatcher\GroupCountBased;
 use FastRoute\RouteCollector;
 use LogicException;
+use Psr\Http\Message\ServerRequestInterface;
 use function Chevere\Message\message;
 
 final class Dispatcher implements DispatcherInterface
@@ -31,10 +32,12 @@ final class Dispatcher implements DispatcherInterface
     }
 
     // @infection-ignore-all
-    public function dispatch(string $httpMethod, string $uri): DispatchInterface
+    public function dispatch(ServerRequestInterface $request): DispatchInterface
     {
+        $method = $request->getMethod();
+        $uri = $request->getUri()->getPath();
         $info = (new GroupCountBased($this->routeCollector->getData()))
-            ->dispatch($httpMethod, $uri);
+            ->dispatch($method, $uri);
         /** @var int $status */
         $status = $info[0];
         /** @var BindInterface $handler */
@@ -55,7 +58,7 @@ final class Dispatcher implements DispatcherInterface
             GroupCountBased::METHOD_NOT_ALLOWED => throw new MethodNotAllowedException(
                 (string) message(
                     'Method `%method%` is not in the list of allowed methods: `%allowed%`',
-                    method: $httpMethod,
+                    method: $method,
                     allowed: implode(', ', $allowed),
                 )
             ),
