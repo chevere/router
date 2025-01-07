@@ -208,24 +208,25 @@ final class FunctionsTest extends TestCase
             )
         );
         $routed = routed($request, $router);
-        $this->assertSame($routed->raw(), null);
-        $this->assertSame($routed->type()->primitive(), 'null');
+        $this->assertSame(null, $routed->raw());
+        $this->assertSame('null', $routed->type()->primitive());
     }
 
     public function testGetResponseView(): void
     {
         $request = new ServerRequest('GET', '/test');
+        $bind = bind(ControllerNoParameters::class, 'web/test.twig');
         $router = router(
             routes(
                 route(
                     path: '/test',
-                    GET: bind(ControllerNoParameters::class, 'web/test.twig')
+                    GET: $bind
                 )
             )
         );
         $routed = routed($request, $router);
-        $this->assertSame($routed->view(), 'web/test.twig');
-        $this->assertSame($routed->raw(), []);
-        $this->assertSame($routed->type()->primitive(), 'array');
+        $this->assertEquals($bind, $routed->bind());
+        $this->assertSame([], $routed->raw());
+        $this->assertSame('array', $routed->type()->primitive());
     }
 }

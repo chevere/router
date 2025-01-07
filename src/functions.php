@@ -243,11 +243,11 @@ function routed(
         );
     } catch (NotFoundException $e) {
         return new Routed(
-            $responseFactory->createResponse(404, $e->getMessage())
+            $responseFactory->createResponse(404, $e->getMessage()),
         );
     } catch (MethodNotAllowedException $e) {
         return new Routed(
-            $responseFactory->createResponse(405, $e->getMessage())
+            $responseFactory->createResponse(405, $e->getMessage()),
         );
     }
 
@@ -272,7 +272,7 @@ function routed(
         $response = $response->withHeader($name, $value);
     }
     if ($response->hasHeader('Location')) {
-        return new Routed($response, $routed->bind()->view());
+        return new Routed($response, $routed->bind());
     }
     $container = array_merge($container, [
         'request' => $request,
@@ -286,7 +286,7 @@ function routed(
         } catch (Throwable $e) {
             return new Routed(
                 $responseFactory->createResponse(400, $e->getMessage()),
-                $routed->bind()->view(),
+                $routed->bind(),
             );
         }
     }
@@ -296,7 +296,7 @@ function routed(
     } catch (ControllerException $e) {
         return new Routed(
             $responseFactory->createResponse($e->getCode(), $e->getMessage()),
-            $routed->bind()->view(),
+            $routed->bind(),
         );
     }
     $response = $responseFactory->createResponse($controllerStatus);
@@ -307,7 +307,7 @@ function routed(
 
     return new Routed(
         $controller->terminate($response),
-        $routed->bind()->view(),
+        $routed->bind(),
         $controllerResponse
     );
 }

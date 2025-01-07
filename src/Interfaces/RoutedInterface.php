@@ -23,7 +23,7 @@ interface RoutedInterface
 {
     public function response(): ResponseInterface;
 
-    public function view(): string;
+    public function bind(): ?BindInterface;
 
     public function type(): TypeInterface;
 

@@ -15,6 +15,7 @@ namespace Chevere\Router;
 
 use Chevere\Parameter\Interfaces\TypeInterface;
 use Chevere\Parameter\Type;
+use Chevere\Router\Interfaces\BindInterface;
 use Chevere\Router\Interfaces\RoutedInterface;
 use Psr\Http\Message\ResponseInterface;
 use function Chevere\Parameter\getType;
@@ -25,7 +26,7 @@ final class Routed implements RoutedInterface
 
     public function __construct(
         private ResponseInterface $response,
-        private string $view = '',
+        private ?BindInterface $bind = null,
         private mixed $raw = null
     ) {
         $this->type = new Type(getType($raw));
@@ -36,9 +37,9 @@ final class Routed implements RoutedInterface
         return $this->response;
     }
 
-    public function view(): string
+    public function bind(): ?BindInterface
     {
-        return $this->view;
+        return $this->bind;
     }
 
     public function type(): TypeInterface
