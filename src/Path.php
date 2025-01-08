@@ -26,8 +26,7 @@ use function Chevere\Message\message;
 final class Path implements PathInterface
 {
     /**
-     * string|array for mixed types.
-     * @var array<int, mixed>
+     * @var array<int, string|array<int, string>>
      */
     private array $data;
 
@@ -41,7 +40,7 @@ final class Path implements PathInterface
         private string $route
     ) {
         $std = new StrictStd();
-        $this->data = $std->parse($this->route)[0];
+        $this->data = $std->parse($this->route)[0]; // @phpstan-ignore-line
         $dataGenerator = new DataGenerator();
 
         try {
@@ -65,7 +64,10 @@ final class Path implements PathInterface
             }
             $this->variables = $this->variables
                 ->withPut(
-                    new Variable($value[0], new VariableRegex($value[1]))
+                    new Variable(
+                        $value[0],
+                        new VariableRegex($value[1])
+                    )
                 );
         }
         $this->regex = new Regex(

@@ -21,7 +21,6 @@ use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use OutOfBoundsException;
 use OverflowException;
-use TypeError;
 use function Chevere\Message\message;
 
 final class Routes implements RoutesInterface
@@ -88,7 +87,6 @@ final class Routes implements RoutesInterface
     }
 
     /**
-     * @throws TypeError
      * @throws OutOfBoundsException
      */
     public function get(string $path): RouteInterface
@@ -116,7 +114,7 @@ final class Routes implements RoutesInterface
 
     private function assertNoOverflow(string $path, RouteInterface $route): void
     {
-        if ($route->name() !== null && $this->names->has($route->name())) {
+        if ($route->name() !== '' && $this->names->has($route->name())) {
             throw new OverflowException(
                 code: static::EXCEPTION_CODE_TAKEN_NAME,
                 message: (string) message(

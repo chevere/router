@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
-use Chevere\DataStructure\Interfaces\MapInterface;
 use Chevere\DataStructure\Map;
 use Chevere\Parameter\Arguments;
 use Chevere\Parameter\Interfaces\ParametersInterface;
@@ -33,9 +32,9 @@ final class Dependencies implements DependenciesInterface
 
     /**
      * [<string>className => ParametersInterface,]
-     * @var MapInterface<ParametersInterface>
+     * @var Map<ParametersInterface>
      */
-    private MapInterface $map;
+    private Map $map;
 
     public function __construct(?RoutesInterface $routes = null)
     {

@@ -149,8 +149,8 @@ function route(
         $itemView = $isBind
             ? $item->view()
             : '';
-        /** @var MethodInterface $method */
-        $method = new $method();
+        /** @var MethodInterface $object */
+        $object = new $method(); // @phpstan-ignore-line
         $middlewares = match (true) {
             is_string($middleware) => middlewares($middleware),
             $middleware === null => middlewares(),
@@ -164,7 +164,7 @@ function route(
             );
         }
         $bind = (new Bind($controllerName, $middlewares))->withView($itemView);
-        $endpoint = new Endpoint($method, $bind);
+        $endpoint = new Endpoint($object, $bind);
         $route = $route->withEndpoint($endpoint);
     }
 

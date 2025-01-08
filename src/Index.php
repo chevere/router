@@ -13,35 +13,33 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
-use Chevere\DataStructure\Interfaces\MapInterface;
 use Chevere\DataStructure\Map;
 use Chevere\Router\Interfaces\IdentifierInterface;
 use Chevere\Router\Interfaces\IndexInterface;
 use Chevere\Router\Interfaces\RouteInterface;
 use OutOfBoundsException;
 use OverflowException;
-use TypeError;
 use function Chevere\Message\message;
 
 final class Index implements IndexInterface
 {
     /**
      * [<string>routeName => IdentifierInterface,]
-     * @var MapInterface<IdentifierInterface>
+     * @var Map<IdentifierInterface>
      */
-    private MapInterface $identifiersMap;
+    private Map $identifiersMap;
 
     /**
      * [<string>routeName => <string>groupName,]
-     * @var MapInterface<string>
+     * @var Map<string>
      */
-    private MapInterface $groupsIndex;
+    private Map $groupsIndex;
 
     /**
      * [<string>groupName => [<string>routeName],]
-     * @var MapInterface<string[]>
+     * @var Map<string[]>
      */
-    private MapInterface $groupsMap;
+    private Map $groupsMap;
 
     public function __construct()
     {
@@ -86,7 +84,6 @@ final class Index implements IndexInterface
     }
 
     /**
-     * @throws TypeError
      * @throws OutOfBoundsException
      */
     public function getRouteIdentifier(string $name): IdentifierInterface
@@ -100,7 +97,6 @@ final class Index implements IndexInterface
     }
 
     /**
-     * @throws TypeError
      * @throws OutOfBoundsException
      */
     public function getGroupRouteNames(string $group): array
@@ -109,7 +105,6 @@ final class Index implements IndexInterface
     }
 
     /**
-     * @throws TypeError
      * @throws OutOfBoundsException
      */
     public function getRouteGroup(string $name): string
