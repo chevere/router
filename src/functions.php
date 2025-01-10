@@ -14,13 +14,13 @@ declare(strict_types=1);
 namespace Chevere\Router;
 
 use Chevere\Http\ControllerName;
-use Chevere\Http\Controllers\MethodNotAllowedController;
-use Chevere\Http\Controllers\NotFoundController;
+use Chevere\Http\Controllers\NullController;
 use Chevere\Http\Exceptions\ControllerException;
 use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Http\Interfaces\ControllerInterface;
 use Chevere\Http\Interfaces\ControllerNameInterface;
 use Chevere\Http\Interfaces\MethodInterface;
+use Chevere\Http\Interfaces\MiddlewareNameInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\Http\MiddlewareName;
 use Chevere\Http\Middlewares;
@@ -115,7 +115,7 @@ function getPath(string $path, string|BindInterface ...$bind): string
  *
  * @param string $path Route path.
  * @param string $name If not provided it will be same as the route path.
- * @param null|MiddlewaresInterface|class-string<MiddlewareInterface> $middleware HTTP server middleware.
+ * @param null|MiddlewaresInterface|MiddlewareNameInterface|class-string<MiddlewareInterface> $middleware HTTP server middleware.
  * @param BindInterface|string ...$bind Binding for HTTP controllers (GET, POST, PUT, DELETE, etc).
  *
  * $bind examples:
@@ -126,7 +126,7 @@ function getPath(string $path, string|BindInterface ...$bind): string
 function route(
     string $path,
     string $name = '',
-    null|string|MiddlewaresInterface $middleware = null,
+    null|string|MiddlewaresInterface|MiddlewareNameInterface $middleware = null,
     string|BindInterface ...$bind
 ): RouteInterface {
     $name = $name === '' ? $path : $name;
@@ -152,9 +152,9 @@ function route(
         /** @var MethodInterface $object */
         $object = new $method(); // @phpstan-ignore-line
         $middlewares = match (true) {
-            is_string($middleware) => middlewares($middleware),
+            $middleware instanceof MiddlewaresInterface => $middleware,
             $middleware === null => middlewares(),
-            default => $middleware,
+            default => middlewares($middleware),
         };
         if ($item instanceof BindInterface) {
             $middlewares = $middlewares->withAppend(
@@ -242,12 +242,12 @@ function routed(
     } catch (NotFoundException $e) {
         return new Routed(
             $responseFactory->createResponse(404, $e->getMessage()),
-            bind(NotFoundController::class),
+            bind(NullController::class),
         );
     } catch (MethodNotAllowedException $e) {
         return new Routed(
             $responseFactory->createResponse(405, $e->getMessage()),
-            bind(MethodNotAllowedController::class)
+            bind(NullController::class)
         );
     }
 
