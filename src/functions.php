@@ -256,7 +256,11 @@ function routed(
     foreach ($middlewares as $middlewareName) {
         $className = (string) $middlewareName;
         $middlewareDependencies = $router->dependencies()->extract($className, $container);
-        $queue[$className] = new $className(...$middlewareDependencies);
+        $middleware = new $className(...$middlewareDependencies);
+        if (method_exists($middleware, 'setUp')) {
+            $middleware->setUp(...$middlewareName->arguments());
+        }
+        $queue[$className] = $middleware;
     }
     $queue[] = new RelayHandle($responseFactory);
     $relay = new Relay($queue);
