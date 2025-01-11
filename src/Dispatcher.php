@@ -15,7 +15,6 @@ namespace Chevere\Router;
 
 use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Router\Exceptions\NotFoundException;
-use Chevere\Router\Interfaces\BindInterface;
 use Chevere\Router\Interfaces\DispatcherInterface;
 use Chevere\Router\Interfaces\DispatchInterface;
 use FastRoute\Dispatcher\GroupCountBased;
@@ -36,19 +35,15 @@ final class Dispatcher implements DispatcherInterface
     {
         $method = $request->getMethod();
         $uri = $request->getUri()->getPath();
-        $info = (new GroupCountBased($this->routeCollector->getData()))
-            ->dispatch($method, $uri);
-        /** @var int $status */
-        $status = $info[0];
-        /** @var BindInterface $handler */
-        $handler = $info[1] ?? null;
-        /** @var string[] $allowed */
-        $allowed = $info[2] ?? [];
-        /** @var array<string, string> $arguments */
-        $arguments = $info[2] ?? [];
+        $groupCountBased = new GroupCountBased(
+            $this->routeCollector->getData()
+        );
+        $format = $groupCountBased->dispatch($method, $uri);
+        /** @var int 0|1|2 $status */
+        $formatCode = $format[0];
 
-        return match ($status) {
-            GroupCountBased::FOUND => new Dispatch($handler, $arguments),
+        return match ($formatCode) {
+            GroupCountBased::FOUND => new Dispatch($format[1], $format[2]),
             GroupCountBased::NOT_FOUND => throw new NotFoundException(
                 (string) message(
                     'No route found for `%uri%`',
@@ -59,14 +54,14 @@ final class Dispatcher implements DispatcherInterface
                 (string) message(
                     'Method `%method%` is not in the list of allowed methods: `%allowed%`',
                     method: $method,
-                    allowed: implode(', ', $allowed),
+                    allowed: implode(', ', $format[1]),
                 )
             ),
             // @codeCoverageIgnoreStart
             default => throw new LogicException(
                 (string) message(
-                    'Unknown router status code `%status%`',
-                    status: strval($status),
+                    'Unknown dispatcher format code `%code%`',
+                    code: strval($formatCode),
                 )
             ),
             // @codeCoverageIgnoreEnd
