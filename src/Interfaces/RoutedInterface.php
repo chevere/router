@@ -21,11 +21,23 @@ use Psr\Http\Message\ResponseInterface;
  */
 interface RoutedInterface
 {
+    /**
+     * Provides access to the ResponseInterface instance.
+     */
     public function response(): ResponseInterface;
 
+    /**
+     * Provides access to the BindInterface instance.
+     */
     public function bind(): BindInterface;
 
+    /**
+     * Provides access to the TypeInterface instance for the raw result.
+     */
     public function type(): TypeInterface;
 
+    /**
+     * Provides access to the raw routed result.
+     */
     public function raw(): mixed;
 }
