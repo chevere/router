@@ -13,14 +13,15 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
+use Chevere\Http\Controllers\NullController;
 use Chevere\Http\Exceptions\MethodNotAllowedException;
+use Chevere\Parameter\Type;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Tests\src\ControllerNoParameters;
 use Chevere\Tests\src\ControllerWithParameters;
 use Chevere\Tests\src\MiddlewareOne;
-use Chevere\Tests\src\RedirectIfLogged;
 use Chevere\Tests\src\WrongController;
 use InvalidArgumentException;
 use Nyholm\Psr7\ServerRequest;
@@ -196,23 +197,7 @@ final class FunctionsTest extends TestCase
         }
     }
 
-    public function testGetResponse(): void
-    {
-        $request = new ServerRequest('GET', '/test');
-        $router = router(
-            routes(
-                route(
-                    path: '/test',
-                    GET: bind(ControllerNoParameters::class, middleware: RedirectIfLogged::class)
-                )
-            )
-        );
-        $routed = routed($request, $router);
-        $this->assertSame(null, $routed->raw());
-        $this->assertSame('null', $routed->type()->primitive());
-    }
-
-    public function testGetResponseView(): void
+    public function testRoutedFound(): void
     {
         $request = new ServerRequest('GET', '/test');
         $bind = bind(ControllerNoParameters::class, 'web/test.twig');
@@ -225,8 +210,41 @@ final class FunctionsTest extends TestCase
             )
         );
         $routed = routed($request, $router);
-        $this->assertEquals($bind, $routed->bind());
         $this->assertSame([], $routed->raw());
-        $this->assertSame('array', $routed->type()->primitive());
+        $this->assertEquals($bind, $routed->bind());
+        $this->assertEquals(new Type('array'), $routed->type());
+    }
+
+    public static function provideRoutedNull(): array
+    {
+        return [
+            ['GET', '/test', 404, 'No route found for `/test`'],
+            ['POST', '/foo', 405, 'Method `POST` is not in the list of allowed methods: `PATCH`'],
+        ];
+    }
+
+    /**
+     * @dataProvider provideRoutedNull
+     */
+    public function testRoutedNull(string $method, string $path, int $code, string $reason): void
+    {
+        $request = new ServerRequest($method, $path);
+        $router = router(
+            routes(
+                route('/foo', PATCH: ControllerNoParameters::class)
+            )
+        );
+        $routed = routed($request, $router);
+        $this->assertSame(
+            $reason,
+            $routed->response()->getReasonPhrase()
+        );
+        $this->assertSame($code, $routed->response()->getStatusCode());
+        $this->assertSame(null, $routed->raw());
+        $this->assertEquals(new Type('null'), $routed->type());
+        $this->assertSame(
+            NullController::class,
+            $routed->bind()->controllerName()->__toString()
+        );
     }
 }
