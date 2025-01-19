@@ -229,16 +229,16 @@ function controllerName(BindInterface|string $item): ControllerNameInterface
  * @param array<string, mixed> $container Service container (name => instance).
  */
 function routed(
-    ServerRequestInterface $request,
+    ServerRequestInterface $serverRequest,
     RouterInterface $router,
     ResponseFactoryInterface $responseFactory = new Psr17Factory(),
     array $container = [],
 ): RoutedInterface {
-    $body = $request->getParsedBody() ?? [];
+    $body = $serverRequest->getParsedBody() ?? [];
     $container['responseFactory'] = $responseFactory;
 
     try {
-        $routed = $router->dispatcher()->dispatch($request);
+        $routed = $router->dispatcher()->dispatch($serverRequest);
     } catch (NotFoundException $e) {
         return new Routed(
             $responseFactory->createResponse(404, $e->getMessage()),
@@ -264,7 +264,7 @@ function routed(
     }
     $queue[] = new RelayHandle($responseFactory);
     $relay = new Relay($queue);
-    $response = $relay->handle($request);
+    $response = $relay->handle($serverRequest);
     $responseHeaders = [];
     foreach ($response->getHeaders() as $name => $values) {
         $responseHeaders[$name] = implode(', ', $values);
@@ -279,14 +279,14 @@ function routed(
         return new Routed($response, $routed->bind());
     }
     $container = array_merge($container, [
-        'request' => $request,
+        'request' => $serverRequest,
     ]);
     $controllerArguments = $router->dependencies()->extract($controllerName, $container);
     /** @var ControllerInterface $controller */
     $controller = new $controllerName(...$controllerArguments);
-    if (in_array($request->getMethod(), ['POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], true)) {
+    if (in_array($serverRequest->getMethod(), ['POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], true)) {
         try {
-            $controller = $controller->withBody((array) $body);
+            $controller = $controller->withServerRequest($serverRequest);
         } catch (Throwable $e) {
             return new Routed(
                 $responseFactory->createResponse(400, $e->getMessage()),

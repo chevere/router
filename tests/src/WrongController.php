@@ -19,6 +19,7 @@ use Chevere\Parameter\Interfaces\ArgumentsInterface;
 use Chevere\Parameter\Interfaces\ArrayParameterInterface;
 use Chevere\Parameter\Interfaces\ArrayStringParameterInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use function Chevere\Parameter\arguments;
 use function Chevere\Parameter\arrayp;
 use function Chevere\Parameter\arrayString;
@@ -40,19 +41,9 @@ final class WrongController extends Action implements ControllerInterface
         return arrayp();
     }
 
-    public function withQuery(array $query): static
+    public function withServerRequest(ServerRequestInterface $serverRequest): static
     {
-        return new self();
-    }
-
-    public function withBody(array $body): static
-    {
-        return new self();
-    }
-
-    public function withFiles(array $files): static
-    {
-        return new self();
+        return $this;
     }
 
     public function query(): ArgumentsInterface
@@ -71,14 +62,27 @@ final class WrongController extends Action implements ControllerInterface
         );
     }
 
-    public function files(): array
+    public function files(): ArgumentsInterface
     {
-        return [];
+        return arguments(
+            static::acceptFiles()->parameters(),
+            []
+        );
     }
 
     public function terminate(ResponseInterface $response): ResponseInterface
     {
         return $response;
+    }
+
+    public function serverParams(): array
+    {
+        return [];
+    }
+
+    public function attributes(): array
+    {
+        return [];
     }
 
     protected function main(int $id): array
