@@ -63,24 +63,24 @@ final class Dependencies implements DependenciesInterface
         return $this->parameters;
     }
 
-    public function has(string $className): bool
+    public function has(string $name): bool
     {
-        return $this->map->has($className);
+        return $this->map->has($name);
     }
 
-    public function get(string $className): ParametersInterface
+    public function get(string $name): ParametersInterface
     {
         /** @var ParametersInterface */
-        return $this->map->get($className);
+        return $this->map->get($name);
     }
 
-    public function extract(string $className, array $container): array
+    public function extract(string $name, array $container): array
     {
         $extracted = [];
-        if (! $this->has($className)) {
+        if (! $this->has($name)) {
             return $extracted;
         }
-        $parameters = $this->get($className);
+        $parameters = $this->get($name);
         $extracted = array_intersect_key(
             $container,
             array_flip($parameters->keys())
@@ -89,12 +89,12 @@ final class Dependencies implements DependenciesInterface
         return (new Arguments($parameters, $extracted))->toArray();
     }
 
-    public function definedAt(string $dependency): string
+    public function definedAt(string $name): string
     {
-        return array_key_exists($dependency, $this->definedAt)
-            ? $this->definedAt[$dependency]
+        return array_key_exists($name, $this->definedAt)
+            ? $this->definedAt[$name]
             : throw new OutOfBoundsException(
-                "Dependency `\${$dependency}` not defined"
+                "Dependency `\${$name}` not defined"
             );
     }
 
