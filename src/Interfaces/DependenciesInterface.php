@@ -51,7 +51,7 @@ interface DependenciesInterface
     public function extract(string $className, array $container): array;
 
     /**
-     * Provides the class name where the given dependency was required.
+     * Provides the class name where the given dependency was defined.
      */
     public function definedAt(string $dependency): string;
 }
