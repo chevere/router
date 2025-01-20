@@ -49,4 +49,9 @@ interface DependenciesInterface
      * @return array<string, mixed> Constructor arguments, taken from the container
      */
     public function extract(string $className, array $container): array;
+
+    /**
+     * Provides the class name where the given dependency was required.
+     */
+    public function definedAt(string $dependency): string;
 }

@@ -21,6 +21,7 @@ use Chevere\Router\Interfaces\DependenciesInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
+use OutOfBoundsException;
 use ReflectionMethod;
 use Throwable;
 use TypeError;
@@ -29,6 +30,8 @@ use function Chevere\Parameter\reflectionToParameters;
 final class Dependencies implements DependenciesInterface
 {
     private ParametersInterface $parameters;
+
+    private array $definedAt = [];
 
     /**
      * [<string>className => ParametersInterface,]
@@ -86,6 +89,15 @@ final class Dependencies implements DependenciesInterface
         return (new Arguments($parameters, $extracted))->toArray();
     }
 
+    public function definedAt(string $dependency): string
+    {
+        return array_key_exists($dependency, $this->definedAt)
+            ? $this->definedAt[$dependency]
+            : throw new OutOfBoundsException(
+                "Dependency `\${$dependency}` not defined"
+            );
+    }
+
     private function addRoute(RouteInterface $route): void
     {
         foreach ($route->endpoints() as $endpoint) {
@@ -132,5 +144,8 @@ final class Dependencies implements DependenciesInterface
             $parameters = $parameters->without($name);
         }
         $this->parameters = $this->parameters->withMerge($parameters);
+        foreach ($parameters->keys() as $key) {
+            $this->definedAt[$key] = $className;
+        }
     }
 }
