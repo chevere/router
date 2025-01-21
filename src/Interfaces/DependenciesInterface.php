@@ -33,7 +33,7 @@ interface DependenciesInterface
     public function parameters(): ParametersInterface;
 
     /**
-     * Indicates whether the given class name is a dependency.
+     * Indicates whether the given class name defines dependencies.
      */
     public function has(string $className): bool;
 
@@ -50,7 +50,12 @@ interface DependenciesInterface
      */
     public function extract(string $className, array $container): array;
 
-    public function definedAt(string $variable): string;
+    public function definedAt(string $name): string;
 
-    public function assert(mixed ...$argument): void;
+    /**
+     * Asserts that the given container has all dependencies.
+     *
+     * @param array<string, mixed> $container Service container
+     */
+    public function assert(array $container): void;
 }

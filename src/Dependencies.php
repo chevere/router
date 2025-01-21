@@ -34,6 +34,9 @@ final class Dependencies implements DependenciesInterface
 {
     private ParametersInterface $parameters;
 
+    /**
+     * @var array<string, string>
+     */
     private array $definedAt = [];
 
     /**
@@ -66,24 +69,24 @@ final class Dependencies implements DependenciesInterface
         return $this->parameters;
     }
 
-    public function has(string $name): bool
+    public function has(string $className): bool
     {
-        return $this->map->has($name);
+        return $this->map->has($className);
     }
 
-    public function get(string $name): ParametersInterface
+    public function get(string $className): ParametersInterface
     {
         /** @var ParametersInterface */
-        return $this->map->get($name);
+        return $this->map->get($className);
     }
 
-    public function extract(string $name, array $container): array
+    public function extract(string $className, array $container): array
     {
         $extracted = [];
-        if (! $this->has($name)) {
+        if (! $this->has($className)) {
             return $extracted;
         }
-        $parameters = $this->get($name);
+        $parameters = $this->get($className);
         $extracted = array_intersect_key(
             $container,
             array_flip($parameters->keys())
@@ -92,10 +95,10 @@ final class Dependencies implements DependenciesInterface
         return (new Arguments($parameters, $extracted))->toArray();
     }
 
-    public function assert(mixed ...$argument): void
+    public function assert(array $container): void
     {
         $errors = [];
-        foreach ($argument as $key => $value) {
+        foreach ($container as $key => $value) {
             $key = (string) $key;
             if (! $this->parameters->has($key)) {
                 continue;
@@ -103,6 +106,7 @@ final class Dependencies implements DependenciesInterface
             $parameter = $this->parameters->get($key);
 
             try {
+                // @phpstan-ignore-next-line
                 $parameter($value);
             } catch (Throwable) {
                 $type = getType($value);
