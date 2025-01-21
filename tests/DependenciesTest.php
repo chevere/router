@@ -13,12 +13,17 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
+use Chevere\DataStructure\Vector;
 use Chevere\Router\Dependencies;
+use Chevere\Router\Path;
+use Chevere\Tests\src\ControllerWithDependencies;
 use Chevere\Tests\src\ControllerWithParameter;
 use Chevere\Tests\src\MiddlewareOne;
 use Chevere\Tests\src\MiddlewareOneConflict;
 use Chevere\Tests\src\MiddlewareTwo;
 use InvalidArgumentException;
+use LogicException;
+use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 use function Chevere\Http\middlewares;
@@ -34,6 +39,21 @@ final class DependenciesTest extends TestCase
         $routes = routes();
         $dependencies = new Dependencies($routes);
         $this->assertCount(0, $dependencies->parameters());
+        $this->assertFalse($dependencies->has('className'));
+        $this->assertSame([], $dependencies->extract('className', [
+            'key' => 'value',
+        ]));
+        $this->expectException(OutOfBoundsException::class);
+        $dependencies->get('className');
+    }
+
+    public function testEmptyRequirer(): void
+    {
+        $routes = routes();
+        $dependencies = new Dependencies($routes);
+        $this->expectException(OutOfBoundsException::class);
+        $this->expectExceptionMessage('Dependency `name` not defined');
+        $dependencies->requirer('name');
     }
 
     public function testEndpoint(): void
@@ -42,29 +62,69 @@ final class DependenciesTest extends TestCase
             route(
                 middleware: MiddlewareOne::class,
                 path: '/{id}',
-                GET: bind(ControllerWithParameter::class, middleware: MiddlewareTwo::class)
+                GET: bind(ControllerWithDependencies::class, middleware: MiddlewareTwo::class)
             )
         );
         $router = router($routes);
         $dependencies = new Dependencies($routes);
         $this->assertEquals($dependencies, $router->dependencies());
-        $this->assertCount(2, $dependencies->parameters());
+        $this->assertCount(3, $dependencies->parameters());
         $this->assertSame(
             [
-                'dependency', // ControllerWithParameter's dependency
-                'value', // MiddlewareOne's dependency
+                'int', // ControllerWithDependencies's int
+                'dependency', // ControllerWithDependencies's dependency
+                'value', // MiddlewareOne's dependency,
             ],
             $dependencies->parameters()->keys()
         );
-        $dependencies->parameters()(
-            dependency: 'Controller dependency',
-            value: 'Middleware dependency'
+        $container = [
+            'dependency' => new Path('/test'),
+            'int' => 123,
+            'value' => 'Middleware dependency',
+            'extra' => 'Extra value',
+        ];
+        $dependencies->assert(int: 1);
+        $dependencies->assert(...$container);
+        $this->assertSame(
+            [
+                'dependency' => $container['dependency'],
+                'int' => $container['int'],
+            ],
+            $dependencies->extract(ControllerWithDependencies::class, $container)
         );
+
+        $dependencies->parameters()(...$container);
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            '[dependency]: Argument #1 ($value) must be of type Stringable|string, int given'
+            '[dependency]: Argument value provided is not of type `Chevere\Router\Path`'
         );
-        $dependencies->parameters()(dependency: 0);
+        $dependencies->parameters()(int: 0, dependency: new Vector());
+    }
+
+    public function testAssert(): void
+    {
+        $routes = routes(
+            route(
+                middleware: MiddlewareOne::class,
+                path: '/{id}',
+                GET: bind(ControllerWithDependencies::class, middleware: MiddlewareTwo::class)
+            )
+        );
+        $reflector = new \ReflectionMethod(ControllerWithDependencies::class, '__construct');
+        $fileLine = $reflector->getFileName() . ':' . $reflector->getStartLine();
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            - [1]: Missing argument `int` as previously defined by `Chevere\Tests\src\ControllerWithDependencies` in {$fileLine}
+            PLAIN
+        );
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            - [2]: Argument `dependency` provided as `int` is not compatible with `Chevere\Router\Path` as previously defined by `Chevere\Tests\src\ControllerWithDependencies` in {$fileLine}
+            PLAIN
+        );
+        $dependencies = new Dependencies($routes);
+        $dependencies->assert(dependency: 123);
     }
 
     public function testIncompatibleDependencies(): void
@@ -78,7 +138,7 @@ final class DependenciesTest extends TestCase
         );
         $this->expectException(TypeError::class);
         $this->expectExceptionMessage(
-            'Incompatible dependency type for variable `$value` at `Chevere\Tests\src\MiddlewareOneConflict::__construct` previously defined as type `string`'
+            'Variable `$value` defined as `int` is not compatible with `string` as previously defined by `Chevere\Tests\src\MiddlewareOne` in '
         );
         new Dependencies($routes);
     }

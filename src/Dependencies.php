@@ -98,23 +98,22 @@ final class Dependencies implements DependenciesInterface
     public function assert(mixed ...$argument): void
     {
         $errors = [];
-        foreach ($this->parameters as $key => $parameter) {
-            $key = (string) $key;
-            $hasArgument = array_key_exists($key, $argument);
+        foreach ($this->parameters as $name => $parameter) {
+            $name = (string) $name;
+            $hasArgument = array_key_exists($name, $argument);
             if (! $hasArgument
-                && $this->parameters->optionalKeys()->contains($key)
+                && $this->parameters->optionalKeys()->contains($name)
             ) {
                 continue;
             }
-            $requirer = $this->requirer($key);
-            $reflector = new ReflectionMethod($requirer, '__construct');
-            $fileLine = $reflector->getFileName() . ':' . $reflector->getStartLine();
+            $requirer = $this->requirer($name);
+            $fileLine = $this->locate($requirer);
             if (! $hasArgument) {
                 $errors[] = (string) message(
                     <<<PLAIN
                     Missing argument `%key%` as previously defined by `%requirer%` in %fileLine%
                     PLAIN,
-                    key: $key,
+                    key: $name,
                     requirer: $requirer,
                     fileLine: $fileLine,
                 );
@@ -124,19 +123,19 @@ final class Dependencies implements DependenciesInterface
 
             try {
                 /** @var mixed $value */
-                $value = $argument[$key];
+                $value = $argument[$name];
                 // @phpstan-ignore-next-line
                 $parameter($value);
             } catch (Throwable) {
-                $type = getType($value);
+                $provided = getType($value);
                 if (is_object($value)) {
-                    $type = get_class($value);
+                    $provided = get_class($value);
                 }
                 $errors[] = (string) message(
                     <<<PLAIN
-                    Argument `{$key}` provided as `%provided%` is not compatible with `%expected%` as previously defined by `%requirer%` in %fileLine%
+                    Argument `{$name}` provided as `%provided%` is not compatible with `%expected%` as previously defined by `%requirer%` in %fileLine%
                     PLAIN,
-                    provided: $type,
+                    provided: $provided,
                     expected: $parameter->type()->typeHinting(),
                     requirer: $requirer,
                     fileLine: $fileLine,
@@ -157,8 +156,15 @@ final class Dependencies implements DependenciesInterface
         }
 
         throw new OutOfBoundsException(
-            "Dependency `\${$name}` not defined"
+            "Dependency `{$name}` not defined"
         );
+    }
+
+    private function locate(string $className): string
+    {
+        $reflector = new ReflectionMethod($className, '__construct');
+
+        return $reflector->getFileName() . ':' . $reflector->getStartLine();
     }
 
     /**
@@ -169,7 +175,7 @@ final class Dependencies implements DependenciesInterface
         return count($errors) === 1
             ? $errors[0]
             : implode("\n\n", array_map(
-                fn ($i, $error) => '- [' . ($i + 1) . '] ' . $error,
+                fn ($i, $error) => '- [' . ($i + 1) . ']: ' . $error,
                 array_keys($errors),
                 $errors
             ));
@@ -213,9 +219,18 @@ final class Dependencies implements DependenciesInterface
             try {
                 $existing->assertCompatible($parameter);
             } catch (Throwable $e) {
-                $errors[] = <<<PLAIN
-                Incompatible dependency type for variable `\${$name}` at `{$className}::__construct` previously defined as type `{$existing->type()->typeHinting()}`
-                PLAIN;
+                $requirer = $this->requirer($name);
+                $fileLine = $this->locate($requirer);
+                $errors[] = (string) message(
+                    <<<PLAIN
+                    Variable `\${$name}` defined as `%provided%` is not compatible with `%expected%` as previously defined by `%requirer%` in %fileLine%
+                    PLAIN,
+                    name: $name,
+                    provided: $parameter->type()->typeHinting(),
+                    expected: $existing->type()->typeHinting(),
+                    requirer: $requirer,
+                    fileLine: $fileLine,
+                );
             }
             $parameters = $parameters->without($name);
         }

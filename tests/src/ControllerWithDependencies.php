@@ -15,9 +15,16 @@ namespace Chevere\Tests\src;
 
 use Chevere\Http\Controller;
 use Chevere\Parameter\Attributes\StringAttr;
+use Chevere\Router\Path;
 
-final class ControllerWithParameter extends Controller
+final class ControllerWithDependencies extends Controller
 {
+    public function __construct(
+        private int $int,
+        private Path $dependency = new Path('/path'),
+    ) {
+    }
+
     protected function main(
         #[StringAttr('/[0-9]+/')]
         string $id
