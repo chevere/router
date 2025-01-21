@@ -33,14 +33,14 @@ interface DependenciesInterface
     public function parameters(): ParametersInterface;
 
     /**
-     * Indicates whether the given name is a dependency.
+     * Indicates whether the given class name is a dependency.
      */
-    public function has(string $name): bool;
+    public function has(string $className): bool;
 
     /**
-     * Provides access to the parameters (dependencies) for a known name.
+     * Provides access to the parameters (dependencies) for a known class name.
      */
-    public function get(string $name): ParametersInterface;
+    public function get(string $className): ParametersInterface;
 
     /**
      * Provides access to the typed arguments for the given class name and container.
@@ -48,10 +48,9 @@ interface DependenciesInterface
      * @param array<string, mixed> $container Service container
      * @return array<string, mixed> Constructor arguments, taken from the container
      */
-    public function extract(string $name, array $container): array;
+    public function extract(string $className, array $container): array;
 
-    /**
-     * Provides the class name where the given dependency was defined.
-     */
-    public function definedAt(string $name): string;
+    public function definedAt(string $variable): string;
+
+    public function assert(mixed ...$argument): void;
 }

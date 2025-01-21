@@ -21,10 +21,13 @@ use Chevere\Router\Interfaces\DependenciesInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
+use LogicException;
 use OutOfBoundsException;
 use ReflectionMethod;
 use Throwable;
 use TypeError;
+use function Chevere\Message\message;
+use function Chevere\Parameter\getType;
 use function Chevere\Parameter\reflectionToParameters;
 
 final class Dependencies implements DependenciesInterface
@@ -87,6 +90,47 @@ final class Dependencies implements DependenciesInterface
         );
 
         return (new Arguments($parameters, $extracted))->toArray();
+    }
+
+    public function assert(mixed ...$argument): void
+    {
+        $errors = [];
+        foreach ($argument as $key => $value) {
+            $key = (string) $key;
+            if (! $this->parameters->has($key)) {
+                continue;
+            }
+            $parameter = $this->parameters->get($key);
+
+            try {
+                $parameter($value);
+            } catch (Throwable) {
+                $type = getType($value);
+                if (is_object($value)) {
+                    $type = get_class($value);
+                }
+                $definedAt = $this->definedAt($key);
+                $reflector = new ReflectionMethod($definedAt, '__construct');
+                $errors[] = (string) message(
+                    <<<PLAIN
+                    Argument `{$key}` provided as `%provided%` is not compatible with `%expected%` as previously defined at `%definedAt%` in %fileLine%
+                    PLAIN,
+                    provided: $type,
+                    expected: $parameter->type()->typeHinting(),
+                    definedAt: $definedAt,
+                    fileLine: $reflector->getFileName() . ':' . $reflector->getStartLine(),
+                );
+            }
+        }
+        if ($errors !== []) {
+            throw new LogicException(
+                implode("\n\n", array_map(
+                    fn ($i, $error) => '[' . ($i + 1) . '] ' . $error,
+                    array_keys($errors),
+                    $errors
+                ))
+            );
+        }
     }
 
     public function definedAt(string $name): string
