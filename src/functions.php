@@ -24,12 +24,10 @@ use Chevere\Http\Interfaces\MiddlewareNameInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\Http\MiddlewareName;
 use Chevere\Http\Middlewares;
-use Chevere\Parameter\Arguments;
 use Chevere\Router\Exceptions\NotFoundException;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\BindInterface;
-use Chevere\Router\Interfaces\DependenciesInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\RoutedInterface;
 use Chevere\Router\Interfaces\RouteInterface;
@@ -314,20 +312,4 @@ function routed(
         $routed->bind(),
         $controllerResponse
     );
-}
-
-/**
- * @param array<string, mixed> $container
- * @return array<string, mixed>
- */
-function getDependencies(
-    DependenciesInterface $dependencies,
-    string $className,
-    array $container
-): array {
-    if (! $dependencies->has($className)) {
-        return [];
-    }
-
-    return (new Arguments($dependencies->get($className), $container))->toArray();
 }

@@ -120,11 +120,11 @@ final class DependenciesTest extends TestCase
         );
         $this->expectExceptionMessage(
             <<<PLAIN
-            - [2]: Argument `dependency` provided as `int` is not compatible with `Chevere\Router\Path` as previously defined by `Chevere\Tests\src\ControllerWithDependencies` in {$fileLine}
+            - [2]: Argument `dependency` provided as `Chevere\DataStructure\Vector` is not compatible with `Chevere\Router\Path` as previously defined by `Chevere\Tests\src\ControllerWithDependencies` in {$fileLine}
             PLAIN
         );
         $dependencies = new Dependencies($routes);
-        $dependencies->assert(dependency: 123);
+        $dependencies->assert(dependency: new Vector());
     }
 
     public function testIncompatibleDependencies(): void
