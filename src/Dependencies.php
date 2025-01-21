@@ -37,7 +37,7 @@ final class Dependencies implements DependenciesInterface
     /**
      * @var array<string, string>
      */
-    private array $definedAt = [];
+    private array $requirer = [];
 
     /**
      * [<string>className => ParametersInterface,]
@@ -95,17 +95,36 @@ final class Dependencies implements DependenciesInterface
         return (new Arguments($parameters, $extracted))->toArray();
     }
 
-    public function assert(array $container): void
+    public function assert(mixed ...$argument): void
     {
         $errors = [];
-        foreach ($container as $key => $value) {
+        foreach ($this->parameters as $key => $parameter) {
             $key = (string) $key;
-            if (! $this->parameters->has($key)) {
+            $hasArgument = array_key_exists($key, $argument);
+            if (! $hasArgument
+                && $this->parameters->optionalKeys()->contains($key)
+            ) {
                 continue;
             }
-            $parameter = $this->parameters->get($key);
+            $requirer = $this->requirer($key);
+            $reflector = new ReflectionMethod($requirer, '__construct');
+            $fileLine = $reflector->getFileName() . ':' . $reflector->getStartLine();
+            if (! $hasArgument) {
+                $errors[] = (string) message(
+                    <<<PLAIN
+                    Missing argument `%key%` as previously defined by `%requirer%` in %fileLine%
+                    PLAIN,
+                    key: $key,
+                    requirer: $requirer,
+                    fileLine: $fileLine,
+                );
+
+                continue;
+            }
 
             try {
+                /** @var mixed $value */
+                $value = $argument[$key];
                 // @phpstan-ignore-next-line
                 $parameter($value);
             } catch (Throwable) {
@@ -113,37 +132,47 @@ final class Dependencies implements DependenciesInterface
                 if (is_object($value)) {
                     $type = get_class($value);
                 }
-                $definedAt = $this->definedAt($key);
-                $reflector = new ReflectionMethod($definedAt, '__construct');
                 $errors[] = (string) message(
                     <<<PLAIN
-                    Argument `{$key}` provided as `%provided%` is not compatible with `%expected%` as previously defined at `%definedAt%` in %fileLine%
+                    Argument `{$key}` provided as `%provided%` is not compatible with `%expected%` as previously defined by `%requirer%` in %fileLine%
                     PLAIN,
                     provided: $type,
                     expected: $parameter->type()->typeHinting(),
-                    definedAt: $definedAt,
-                    fileLine: $reflector->getFileName() . ':' . $reflector->getStartLine(),
+                    requirer: $requirer,
+                    fileLine: $fileLine,
                 );
             }
         }
         if ($errors !== []) {
-            throw new LogicException(
-                implode("\n\n", array_map(
-                    fn ($i, $error) => '[' . ($i + 1) . '] ' . $error,
-                    array_keys($errors),
-                    $errors
-                ))
-            );
+            $message = $this->errorMessage($errors);
+
+            throw new LogicException($message);
         }
     }
 
-    public function definedAt(string $name): string
+    public function requirer(string $name): string
     {
-        return array_key_exists($name, $this->definedAt)
-            ? $this->definedAt[$name]
-            : throw new OutOfBoundsException(
-                "Dependency `\${$name}` not defined"
-            );
+        if (array_key_exists($name, $this->requirer)) {
+            return $this->requirer[$name];
+        }
+
+        throw new OutOfBoundsException(
+            "Dependency `\${$name}` not defined"
+        );
+    }
+
+    /**
+     * @param array<string> $errors
+     */
+    private function errorMessage(array $errors): string
+    {
+        return count($errors) === 1
+            ? $errors[0]
+            : implode("\n\n", array_map(
+                fn ($i, $error) => '- [' . ($i + 1) . '] ' . $error,
+                array_keys($errors),
+                $errors
+            ));
     }
 
     private function addRoute(RouteInterface $route): void
@@ -166,6 +195,7 @@ final class Dependencies implements DependenciesInterface
 
     private function handleParameters(string $className): void
     {
+        $errors = [];
         if (! method_exists($className, '__construct')) {
             return;
         }
@@ -183,17 +213,20 @@ final class Dependencies implements DependenciesInterface
             try {
                 $existing->assertCompatible($parameter);
             } catch (Throwable $e) {
-                throw new TypeError(
-                    <<<PLAIN
-                    Incompatible dependency type for variable `\${$name}` at `{$className}::__construct` previously defined as type `{$existing->type()->typeHinting()}`
-                    PLAIN
-                );
+                $errors[] = <<<PLAIN
+                Incompatible dependency type for variable `\${$name}` at `{$className}::__construct` previously defined as type `{$existing->type()->typeHinting()}`
+                PLAIN;
             }
             $parameters = $parameters->without($name);
         }
+        if ($errors !== []) {
+            $message = $this->errorMessage($errors);
+
+            throw new TypeError($message);
+        }
         $this->parameters = $this->parameters->withMerge($parameters);
         foreach ($parameters->keys() as $key) {
-            $this->definedAt[$key] = $className;
+            $this->requirer[$key] = $className;
         }
     }
 }

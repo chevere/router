@@ -50,12 +50,13 @@ interface DependenciesInterface
      */
     public function extract(string $className, array $container): array;
 
-    public function definedAt(string $name): string;
+    /**
+     * Indicates the class name which declared the given dependency.
+     */
+    public function requirer(string $name): string;
 
     /**
      * Asserts that the given container has all dependencies.
-     *
-     * @param array<string, mixed> $container Service container
      */
-    public function assert(array $container): void;
+    public function assert(mixed ...$container): void;
 }
