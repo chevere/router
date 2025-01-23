@@ -68,7 +68,7 @@ function getPath(string $path, string|BindInterface ...$bind): string
 {
     $routePath = new Path($path);
     foreach ($bind as $item) {
-        $controllerName = (string) controllerName($item);
+        $controllerName = controllerName($item)->__toString();
         $controllerName::assert();
         foreach ($routePath->variables()->keys() as $variable) {
             $variableBracket = <<<STRING
@@ -232,7 +232,6 @@ function routed(
     ResponseFactoryInterface $responseFactory = new Psr17Factory(),
     array $container = [],
 ): RoutedInterface {
-    $body = $serverRequest->getParsedBody() ?? [];
     $container['responseFactory'] = $responseFactory;
 
     try {
@@ -248,7 +247,6 @@ function routed(
             bind(NullController::class)
         );
     }
-
     $queue = [];
     $middlewares = $routed->bind()->middlewares();
     foreach ($middlewares as $middlewareName) {
@@ -268,8 +266,9 @@ function routed(
         $responseHeaders[$name] = implode(', ', $values);
     }
     $controllerName = $routed->bind()->controllerName()->__toString();
-    $controllerStatus = responseAttribute($controllerName)->status->primary;
-    $controllerHeaders = responseAttribute($controllerName)->headers->toArray();
+    $responseAttribute = responseAttribute($controllerName);
+    $controllerStatus = $responseAttribute->status->success;
+    $controllerHeaders = $responseAttribute->headers->toArray();
     foreach ($controllerHeaders as $name => $value) {
         $response = $response->withHeader($name, $value);
     }
