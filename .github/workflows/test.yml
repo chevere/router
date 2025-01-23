@@ -49,6 +49,7 @@ jobs:
         run: composer install --no-progress
       - name: Clear PHPStan cache
         run: vendor/bin/phpstan clear-result-cache
+        continue-on-error: true
       - name: Run PHPStan
         run: composer phpstan
       - name: Tests (PHPUnit)
