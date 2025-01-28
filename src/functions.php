@@ -309,10 +309,10 @@ function routed(
         $response = $response->withHeader($name, $value);
     }
 
-    return (
+    return
         new Routed(
             $controller->terminate($response),
             $routed->bind(),
-        )
-    )->withRaw($controllerResponse);
+            $controllerResponse
+        );
 }

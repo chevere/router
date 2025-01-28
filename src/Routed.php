@@ -20,27 +20,16 @@ use Throwable;
 
 final class Routed implements RoutedInterface
 {
-    private mixed $raw;
-
     private Throwable $throwable;
 
-    private bool $hasRaw = false;
-
-    private bool $hasThrowable = false;
+    private bool $hasThrowable;
 
     public function __construct(
         private ResponseInterface $response,
         private BindInterface $bind,
+        private mixed $raw = null,
     ) {
-    }
-
-    public function withRaw(mixed $raw): RoutedInterface
-    {
-        $new = clone $this;
-        $new->raw = $raw;
-        $new->hasRaw = true;
-
-        return $new;
+        $this->hasThrowable = false;
     }
 
     public function withThrowable(Throwable $throwable): RoutedInterface
@@ -60,11 +49,6 @@ final class Routed implements RoutedInterface
     public function bind(): BindInterface
     {
         return $this->bind;
-    }
-
-    public function hasRaw(): bool
-    {
-        return $this->hasRaw;
     }
 
     public function hasThrowable(): bool

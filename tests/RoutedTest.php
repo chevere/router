@@ -30,8 +30,8 @@ final class RoutedTest extends TestCase
         $routed = (new Routed($response, $bind));
         $this->assertSame($routed->bind(), $bind);
         $this->assertSame($routed->response(), $response);
+        $this->assertNull($routed->raw());
         $this->assertFalse($routed->hasThrowable());
-        $this->assertFalse($routed->hasRaw());
     }
 
     public function testWithRaw(): void
@@ -39,24 +39,8 @@ final class RoutedTest extends TestCase
         $raw = [];
         $response = new Response();
         $bind = bind(ControllerNoParameters::class, 'test');
-        $routed = (new Routed($response, $bind));
-        $with = $routed->withRaw($raw);
-        $this->assertNotSame($routed, $with);
-        $this->assertSame($with->raw(), $raw);
-    }
-
-    public function testWithNoRaw(): void
-    {
-        $response = new Response();
-        $bind = bind(ControllerNoParameters::class, 'test');
-        $routed = (new Routed($response, $bind));
-        $this->expectException(Error::class);
-        $this->expectExceptionMessage(
-            <<<PLAIN
-            \$raw must not be accessed before initialization
-            PLAIN
-        );
-        $routed->raw();
+        $routed = (new Routed($response, $bind, $raw));
+        $this->assertSame($routed->raw(), $raw);
     }
 
     public function testWithThrowable(): void

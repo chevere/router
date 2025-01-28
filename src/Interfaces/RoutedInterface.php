@@ -22,25 +22,12 @@ use Throwable;
 interface RoutedInterface
 {
     /**
-     * Return an instance with the specified $raw.
-     *
-     * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified $raw.
-     */
-    public function withRaw(mixed $raw): self;
-
-    /**
      * Return an instance with the specified $throwable.
      *
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified $throwable.
      */
     public function withThrowable(Throwable $throwable): self;
-
-    /**
-     * Indicates whether the instance has $raw.
-     */
-    public function hasRaw(): bool;
 
     /**
      * Indicates whether the instance has $throwable.
