@@ -13,21 +13,20 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
-use Chevere\Parameter\Interfaces\TypeInterface;
-use Chevere\Parameter\Type;
 use Chevere\Router\Interfaces\BindInterface;
 use Chevere\Router\Interfaces\RoutedInterface;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
-use function Chevere\Parameter\getType;
 
 final class Routed implements RoutedInterface
 {
-    private TypeInterface $type;
-
     private mixed $raw;
 
     private Throwable $throwable;
+
+    private bool $hasRaw = false;
+
+    private bool $hasThrowable = false;
 
     public function __construct(
         private ResponseInterface $response,
@@ -39,7 +38,7 @@ final class Routed implements RoutedInterface
     {
         $new = clone $this;
         $new->raw = $raw;
-        $new->type = new Type(getType($raw));
+        $new->hasRaw = true;
 
         return $new;
     }
@@ -48,6 +47,7 @@ final class Routed implements RoutedInterface
     {
         $new = clone $this;
         $new->throwable = $throwable;
+        $new->hasThrowable = true;
 
         return $new;
     }
@@ -62,9 +62,14 @@ final class Routed implements RoutedInterface
         return $this->bind;
     }
 
-    public function type(): TypeInterface
+    public function hasRaw(): bool
     {
-        return $this->type;
+        return $this->hasRaw;
+    }
+
+    public function hasThrowable(): bool
+    {
+        return $this->hasThrowable;
     }
 
     public function raw(): mixed

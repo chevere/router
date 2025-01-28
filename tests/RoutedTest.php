@@ -16,25 +16,36 @@ namespace Chevere\Tests;
 use Chevere\Router\Routed;
 use Chevere\Tests\src\ControllerNoParameters;
 use Error;
+use Exception;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use function Chevere\Router\bind;
 
 final class RoutedTest extends TestCase
 {
-    public function testRouted(): void
+    public function testConstruct(): void
     {
         $response = new Response();
         $bind = bind(ControllerNoParameters::class, 'test');
-        $raw = [];
-        $routed = (new Routed($response, $bind))->withRaw($raw);
+        $routed = (new Routed($response, $bind));
         $this->assertSame($routed->bind(), $bind);
         $this->assertSame($routed->response(), $response);
-        $this->assertSame($routed->raw(), $raw);
-        $this->assertSame($routed->type()->primitive(), 'array');
+        $this->assertFalse($routed->hasThrowable());
+        $this->assertFalse($routed->hasRaw());
     }
 
-    public function testNoRaw(): void
+    public function testWithRaw(): void
+    {
+        $raw = [];
+        $response = new Response();
+        $bind = bind(ControllerNoParameters::class, 'test');
+        $routed = (new Routed($response, $bind));
+        $with = $routed->withRaw($raw);
+        $this->assertNotSame($routed, $with);
+        $this->assertSame($with->raw(), $raw);
+    }
+
+    public function testWithNoRaw(): void
     {
         $response = new Response();
         $bind = bind(ControllerNoParameters::class, 'test');
@@ -48,7 +59,18 @@ final class RoutedTest extends TestCase
         $routed->raw();
     }
 
-    public function testNoThrowable(): void
+    public function testWithThrowable(): void
+    {
+        $throwable = new Exception('test');
+        $response = new Response();
+        $bind = bind(ControllerNoParameters::class, 'test');
+        $routed = (new Routed($response, $bind));
+        $with = $routed->withThrowable($throwable);
+        $this->assertNotSame($routed, $with);
+        $this->assertSame($with->throwable(), $throwable);
+    }
+
+    public function testWithNoThrowable(): void
     {
         $response = new Response();
         $bind = bind(ControllerNoParameters::class, 'test');

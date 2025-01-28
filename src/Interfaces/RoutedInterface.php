@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Chevere\Parameter\Interfaces\TypeInterface;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
@@ -39,6 +38,16 @@ interface RoutedInterface
     public function withThrowable(Throwable $throwable): self;
 
     /**
+     * Indicates whether the instance has $raw.
+     */
+    public function hasRaw(): bool;
+
+    /**
+     * Indicates whether the instance has $throwable.
+     */
+    public function hasThrowable(): bool;
+
+    /**
      * Provides access to the ResponseInterface instance.
      */
     public function response(): ResponseInterface;
@@ -49,14 +58,12 @@ interface RoutedInterface
     public function bind(): BindInterface;
 
     /**
-     * Provides access to the TypeInterface instance for the raw result.
-     */
-    public function type(): TypeInterface;
-
-    /**
      * Provides access to the raw routed result.
      */
     public function raw(): mixed;
 
-    public function throwable(): ?Throwable;
+    /**
+     * Provides access to the Throwable instance.
+     */
+    public function throwable(): Throwable;
 }

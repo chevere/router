@@ -15,7 +15,6 @@ namespace Chevere\Tests;
 
 use Chevere\Http\Controllers\NullController;
 use Chevere\Http\Exceptions\MethodNotAllowedException;
-use Chevere\Parameter\Type;
 use Chevere\Router\Exceptions\NotFoundException;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
@@ -213,7 +212,6 @@ final class FunctionsTest extends TestCase
         $routed = routed($request, $router);
         $this->assertSame([], $routed->raw());
         $this->assertEquals($bind, $routed->bind());
-        $this->assertEquals(new Type('array'), $routed->type());
     }
 
     public static function provideRoutedNull(): array
