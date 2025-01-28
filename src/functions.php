@@ -295,10 +295,14 @@ function routed(
 
     try {
         $controllerResponse = $controller->__invoke(...$routed->arguments());
-    } catch (ControllerException $e) {
+    } catch (Throwable $e) {
+        $code = $e instanceof ControllerException
+            ? $e->getCode()
+            : 500;
+
         return (
             new Routed(
-                $responseFactory->createResponse($e->getCode()),
+                $responseFactory->createResponse($code),
                 $routed->bind(),
             )
         )->withThrowable($e);
@@ -309,10 +313,9 @@ function routed(
         $response = $response->withHeader($name, $value);
     }
 
-    return
-        new Routed(
-            $controller->terminate($response),
-            $routed->bind(),
-            $controllerResponse
-        );
+    return new Routed(
+        $controller->terminate($response),
+        $routed->bind(),
+        $controllerResponse
+    );
 }
