@@ -236,16 +236,15 @@ function routed(
 
     try {
         $routed = $router->dispatcher()->dispatch($serverRequest);
-    } catch (NotFoundException $e) {
-        return new Routed(
-            $responseFactory->createResponse(404, $e->getMessage()),
-            bind(NullController::class),
-        );
-    } catch (MethodNotAllowedException $e) {
-        return new Routed(
-            $responseFactory->createResponse(405, $e->getMessage()),
-            bind(NullController::class)
-        );
+    } catch (NotFoundException|MethodNotAllowedException $e) {
+        $code = $e instanceof MethodNotAllowedException ? 405 : 404;
+
+        return (
+            new Routed(
+                $responseFactory->createResponse($code),
+                bind(NullController::class),
+            )
+        )->withThrowable($e);
     }
     $queue = [];
     $middlewares = $routed->bind()->middlewares();
@@ -285,20 +284,24 @@ function routed(
         try {
             $controller = $controller->withServerRequest($serverRequest);
         } catch (Throwable $e) {
-            return new Routed(
-                $responseFactory->createResponse(400, $e->getMessage()),
-                $routed->bind(),
-            );
+            return (
+                new Routed(
+                    $responseFactory->createResponse(400),
+                    $routed->bind(),
+                )
+            )->withThrowable($e);
         }
     }
 
     try {
         $controllerResponse = $controller->__invoke(...$routed->arguments());
     } catch (ControllerException $e) {
-        return new Routed(
-            $responseFactory->createResponse($e->getCode(), $e->getMessage()),
-            $routed->bind(),
-        );
+        return (
+            new Routed(
+                $responseFactory->createResponse($e->getCode()),
+                $routed->bind(),
+            )
+        )->withThrowable($e);
     }
     $response = $responseFactory->createResponse($controllerStatus);
     $headers = array_merge($controllerHeaders, $responseHeaders);
@@ -306,9 +309,10 @@ function routed(
         $response = $response->withHeader($name, $value);
     }
 
-    return new Routed(
-        $controller->terminate($response),
-        $routed->bind(),
-        $controllerResponse
-    );
+    return (
+        new Routed(
+            $controller->terminate($response),
+            $routed->bind(),
+        )
+    )->withRaw($controllerResponse);
 }

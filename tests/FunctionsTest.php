@@ -16,6 +16,7 @@ namespace Chevere\Tests;
 use Chevere\Http\Controllers\NullController;
 use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Parameter\Type;
+use Chevere\Router\Exceptions\NotFoundException;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\EndpointInterface;
@@ -218,15 +219,27 @@ final class FunctionsTest extends TestCase
     public static function provideRoutedNull(): array
     {
         return [
-            ['GET', '/test', 404, 'No route found for `/test`'],
-            ['POST', '/foo', 405, 'Method `POST` is not in the list of allowed methods: `PATCH`'],
+            [
+                'GET',
+                '/test',
+                404,
+                'No route found for `/test`',
+                NotFoundException::class,
+            ],
+            [
+                'POST',
+                '/foo',
+                405,
+                'Method `POST` is not in the list of allowed methods: `PATCH`',
+                MethodNotAllowedException::class,
+            ],
         ];
     }
 
     /**
      * @dataProvider provideRoutedNull
      */
-    public function testRoutedNull(string $method, string $path, int $code, string $reason): void
+    public function testRoutedNull(string $method, string $path, int $code, string $reason, string $exception): void
     {
         $request = new ServerRequest($method, $path);
         $router = router(
@@ -235,13 +248,9 @@ final class FunctionsTest extends TestCase
             )
         );
         $routed = routed($request, $router);
-        $this->assertSame(
-            $reason,
-            $routed->response()->getReasonPhrase()
-        );
         $this->assertSame($code, $routed->response()->getStatusCode());
-        $this->assertSame(null, $routed->raw());
-        $this->assertEquals(new Type('null'), $routed->type());
+        $this->assertInstanceOf($exception, $routed->throwable());
+        $this->assertSame($reason, $routed->throwable()->getMessage());
         $this->assertSame(
             NullController::class,
             $routed->bind()->controllerName()->__toString()

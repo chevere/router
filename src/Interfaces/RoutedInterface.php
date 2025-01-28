@@ -15,12 +15,29 @@ namespace Chevere\Router\Interfaces;
 
 use Chevere\Parameter\Interfaces\TypeInterface;
 use Psr\Http\Message\ResponseInterface;
+use Throwable;
 
 /**
  * Describes the component in charge of wrap ResponseInterface and its routed result.
  */
 interface RoutedInterface
 {
+    /**
+     * Return an instance with the specified $raw.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the specified $raw.
+     */
+    public function withRaw(mixed $raw): self;
+
+    /**
+     * Return an instance with the specified $throwable.
+     *
+     * This method MUST retain the state of the current instance, and return
+     * an instance that contains the specified $throwable.
+     */
+    public function withThrowable(Throwable $throwable): self;
+
     /**
      * Provides access to the ResponseInterface instance.
      */
@@ -40,4 +57,6 @@ interface RoutedInterface
      * Provides access to the raw routed result.
      */
     public function raw(): mixed;
+
+    public function throwable(): ?Throwable;
 }

@@ -15,6 +15,7 @@ namespace Chevere\Tests;
 
 use Chevere\Router\Routed;
 use Chevere\Tests\src\ControllerNoParameters;
+use Error;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use function Chevere\Router\bind;
@@ -26,10 +27,38 @@ final class RoutedTest extends TestCase
         $response = new Response();
         $bind = bind(ControllerNoParameters::class, 'test');
         $raw = [];
-        $routed = new Routed($response, $bind, $raw);
+        $routed = (new Routed($response, $bind))->withRaw($raw);
         $this->assertSame($routed->bind(), $bind);
         $this->assertSame($routed->response(), $response);
         $this->assertSame($routed->raw(), $raw);
         $this->assertSame($routed->type()->primitive(), 'array');
+    }
+
+    public function testNoRaw(): void
+    {
+        $response = new Response();
+        $bind = bind(ControllerNoParameters::class, 'test');
+        $routed = (new Routed($response, $bind));
+        $this->expectException(Error::class);
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            \$raw must not be accessed before initialization
+            PLAIN
+        );
+        $routed->raw();
+    }
+
+    public function testNoThrowable(): void
+    {
+        $response = new Response();
+        $bind = bind(ControllerNoParameters::class, 'test');
+        $routed = (new Routed($response, $bind));
+        $this->expectException(Error::class);
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            \$throwable must not be accessed before initialization
+            PLAIN
+        );
+        $routed->throwable();
     }
 }
