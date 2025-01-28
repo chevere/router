@@ -239,12 +239,10 @@ function routed(
     } catch (NotFoundException|MethodNotAllowedException $e) {
         $code = $e instanceof MethodNotAllowedException ? 405 : 404;
 
-        return (
-            new Routed(
-                $responseFactory->createResponse($code),
-                bind(NullController::class),
-            )
-        )->withThrowable($e);
+        return (new Routed(
+            $responseFactory->createResponse($code),
+            bind(NullController::class),
+        ))->withThrowable($e);
     }
     $queue = [];
     $middlewares = $routed->bind()->middlewares();
@@ -284,12 +282,10 @@ function routed(
         try {
             $controller = $controller->withServerRequest($serverRequest);
         } catch (Throwable $e) {
-            return (
-                new Routed(
-                    $responseFactory->createResponse(400),
-                    $routed->bind(),
-                )
-            )->withThrowable($e);
+            return (new Routed(
+                $responseFactory->createResponse(400),
+                $routed->bind(),
+            ))->withThrowable($e);
         }
     }
 
@@ -297,15 +293,13 @@ function routed(
         $controllerResponse = $controller->__invoke(...$routed->arguments());
     } catch (Throwable $e) {
         $code = $e instanceof ControllerException
-            ? $e->getCode()
+            ? (int) $e->getCode()
             : 500;
 
-        return (
-            new Routed(
-                $responseFactory->createResponse($code),
-                $routed->bind(),
-            )
-        )->withThrowable($e);
+        return (new Routed(
+            $responseFactory->createResponse($code),
+            $routed->bind(),
+        ))->withThrowable($e);
     }
     $response = $responseFactory->createResponse($controllerStatus);
     $headers = array_merge($controllerHeaders, $responseHeaders);
