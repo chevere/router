@@ -15,6 +15,8 @@ namespace Chevere\Tests\src;
 
 use Chevere\Action\Action;
 use Chevere\Http\Interfaces\ControllerInterface;
+use Chevere\Http\Interfaces\StatusInterface;
+use Chevere\Http\Status;
 use Chevere\Parameter\Interfaces\ArgumentsInterface;
 use Chevere\Parameter\Interfaces\ArrayParameterInterface;
 use Chevere\Parameter\Interfaces\ArrayStringParameterInterface;
@@ -83,6 +85,11 @@ final class WrongController extends Action implements ControllerInterface
     public function attributes(): array
     {
         return [];
+    }
+
+    public function status(): StatusInterface
+    {
+        return new Status();
     }
 
     protected function main(int $id): array
