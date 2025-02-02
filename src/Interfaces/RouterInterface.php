@@ -16,7 +16,7 @@ namespace Chevere\Router\Interfaces;
 use FastRoute\RouteCollector;
 
 /**
- * Describes the component in charge of handling routing.
+ * Describes the component in charge of handling router.
  */
 interface RouterInterface
 {
@@ -28,28 +28,13 @@ interface RouterInterface
      */
     public function withAddedRoute(RouteInterface $route, string $group): self;
 
-    /**
-     * Provides access to the index instance.
-     */
     public function index(): IndexInterface;
 
-    /**
-     * Provides access to the routes instance.
-     */
     public function routes(): RoutesInterface;
 
-    /**
-     * Provides access to the route collector instance.
-     */
     public function collector(): RouteCollector;
 
-    /**
-     * Provides access to the dispatcher instance.
-     */
     public function dispatcher(): DispatcherInterface;
 
-    /**
-     * Provides access to the dependencies instance.
-     */
     public function dependencies(): DependenciesInterface;
 }

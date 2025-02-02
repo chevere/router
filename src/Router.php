@@ -20,6 +20,7 @@ use Chevere\Router\Interfaces\IndexInterface;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
+use Chevere\Router\Interfaces\ViewsInterface;
 use Chevere\Router\Parsers\StrictStd;
 use FastRoute\DataGenerator\GroupCountBased;
 use FastRoute\RouteCollector;
@@ -37,6 +38,8 @@ final class Router implements RouterInterface
 
     private DependenciesInterface $dependencies;
 
+    private ViewsInterface $views;
+
     public function __construct()
     {
         $this->routes = new Routes();
@@ -44,6 +47,7 @@ final class Router implements RouterInterface
         $this->collector = new RouteCollector(new StrictStd(), new GroupCountBased());
         $this->dispatcher = new Dispatcher($this->collector);
         $this->dependencies = new Dependencies();
+        $this->views = new Views($this->routes);
     }
 
     public function withAddedRoute(RouteInterface $route, string $group): RouterInterface
@@ -60,6 +64,7 @@ final class Router implements RouterInterface
                 $endpoint->bind(),
             );
         }
+        $new->views = new Views($new->routes);
 
         return $new;
     }
@@ -87,6 +92,11 @@ final class Router implements RouterInterface
     public function dependencies(): DependenciesInterface
     {
         return $this->dependencies;
+    }
+
+    public function views(): ViewsInterface
+    {
+        return $this->views;
     }
 
     private function assertHasEndpoints(RouteInterface $route): void
