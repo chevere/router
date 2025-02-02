@@ -33,8 +33,8 @@ final class Views implements ViewsInterface
                 'Provided views directory does not exists'
             );
         }
+        $errors = [];
         foreach ($this->routes as $name => $route) {
-            $errors = [];
             foreach ($route->endpoints() as $endpoint) {
                 $basename = $endpoint->bind()->view();
                 if ($basename === '') {
@@ -53,9 +53,9 @@ final class Views implements ViewsInterface
                     );
                 }
             }
-            if ($errors !== []) {
-                throw new LogicException(implode("\n", $errors));
-            }
+        }
+        if ($errors !== []) {
+            throw new LogicException(implode("\n", $errors));
         }
     }
 }
