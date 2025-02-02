@@ -37,4 +37,6 @@ interface RouterInterface
     public function dispatcher(): DispatcherInterface;
 
     public function dependencies(): DependenciesInterface;
+
+    public function views(): ViewsInterface;
 }
