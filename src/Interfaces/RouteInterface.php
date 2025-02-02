@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
+use Chevere\Caller\Interfaces\CallerInterface;
 use Chevere\Http\Interfaces\MethodInterface;
 
 /**
@@ -22,9 +23,6 @@ interface RouteInterface
 {
     public function name(): string;
 
-    /**
-     * Provides access to the `$path` instance.
-     */
     public function path(): PathInterface;
 
     /**
@@ -45,8 +43,7 @@ interface RouteInterface
      */
     public function withoutEndpoint(MethodInterface $method): self;
 
-    /**
-     * Provides access to the endpoints instance.
-     */
     public function endpoints(): EndpointsInterface;
+
+    public function caller(): CallerInterface;
 }

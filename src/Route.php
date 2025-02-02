@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
+use Chevere\Caller\Caller;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
@@ -34,11 +35,25 @@ final class Route implements RouteInterface
 
     private EndpointsInterface $endpoints;
 
+    private Caller $caller;
+
     public function __construct(
         private PathInterface $path,
         private string $name,
     ) {
+        $debugBacktrace = debug_backtrace(options: 0, limit: 2);
+        $callerFunction = $debugBacktrace[1]['function'] ?? '';
+        $index = (int) ($callerFunction === 'Chevere\Router\route');
+        $debugBacktrace = $debugBacktrace[$index];
+        $file = $debugBacktrace['file'] ?? 'unknown';
+        $line = $debugBacktrace['line'] ?? 0;
+        $this->caller = new Caller($file, (int) $line);
         $this->endpoints = new Endpoints();
+    }
+
+    public function caller(): Caller
+    {
+        return $this->caller;
     }
 
     public function name(): string
