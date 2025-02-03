@@ -255,11 +255,10 @@ function routed(
         }
         $queue[$className] = $middleware;
     }
-    $handle = new RelayHandle($responseFactory);
+    $handle = new RelayHandle($responseFactory, $serverRequest);
     $queue[] = $handle;
     $relay = new Relay($queue);
     $response = $relay->handle($serverRequest);
-    $serverRequest = $handle->request();
     $responseHeaders = [];
     foreach ($response->getHeaders() as $name => $values) {
         $responseHeaders[$name] = implode(', ', $values);
@@ -275,14 +274,14 @@ function routed(
         return new Routed($response, $routed->bind());
     }
     $container = array_merge($container, [
-        'request' => $serverRequest,
+        'request' => $handle->request(),
     ]);
     $controllerArguments = $router->dependencies()->extract($controllerName, $container);
     /** @var ControllerInterface $controller */
     $controller = new $controllerName(...$controllerArguments);
 
     try {
-        $controller = $controller->withServerRequest($serverRequest);
+        $controller = $controller->withServerRequest($handle->request());
     } catch (Throwable $e) {
         return (new Routed(
             $responseFactory->createResponse(400),

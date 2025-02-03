@@ -21,10 +21,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class RelayHandle implements MiddlewareInterface
 {
-    private ServerRequestInterface $request;
-
     public function __construct(
-        private ResponseFactoryInterface $responseFactory
+        private ResponseFactoryInterface $responseFactory,
+        private ServerRequestInterface $request,
     ) {
     }
 
