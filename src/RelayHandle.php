@@ -21,6 +21,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class RelayHandle implements MiddlewareInterface
 {
+    private ServerRequestInterface $request;
+
     public function __construct(
         private ResponseFactoryInterface $responseFactory
     ) {
@@ -30,6 +32,13 @@ final class RelayHandle implements MiddlewareInterface
         ServerRequestInterface $request,
         RequestHandlerInterface $handler
     ): ResponseInterface {
+        $this->request = $request;
+
         return $this->responseFactory->createResponse();
+    }
+
+    public function request(): ServerRequestInterface
+    {
+        return $this->request;
     }
 }
