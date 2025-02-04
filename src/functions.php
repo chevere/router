@@ -189,14 +189,14 @@ function router(RoutesInterface ...$routes): RouterInterface
 }
 
 /**
- * Binds a controller to a view and middleware.
+ * Binds a Controller to a view and middleware.
  *
  * @param string $controller HTTP controller name
  * @param string $view View name, empty string for headless.
  * @param string $middleware HTTP middleware name(s)
  */
 function bind(
-    string $controller,
+    string $controller = NullController::class,
     string $view = '',
     string ...$middleware
 ): BindInterface {
