@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
-use Chevere\Http\Controllers\NullController;
 use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Router\Exceptions\NotFoundException;
 use Chevere\Router\Exceptions\VariableInvalidException;
@@ -245,13 +244,9 @@ final class FunctionsTest extends TestCase
                 route('/foo', PATCH: ControllerNoParameters::class)
             )
         );
-        $routed = routed($request, $router);
-        $this->assertSame($code, $routed->response()->getStatusCode());
-        $this->assertInstanceOf($exception, $routed->throwable());
-        $this->assertSame($reason, $routed->throwable()->getMessage());
-        $this->assertSame(
-            NullController::class,
-            $routed->bind()->controllerName()->__toString()
-        );
+        $this->expectException($exception);
+        $this->expectExceptionMessage($reason);
+        $this->expectExceptionCode($code);
+        routed($request, $router);
     }
 }

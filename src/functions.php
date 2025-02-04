@@ -157,7 +157,8 @@ function route(
                     'Unknown HTTP method `%provided%` provided for `%controller%` controller.',
                     provided: $httpMethod,
                     controller: $controllerName->__toString(),
-                )
+                ),
+                405
             );
         }
         /** @var MethodInterface $object */
@@ -236,6 +237,8 @@ function controllerName(BindInterface|string $item): ControllerNameInterface
  * Executes the request on router.
  *
  * @param array<string, mixed> $container Service container (name => instance).
+ *
+ * @throws NotFoundException|MethodNotAllowedException
  */
 function routed(
     ServerRequestInterface $serverRequest,
@@ -244,17 +247,7 @@ function routed(
     array $container = [],
 ): RoutedInterface {
     $container['responseFactory'] = $responseFactory;
-
-    try {
-        $routed = $router->dispatcher()->dispatch($serverRequest);
-    } catch (NotFoundException|MethodNotAllowedException $e) {
-        $code = $e instanceof MethodNotAllowedException ? 405 : 404;
-
-        return (new Routed(
-            $responseFactory->createResponse($code),
-            bind(NullController::class),
-        ))->withThrowable($e);
-    }
+    $routed = $router->dispatcher()->dispatch($serverRequest);
     $queue = [];
     $middlewares = $routed->bind()->middlewares();
     foreach ($middlewares as $middlewareName) {

@@ -48,14 +48,16 @@ final class Dispatcher implements DispatcherInterface
                 (string) message(
                     'No route found for `%uri%`',
                     uri: $uri,
-                )
+                ),
+                404
             ),
             GroupCountBased::METHOD_NOT_ALLOWED => throw new MethodNotAllowedException(
                 (string) message(
                     'Method `%method%` is not in the list of allowed methods: `%allowed%`',
                     method: $method,
                     allowed: implode(', ', $format[1]),
-                )
+                ),
+                405
             ),
             // @codeCoverageIgnoreStart
             default => throw new LogicException(
