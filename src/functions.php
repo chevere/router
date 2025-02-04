@@ -68,7 +68,11 @@ function getPath(string $path, string|BindInterface ...$bind): string
 {
     $routePath = new Path($path);
     foreach ($bind as $item) {
-        $controllerName = controllerName($item)->__toString();
+        try {
+            $controllerName = controllerName($item)->__toString();
+        } catch (Throwable) {
+            continue;
+        }
         $controllerName::assert();
         foreach ($routePath->variables()->keys() as $variable) {
             $variableBracket = <<<STRING
@@ -111,15 +115,18 @@ function getPath(string $path, string|BindInterface ...$bind): string
 /**
  * Creates Route binding.
  *
+ * `$bind` examples:
+ *
+ * ```php
+ * GET: MyController::class,
+ * POST: 'my-view.twig',
+ * PATCH: bind(...),
+ * ```
+ *
  * @param string $path Route path.
  * @param string $name If not provided it will be same as the route path.
  * @param null|MiddlewaresInterface|MiddlewareNameInterface|class-string<MiddlewareInterface> $middleware HTTP server middleware.
  * @param BindInterface|string ...$bind Binding for HTTP controllers (GET, POST, PUT, DELETE, etc).
- *
- * $bind examples:
- * GET: bind(ClassName, 'view'),
- * POST: bind(ClassName, middleware: Middleware1::class,...),
- * PATCH: ClassName,
  */
 function route(
     string $path,
@@ -131,7 +138,17 @@ function route(
     $path = getPath($path, ...$bind);
     $route = new Route(new Path($path), $name);
     foreach ($bind as $method => $item) {
-        $controllerName = controllerName($item);
+        if ($item instanceof BindInterface) {
+            $controllerName = $item->controllerName();
+        } else {
+            try {
+                $controllerName = controllerName($item);
+                $item = bind($item, '');
+            } catch (Throwable) {
+                $item = bind(NullController::class, $item);
+                $controllerName = $item->controllerName();
+            }
+        }
         $httpMethod = strval($method);
         $method = EndpointInterface::KNOWN_METHODS[$method] ?? null;
         if ($method === null) {
@@ -143,10 +160,6 @@ function route(
                 )
             );
         }
-        $isBind = $item instanceof BindInterface;
-        $itemView = $isBind
-            ? $item->view()
-            : '';
         /** @var MethodInterface $object */
         $object = new $method(); // @phpstan-ignore-line
         $middlewares = match (true) {
@@ -154,14 +167,12 @@ function route(
             $middleware === null => middlewares(),
             default => middlewares($middleware),
         };
-        if ($item instanceof BindInterface) {
-            $middlewares = $middlewares->withAppend(
-                ...iterator_to_array(
-                    $item->middlewares()
-                )
-            );
-        }
-        $bind = (new Bind($controllerName, $middlewares))->withView($itemView);
+        $middlewares = $middlewares->withAppend(
+            ...iterator_to_array(
+                $item->middlewares()
+            )
+        );
+        $bind = (new Bind($controllerName, $middlewares))->withView($item->view());
         $endpoint = new Endpoint($object, $bind);
         $route = $route->withEndpoint($endpoint);
     }
