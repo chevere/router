@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Chevere\Tests\src;
 
 use Chevere\Action\Action;
+use Chevere\DataStructure\Interfaces\MapInterface;
+use Chevere\DataStructure\Map;
 use Chevere\Http\Interfaces\ControllerInterface;
 use Chevere\Http\Interfaces\StatusInterface;
 use Chevere\Http\Status;
@@ -77,14 +79,14 @@ final class WrongController extends Action implements ControllerInterface
         return $response;
     }
 
-    public function serverParams(): array
+    public function serverParams(): MapInterface
     {
-        return [];
+        return new Map();
     }
 
-    public function attributes(): array
+    public function attributes(): MapInterface
     {
-        return [];
+        return new Map();
     }
 
     public function status(): StatusInterface

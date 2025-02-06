@@ -269,8 +269,10 @@ function routed(
     }
     $controllerName = $routed->bind()->controllerName()->__toString();
     $responseAttribute = responseAttribute($controllerName);
-    $controllerStatus = $responseAttribute->status->success();
-    $controllerHeaders = $responseAttribute->headers->toArray();
+    $controllerStatus = $responseAttribute?->status->success()
+        ?? 200;
+    $controllerHeaders = $responseAttribute?->headers->toArray()
+        ?? [];
     foreach ($controllerHeaders as $name => $value) {
         $response = $response->withHeader($name, $value);
     }
