@@ -131,6 +131,7 @@ function getPath(string $path, string|BindInterface ...$bind): string
 function route(
     string $path,
     string $name = '',
+    string $view = '',
     null|string|MiddlewaresInterface|MiddlewareNameInterface $middleware = null,
     string|BindInterface ...$bind
 ): RouteInterface {
@@ -143,7 +144,7 @@ function route(
         } else {
             try {
                 $controllerName = controllerName($item);
-                $item = bind($item, '');
+                $item = bind($item, $view);
             } catch (Throwable) {
                 $item = bind(NullController::class, $item);
                 $controllerName = $item->controllerName();
