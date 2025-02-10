@@ -211,10 +211,15 @@ function router(RoutesInterface ...$routes): RouterInterface
 function bind(
     string $controller = NullController::class,
     string $view = '',
-    string ...$middleware
+    string|MiddlewareNameInterface ...$middleware
 ): BindInterface {
     $middlewares = [];
     foreach ($middleware as $name) {
+        if ($name instanceof MiddlewareNameInterface) {
+            $middlewares[] = $name;
+
+            continue;
+        }
         $middlewares[] = new MiddlewareName($name);
     }
 
@@ -270,7 +275,7 @@ function routed(
     }
     $controllerName = $routed->bind()->controllerName()->__toString();
     $responseAttribute = responseAttribute($controllerName);
-    $controllerStatus = $responseAttribute?->status->success()
+    $controllerStatus = $responseAttribute?->status->success
         ?? 200;
     $controllerHeaders = $responseAttribute?->headers->toArray()
         ?? [];
