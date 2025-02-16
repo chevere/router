@@ -66,24 +66,26 @@ final class ViewsTest extends TestCase
         $mapMissing = __DIR__ . '/missing';
         $mapNotThere = __DIR__ . '/not-there';
         $file = __FILE__;
-        $lineB = __LINE__ + 7;
-        $lineC = __LINE__ + 11;
+        $lineB = __LINE__ + 1;
+        $routeB = route(
+            '/b',
+            view: 'not-found',
+            GET: ControllerNoParameters::class
+        );
+        $lineC = __LINE__ + 1;
+        $routeC = route(
+            '/c',
+            GET: bind(ControllerNoParameters::class, view: 'missing'),
+            PUT: ControllerNoParameters::class,
+            POST: bind(ControllerNoParameters::class, view: 'not-there')
+        );
         $routes = routes(
             a: route(
                 '/a',
                 GET: ControllerNoParameters::class,
             ),
-            b: route(
-                '/b',
-                view: 'not-found',
-                GET: ControllerNoParameters::class
-            ),
-            c: route(
-                '/c',
-                GET: bind(ControllerNoParameters::class, view: 'missing'),
-                PUT: ControllerNoParameters::class,
-                POST: bind(ControllerNoParameters::class, view: 'not-there')
-            )
+            b: $routeB,
+            c: $routeC
         );
         $this->expectExceptionMessage(
             <<<PLAIN
