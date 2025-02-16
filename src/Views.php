@@ -30,7 +30,9 @@ final class Views implements ViewsInterface
     {
         if (! is_dir($dir)) {
             throw new InvalidArgumentException(
-                'Provided views directory does not exists'
+                <<<PLAIN
+                Argument `dir` provided is not a directory
+                PLAIN
             );
         }
         $errors = [];
@@ -42,9 +44,9 @@ final class Views implements ViewsInterface
                 }
                 $file = "{$dir}/{$basename}";
                 if (! is_file($file)) {
-                    $errors[] = (string) message(
+                    $errors[] = message(
                         <<<PLAIN
-                        View `%baseName%` linked by route `%name%` at %caller% not found for view filepath in %file%
+                        View `%baseName%` linked by route `%name%` at %caller% not found for view mapped path at %file%
                         PLAIN,
                         baseName: $basename,
                         name: $name,

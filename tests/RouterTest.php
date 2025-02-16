@@ -66,6 +66,7 @@ final class RouterTest extends TestCase
             $routerWithAddedRoute->collector()
                 ->getData()[1]['GET'][0]['routeMap'][3]
         );
+        $router->views()->assert(__DIR__);
     }
 
     public function testConstructInvalidArgument(): void

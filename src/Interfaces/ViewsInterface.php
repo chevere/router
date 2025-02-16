@@ -13,10 +13,19 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
+use InvalidArgumentException;
+use LogicException;
+
 /**
- * Describes the component in charge of defining routed views.
+ * Describes the component in charge of asserting routed views.
  */
 interface ViewsInterface
 {
+    /**
+     * Asserts the registered router views in the given `$dir`.
+     *
+     * @throws InvalidArgumentException If `$dir` does not exists.
+     * @throws LogicException For all view files not found.
+     */
     public function assert(string $dir): void;
 }
