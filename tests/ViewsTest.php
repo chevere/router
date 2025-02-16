@@ -65,14 +65,11 @@ final class ViewsTest extends TestCase
         $mapNotFound = __DIR__ . '/not-found';
         $mapMissing = __DIR__ . '/missing';
         $mapNotThere = __DIR__ . '/not-there';
-        $file = __FILE__;
-        $lineB = __LINE__ + 1;
         $routeB = route(
             '/b',
             view: 'not-found',
             GET: ControllerNoParameters::class
         );
-        $lineC = __LINE__ + 1;
         $routeC = route(
             '/c',
             GET: bind(ControllerNoParameters::class, view: 'missing'),
@@ -89,9 +86,9 @@ final class ViewsTest extends TestCase
         );
         $this->expectExceptionMessage(
             <<<PLAIN
-            View `not-found` linked by route `/b` at {$file}:{$lineB} not found for view mapped path at {$mapNotFound}
-            View `missing` linked by route `/c` at {$file}:{$lineC} not found for view mapped path at {$mapMissing}
-            View `not-there` linked by route `/c` at {$file}:{$lineC} not found for view mapped path at {$mapNotThere}
+            View `not-found` linked by route `/b` at {$routeB->caller()} not found for view mapped path at {$mapNotFound}
+            View `missing` linked by route `/c` at {$routeC->caller()} not found for view mapped path at {$mapMissing}
+            View `not-there` linked by route `/c` at {$routeC->caller()} not found for view mapped path at {$mapNotThere}
             PLAIN
         );
         $views = new Views($routes);
