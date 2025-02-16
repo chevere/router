@@ -22,14 +22,13 @@ final class Routed implements RoutedInterface
 {
     private Throwable $throwable;
 
-    private bool $hasThrowable;
+    private bool $hasThrowable = false;
 
     public function __construct(
         private ResponseInterface $response,
         private BindInterface $bind,
         private mixed $raw = null,
     ) {
-        $this->hasThrowable = false;
     }
 
     public function withThrowable(Throwable $throwable): RoutedInterface

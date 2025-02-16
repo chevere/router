@@ -52,6 +52,7 @@ final class RoutedTest extends TestCase
         $with = $routed->withThrowable($throwable);
         $this->assertNotSame($routed, $with);
         $this->assertSame($with->throwable(), $throwable);
+        $this->assertTrue($with->hasThrowable());
     }
 
     public function testWithNoThrowable(): void

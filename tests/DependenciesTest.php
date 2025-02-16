@@ -40,11 +40,26 @@ final class DependenciesTest extends TestCase
         $dependencies = new Dependencies($routes);
         $this->assertCount(0, $dependencies->parameters());
         $this->assertFalse($dependencies->has('className'));
-        $this->assertSame([], $dependencies->extract('className', [
-            'key' => 'value',
-        ]));
+        $this->assertSame(
+            [],
+            $dependencies->extract(
+                'className',
+                [
+                    'key' => 'value',
+                ]
+            )
+        );
         $this->expectException(OutOfBoundsException::class);
         $dependencies->get('className');
+    }
+
+    public function testWithRoute(): void
+    {
+        $routes = routes();
+        $dependencies = new Dependencies($routes);
+        $with = $dependencies->withRoute();
+        $this->assertNotSame($dependencies, $with);
+        $this->assertEquals($dependencies, $with);
     }
 
     public function testEmptyRequirer(): void
@@ -52,8 +67,8 @@ final class DependenciesTest extends TestCase
         $routes = routes();
         $dependencies = new Dependencies($routes);
         $this->expectException(OutOfBoundsException::class);
-        $this->expectExceptionMessage('Dependency `name` not defined');
-        $dependencies->requirer('name');
+        $this->expectExceptionMessage('Dependency `` not defined');
+        $dependencies->requirer('');
     }
 
     public function testEndpoint(): void
@@ -66,7 +81,7 @@ final class DependenciesTest extends TestCase
             )
         );
         $router = router($routes);
-        $dependencies = new Dependencies($routes);
+        $dependencies = (new Dependencies())->withRoute(...$routes);
         $this->assertEquals($dependencies, $router->dependencies());
         $this->assertCount(3, $dependencies->parameters());
         $this->assertSame(

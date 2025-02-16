@@ -41,13 +41,13 @@ final class Route implements RouteInterface
         private PathInterface $path,
         private string $name,
     ) {
-        $debugBacktrace = debug_backtrace(options: 0, limit: 2);
-        $callerFunction = $debugBacktrace[1]['function'] ?? '';
-        $index = (int) ($callerFunction === 'Chevere\Router\route');
-        $debugBacktrace = $debugBacktrace[$index];
-        $file = $debugBacktrace['file'] ?? 'unknown';
-        $line = $debugBacktrace['line'] ?? 0;
-        $this->caller = new Caller($file, (int) $line);
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, limit: 2); // @codeCoverageIgnore
+        $callerFunction = $backtrace[1]['function'] ?? '';
+        $index = intval($callerFunction === 'Chevere\Router\route');
+        $this->caller = new Caller(
+            $backtrace[$index]['file'], // @phpstan-ignore-line
+            $backtrace[$index]['line'] // @phpstan-ignore-line
+        );
         $this->endpoints = new Endpoints();
     }
 

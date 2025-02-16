@@ -38,10 +38,17 @@ final class RouteTest extends TestCase
         $path = '/test';
         $routePath = new Path($path);
         $route = new Route($routePath, 'test');
+        $line = __LINE__ - 1;
+        $this->assertSame('test', $route->name());
         $this->assertSame($routePath, $route->path());
+        $this->assertSame($line, $route->caller()->line());
+        $this->assertSame(__FILE__, $route->caller()->file());
         $route = route($path, 'name');
+        $line = __LINE__ - 1;
         $this->assertSame('name', $route->name());
         $this->assertEquals($routePath, $route->path());
+        $this->assertSame($line, $route->caller()->line());
+        $this->assertSame(__FILE__, $route->caller()->file());
         $this->expectException(OutOfBoundsException::class);
         $route->withoutEndpoint(new GetMethod());
     }
