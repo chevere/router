@@ -14,8 +14,8 @@
     "require": {
         "php": "^8.1",
         "chevere/action": "^1.0.2",
-        "chevere/caller": "1.0.x-dev",
-        "chevere/data-structure": "^1.1.x-dev",
+        "chevere/caller": "1.0.0",
+        "chevere/data-structure": "^1.1.0",
         "chevere/http": "^0.5.x-dev",
         "chevere/message": "^1.0.0",
         "chevere/parameter": "^1.0.7",
@@ -26,7 +26,7 @@
     "require-dev": {
         "chevere/var-dump": "^2.0",
         "phpstan/phpstan": "^2.0",
-        "phpunit/phpunit": "^9.5",
+        "phpunit/phpunit": "^10.5",
         "symplify/easy-coding-standard": "^12.1"
     },
     "autoload": {
@@ -61,11 +61,11 @@
         "phpstan": "vendor/bin/phpstan analyze src/ --memory-limit 512M --level 9",
         "test": [
             "Composer\\Config::disableProcessTimeout",
-            "vendor/bin/phpunit -c phpunit.xml"
+            "vendor/bin/phpunit -c phpunit.xml --no-coverage"
         ],
         "test-coverage": [
             "Composer\\Config::disableProcessTimeout",
-            "vendor/bin/phpunit -c phpunit-coverage.xml"
+            "vendor/bin/phpunit -c phpunit.xml"
         ],
         "cs-update": "mkdir -p .ecs && cd .ecs && curl -O https://raw.githubusercontent.com/chevere/code-style/main/.ecs/ecs-chevere.php",
         "cs-fix": "vendor/bin/ecs --config='.ecs/ecs.php' check src --fix",

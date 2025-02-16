@@ -24,6 +24,7 @@ use Chevere\Tests\src\MiddlewareOne;
 use Chevere\Tests\src\WrongController;
 use InvalidArgumentException;
 use Nyholm\Psr7\ServerRequest;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use function Chevere\Action\getParameters;
 use function Chevere\Router\bind;
@@ -34,7 +35,7 @@ use function Chevere\Router\routes;
 
 final class FunctionsTest extends TestCase
 {
-    public function functionRouteProvider(): array
+    public static function functionRouteProvider(): array
     {
         $return = [];
         foreach (EndpointInterface::KNOWN_METHODS as $method => $className) {
@@ -44,9 +45,7 @@ final class FunctionsTest extends TestCase
         return $return;
     }
 
-    /**
-     * @dataProvider functionRouteProvider
-     */
+    #[DataProvider('functionRouteProvider')]
     public function testFunctionRoute(string $method, string $className): void
     {
         $controller = ControllerNoParameters::class;
@@ -65,9 +64,7 @@ final class FunctionsTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider functionRouteViewDataProvider
-     */
+    #[DataProvider('functionRouteViewDataProvider')]
     public function testFunctionRouteViewNamespace(array $arguments, string $expectedView): void
     {
         $arguments = array_merge([
@@ -80,7 +77,7 @@ final class FunctionsTest extends TestCase
         );
     }
 
-    public function functionRouteViewDataProvider(): array
+    public static function functionRouteViewDataProvider(): array
     {
         $controller = ControllerNoParameters::class;
 
