@@ -18,6 +18,7 @@ use Chevere\Router\Exceptions\NotFoundException;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\EndpointInterface;
+use Chevere\Router\Routes;
 use Chevere\Tests\src\ControllerNoParameters;
 use Chevere\Tests\src\ControllerWithParameters;
 use Chevere\Tests\src\MiddlewareOne;
@@ -35,7 +36,7 @@ use function Chevere\Router\routes;
 
 final class FunctionsTest extends TestCase
 {
-    public static function functionRouteProvider(): array
+    public static function dataProviderRoute(): array
     {
         $return = [];
         foreach (EndpointInterface::KNOWN_METHODS as $method => $className) {
@@ -45,8 +46,8 @@ final class FunctionsTest extends TestCase
         return $return;
     }
 
-    #[DataProvider('functionRouteProvider')]
-    public function testFunctionRoute(string $method, string $className): void
+    #[DataProvider('dataProviderRoute')]
+    public function testRoute(string $method, string $className): void
     {
         $controller = ControllerNoParameters::class;
         $arguments = [
@@ -65,7 +66,7 @@ final class FunctionsTest extends TestCase
     }
 
     #[DataProvider('functionRouteViewDataProvider')]
-    public function testFunctionRouteViewNamespace(array $arguments, string $expectedView): void
+    public function testRouteViewNamespace(array $arguments, string $expectedView): void
     {
         $arguments = array_merge([
             'path' => '/test/',
@@ -103,7 +104,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function testFunctionVariableNotFound(): void
+    public function testRouteVariableNotFound(): void
     {
         $this->expectException(VariableNotFoundException::class);
         $this->expectExceptionMessage(
@@ -117,7 +118,7 @@ final class FunctionsTest extends TestCase
         );
     }
 
-    public function testFunctionVariable(): void
+    public function testVariable(): void
     {
         $controller = ControllerWithParameters::class;
         $parameters = getParameters($controller);
@@ -136,41 +137,48 @@ final class FunctionsTest extends TestCase
         );
     }
 
-    public function testFunctionRouteInvalidPath(): void
+    public function testRouteInvalidPath(): void
     {
         $controller = ControllerNoParameters::class;
         $this->expectException(InvalidArgumentException::class);
         route('test', 'name', GET: $controller);
     }
 
-    public function testFunctionRouteInvalidMethod(): void
+    public function testRouteInvalidMethod(): void
     {
         $controller = ControllerNoParameters::class;
         $this->expectException(MethodNotAllowedException::class);
         route('/test/', 'name', TEST: $controller);
     }
 
-    public function testFunctionRouteInvalidController(): void
+    public function testRouteInvalidController(): void
     {
         $this->expectException(VariableInvalidException::class);
         route(path: '/{id}', GET: WrongController::class);
     }
 
-    public function testFunctionRoutes(): void
+    public function testRoutes(): void
     {
-        $name = 'test';
-        $path = '/test/';
-        $route = route(
-            name: $name,
-            path: $path,
+        $routeA = route(
+            name: 'a',
+            path: '/a/',
             GET: ControllerNoParameters::class
         );
-        $routes = routes(myRoute: $route);
-        $this->assertTrue($routes->has($path));
-        $this->assertSame($route, $routes->get($path));
+        $routeB = route(
+            name: 'b',
+            path: '/b/',
+            GET: ControllerNoParameters::class
+        );
+        $routes = routes($routeA, $routeB);
+        $routesAlt = routes($routes);
+        $this->assertEquals($routes, $routesAlt);
+        $this->assertEquals(
+            (new Routes())->withRoute($routeA, $routeB),
+            $routes
+        );
     }
 
-    public function testRouterFunction(): void
+    public function testRouter(): void
     {
         $routes = [
             'web' => routes(
