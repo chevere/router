@@ -16,6 +16,14 @@
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=chevere_router&metric=sqale_index)](https://sonarcloud.io/dashboard?id=chevere_router)
 [![CodeFactor](https://www.codefactor.io/repository/github/chevere/router/badge)](https://www.codefactor.io/repository/github/chevere/router)
 
+## Installing
+
+Router is available through [Packagist](https://packagist.org/packages/chevere/router) and the repository source is at [chevere/router](https://github.com/chevere/router).
+
+```sh
+composer require chevere/router
+```
+
 ## Documentation
 
 Documentation is available at [chevere.org](https://chevere.org/packages/router).
