@@ -24,6 +24,7 @@ use Chevere\Router\Interfaces\RoutesInterface;
 use LogicException;
 use OutOfBoundsException;
 use ReflectionMethod;
+use Stringable;
 use Throwable;
 use TypeError;
 use function Chevere\Message\message;
@@ -82,9 +83,8 @@ final class Dependencies implements DependenciesInterface
 
     public function extract(string $className, array $container): array
     {
-        $extracted = [];
         if (! $this->has($className)) {
-            return $extracted;
+            return [];
         }
         $parameters = $this->get($className);
         $extracted = array_intersect_key(
@@ -109,7 +109,7 @@ final class Dependencies implements DependenciesInterface
             $requirer = $this->requirer($name);
             $fileLine = $this->locate($requirer);
             if (! $hasArgument) {
-                $errors[] = (string) message(
+                $errors[] = message(
                     <<<PLAIN
                     Missing argument `%key%` as previously defined by `%requirer%` in %fileLine%
                     PLAIN,
@@ -131,7 +131,7 @@ final class Dependencies implements DependenciesInterface
                 if (is_object($value)) {
                     $provided = get_class($value);
                 }
-                $errors[] = (string) message(
+                $errors[] = message(
                     <<<PLAIN
                     Argument `{$name}` provided as `%provided%` is not compatible with `%expected%` as previously defined by `%requirer%` in %fileLine%
                     PLAIN,
@@ -168,17 +168,20 @@ final class Dependencies implements DependenciesInterface
     }
 
     /**
-     * @param array<string> $errors
+     * @param array<string|Stringable> $errors
      */
     private function errorMessage(array $errors): string
     {
         return count($errors) === 1
-            ? $errors[0]
-            : implode("\n\n", array_map(
-                fn ($i, $error) => '- [' . ($i + 1) . ']: ' . $error,
-                array_keys($errors),
-                $errors
-            ));
+            ? strval($errors[0])
+            : implode(
+                "\n\n",
+                array_map(
+                    fn ($i, $error) => '- [' . ($i + 1) . ']: ' . $error,
+                    array_keys($errors),
+                    $errors
+                )
+            );
     }
 
     private function addRoute(RouteInterface $route): void
