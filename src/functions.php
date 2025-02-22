@@ -120,13 +120,13 @@ function getPath(string $path, string|BindInterface ...$bind): string
  * ```php
  * GET: MyController::class,
  * POST: 'my-view.twig',
- * PATCH: bind(...),
+ * PATCH: bind(MyController::class, 'my-view.twig', MyMiddleware::class),
  * ```
  *
- * @param string $path Route path.
- * @param string $name If not provided it will be same as the route path.
- * @param null|MiddlewaresInterface|MiddlewareNameInterface|class-string<MiddlewareInterface> $middleware HTTP server middleware.
- * @param BindInterface|string ...$bind Binding for HTTP controllers (GET, POST, PUT, DELETE, etc).
+ * @param string $path Route path like `/my-route/{id}`.
+ * @param string $name Route name, if not provided will be same as `$path`.
+ * @param null|MiddlewaresInterface|MiddlewareNameInterface|class-string<MiddlewareInterface> $middleware PSR-15 HTTP Server Middleware.
+ * @param BindInterface|class-string<ControllerInterface>|string ...$bind Binding for HTTP methods to a handler (controller, view, middleware).
  */
 function route(
     string $path,
