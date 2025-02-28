@@ -273,8 +273,9 @@ function routed(
     foreach ($response->getHeaders() as $name => $values) {
         $responseHeaders[$name] = implode(', ', $values);
     }
-    $controllerName = $routed->bind()->controllerName()->__toString();
-    $responseAttribute = responseAttribute($controllerName);
+    $controllerName = $routed->bind()->controllerName();
+    $controllerNameString = $controllerName->__toString();
+    $responseAttribute = responseAttribute($controllerNameString);
     $controllerStatus = $responseAttribute?->status->success
         ?? 200;
     $controllerHeaders = $responseAttribute?->headers->toArray()
@@ -288,12 +289,17 @@ function routed(
     $container = array_merge($container, [
         'request' => $handle->request(),
     ]);
-    $controllerArguments = $router->dependencies()->extract($controllerName, $container);
+    $controllerArguments = $router->dependencies()->extract($controllerNameString, $container);
     /** @var ControllerInterface $controller */
-    $controller = new $controllerName(...$controllerArguments);
+    $controller = new $controllerNameString(...$controllerArguments);
 
     try {
         $controller = $controller->withServerRequest($handle->request());
+        if (method_exists($controller, 'setUp')) {
+            $controller->setUp(
+                ...$controllerName->arguments()
+            );
+        }
     } catch (Throwable $e) {
         return (new Routed(
             $responseFactory->createResponse(400),
