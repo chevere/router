@@ -22,13 +22,11 @@ use Chevere\Http\Status;
 use Chevere\Parameter\Interfaces\ArgumentsInterface;
 use Chevere\Parameter\Interfaces\ArrayParameterInterface;
 use Chevere\Parameter\Interfaces\ArrayStringParameterInterface;
-use Chevere\Parameter\Interfaces\CastInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use function Chevere\Parameter\arguments;
 use function Chevere\Parameter\arrayp;
 use function Chevere\Parameter\arrayString;
-use function Chevere\Parameter\cast;
 
 final class WrongController extends Action implements ControllerInterface
 {
@@ -86,14 +84,19 @@ final class WrongController extends Action implements ControllerInterface
         return new Map();
     }
 
-    public function attributes(): MapInterface
+    public function headers(): MapInterface
     {
         return new Map();
     }
 
-    public function attribute(string $name, mixed $default = null): CastInterface
+    public function cookieParams(): MapInterface
     {
-        return cast(null);
+        return new Map();
+    }
+
+    public function attributes(): MapInterface
+    {
+        return new Map();
     }
 
     public function status(): StatusInterface
