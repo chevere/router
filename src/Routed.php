@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
-use Chevere\DataStructure\Interfaces\MapInterface;
-use Chevere\DataStructure\Map;
 use Chevere\Router\Interfaces\BindInterface;
 use Chevere\Router\Interfaces\RoutedInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -26,21 +24,11 @@ final class Routed implements RoutedInterface
 
     private bool $hasThrowable = false;
 
-    /**
-     * @var Map<string>
-     */
-    private Map $attributes;
-
-    /**
-     * @param array<string, mixed> $attributes An array of key-value pairs from the request.
-     */
     public function __construct(
         private ResponseInterface $response,
         private BindInterface $bind,
-        array $attributes = [],
         private mixed $raw = null,
     ) {
-        $this->attributes = new Map(...$attributes);
     }
 
     public function withThrowable(Throwable $throwable): RoutedInterface
@@ -55,11 +43,6 @@ final class Routed implements RoutedInterface
     public function response(): ResponseInterface
     {
         return $this->response;
-    }
-
-    public function attributes(): MapInterface
-    {
-        return $this->attributes;
     }
 
     public function bind(): BindInterface

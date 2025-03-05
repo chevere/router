@@ -270,7 +270,7 @@ function routed(
     $relay = new Relay($queue);
     $response = $relay->handle($serverRequest);
     if ($response->getStatusCode() !== 0) {
-        return new Routed($response, $routed->bind(), $handle->request()->getAttributes());
+        return new Routed($response, $routed->bind());
     }
     $responseHeaders = [];
     foreach ($response->getHeaders() as $name => $values) {
@@ -287,7 +287,7 @@ function routed(
         $response = $response->withHeader($name, $value);
     }
     if ($response->hasHeader('Location')) {
-        return new Routed($response, $routed->bind(), $handle->request()->getAttributes());
+        return new Routed($response, $routed->bind());
     }
     $container = array_merge($container, [
         'request' => $handle->request(),
@@ -320,7 +320,6 @@ function routed(
         return (new Routed(
             $responseFactory->createResponse($code),
             $routed->bind(),
-            $handle->request()->getAttributes()
         ))->withThrowable($e);
     }
     $response = $responseFactory->createResponse($controllerStatus);
@@ -332,7 +331,6 @@ function routed(
     return new Routed(
         $controller->terminate($response),
         $routed->bind(),
-        $handle->request()->getAttributes(),
         $controllerResponse
     );
 }
