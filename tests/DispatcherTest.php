@@ -45,6 +45,18 @@ final class DispatcherTest extends TestCase
         $this->assertSame($bind, $bindDispatch);
     }
 
+    public function testMatch(): void
+    {
+        $routeCollector = $this->getRouteCollector();
+        $bind = bind(ControllerWithParameters::class);
+        $routeCollector->addRoute('GET', '/apps', $bind);
+        $routeCollector->addRoute('GET', '/apps/{id}', $bind);
+        $routeDispatcher = new Dispatcher($routeCollector);
+        $request = new ServerRequest('GET', '/apps/js');
+        $bindDispatch = $routeDispatcher->dispatch($request)->bind();
+        $this->assertSame($bind, $bindDispatch);
+    }
+
     public function testHttpMethodNotAllowed(): void
     {
         $routeCollector = $this->getRouteCollector();

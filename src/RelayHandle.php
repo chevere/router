@@ -33,7 +33,7 @@ final class RelayHandle implements MiddlewareInterface
     ): ResponseInterface {
         $this->request = $request;
 
-        return $this->responseFactory->createResponse();
+        return $this->responseFactory->createResponse(0);
     }
 
     public function request(): ServerRequestInterface

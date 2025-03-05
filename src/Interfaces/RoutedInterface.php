@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
+use Chevere\DataStructure\Interfaces\MapInterface;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
@@ -38,6 +39,13 @@ interface RoutedInterface
      * Provides access to the ResponseInterface instance.
      */
     public function response(): ResponseInterface;
+
+    /**
+     * Provides access to the attributes derived from the request.
+     *
+     * @return MapInterface<string>
+     */
+    public function attributes(): MapInterface;
 
     /**
      * Provides access to the BindInterface instance.
