@@ -133,11 +133,17 @@ function route(
     string $name = '',
     string $view = '',
     null|string|MiddlewaresInterface|MiddlewareNameInterface $middleware = null,
+    null|string|MiddlewaresInterface|MiddlewareNameInterface $exclude = null,
     string|BindInterface ...$bind
 ): RouteInterface {
     $name = $name === '' ? $path : $name;
     $path = getPath($path, ...$bind);
-    $route = new Route(new Path($path), $name);
+    $excludes = match (true) {
+        $exclude instanceof MiddlewaresInterface => $exclude,
+        $exclude === null => middlewares(),
+        default => middlewares($exclude),
+    };
+    $route = new Route(new Path($path), $name, $excludes);
     foreach ($bind as $method => $item) {
         if ($item instanceof BindInterface) {
             $controllerName = $item->controllerName();
@@ -175,8 +181,9 @@ function route(
             )
         );
         $bind = (new Bind($controllerName, $middlewares))->withView($item->view());
-        $endpoint = new Endpoint($object, $bind);
-        $route = $route->withEndpoint($endpoint);
+        $route = $route->withEndpoint(
+            new Endpoint($object, $bind)
+        );
     }
 
     return $route;

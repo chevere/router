@@ -21,6 +21,7 @@ use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use OutOfBoundsException;
 use OverflowException;
+use function Chevere\Http\middlewares;
 use function Chevere\Message\message;
 
 final class Routes implements RoutesInterface
@@ -95,12 +96,20 @@ final class Routes implements RoutesInterface
         return $this->map->get($path);
     }
 
-    private function addMiddleware(string $method, MiddlewaresInterface $middleware): void
+    private function addMiddleware(string $method, MiddlewaresInterface $middlewares): void
     {
+        $collector = middlewares();
         foreach ($this->getIterator() as $name => $route) {
             foreach ($route->endpoints() as $endpoint) {
+                foreach ($middlewares as $middlewareName) {
+                    $className = strval($middlewareName);
+                    if ($route->excluded()->has($className)) {
+                        continue;
+                    }
+                    $collector = $collector->withAppend($middlewareName);
+                }
                 $finalMiddlewares = $endpoint->bind()->middlewares()->{$method}(
-                    ...$middleware->getIterator()
+                    ...$collector->getIterator()
                 );
                 $bind = $endpoint->bind()->withMiddlewares($finalMiddlewares);
                 $finalEndpoint = new Endpoint($endpoint->method(), $bind);

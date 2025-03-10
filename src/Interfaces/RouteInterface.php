@@ -15,6 +15,7 @@ namespace Chevere\Router\Interfaces;
 
 use Chevere\Caller\Interfaces\CallerInterface;
 use Chevere\Http\Interfaces\MethodInterface;
+use Chevere\Http\Interfaces\MiddlewaresInterface;
 
 /**
  * Describes the component in charge of defining a route.
@@ -46,4 +47,6 @@ interface RouteInterface
     public function endpoints(): EndpointsInterface;
 
     public function caller(): CallerInterface;
+
+    public function excluded(): MiddlewaresInterface;
 }

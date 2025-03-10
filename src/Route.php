@@ -15,6 +15,8 @@ namespace Chevere\Router;
 
 use Chevere\Caller\Caller;
 use Chevere\Http\Interfaces\MethodInterface;
+use Chevere\Http\Interfaces\MiddlewaresInterface;
+use Chevere\Http\Middlewares;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
 use Chevere\Router\Exceptions\EndpointConflictException;
@@ -40,6 +42,7 @@ final class Route implements RouteInterface
     public function __construct(
         private PathInterface $path,
         private string $name,
+        private MiddlewaresInterface $excluded = new Middlewares()
     ) {
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, limit: 2); // @codeCoverageIgnore
         $callerFunction = $backtrace[1]['function'] ?? '';
@@ -64,6 +67,11 @@ final class Route implements RouteInterface
     public function path(): PathInterface
     {
         return $this->path;
+    }
+
+    public function excluded(): MiddlewaresInterface
+    {
+        return $this->excluded;
     }
 
     public function withEndpoint(EndpointInterface $endpoint): RouteInterface
