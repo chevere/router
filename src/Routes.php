@@ -98,12 +98,11 @@ final class Routes implements RoutesInterface
 
     private function addMiddleware(string $method, MiddlewaresInterface $middlewares): void
     {
-        $collector = middlewares();
         foreach ($this->getIterator() as $name => $route) {
             foreach ($route->endpoints() as $endpoint) {
+                $collector = middlewares();
                 foreach ($middlewares as $middlewareName) {
-                    $className = strval($middlewareName);
-                    if ($route->excluded()->has($className)) {
+                    if ($route->excluded()->has($middlewareName)) {
                         continue;
                     }
                     $collector = $collector->withAppend($middlewareName);
