@@ -33,6 +33,7 @@ use Chevere\Router\Interfaces\RoutedInterface;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
+use Closure;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use OutOfBoundsException;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -258,6 +259,7 @@ function routed(
     RouterInterface $router,
     ResponseFactoryInterface $responseFactory = new Psr17Factory(),
     array $container = [],
+    ?Closure $callback = null
 ): RoutedInterface {
     $container['responseFactory'] = $responseFactory;
     $routed = $router->dispatcher()->dispatch($serverRequest);
@@ -282,6 +284,9 @@ function routed(
     $responseHeaders = [];
     foreach ($response->getHeaders() as $name => $values) {
         $responseHeaders[$name] = implode(', ', $values);
+    }
+    if ($callback) {
+        $callback($container);
     }
     $controllerName = $routed->bind()->controllerName();
     $controllerNameString = $controllerName->__toString();
