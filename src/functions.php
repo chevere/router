@@ -319,13 +319,7 @@ function routed(
         return (new Routed(
             $responseFactory->createResponse(400),
             $routed->bind(),
-        ))->withThrowable(
-            new ControllerException(
-                $e->getMessage(),
-                $e->getCode(),
-                $e->getPrevious()
-            )
-        );
+        ))->withThrowable($e);
     }
 
     try {
