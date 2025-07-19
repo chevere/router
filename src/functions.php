@@ -213,8 +213,8 @@ function router(RoutesInterface ...$routes): RouterInterface
  * Binds a Controller to a view and middleware.
  *
  * @param string $controller HTTP controller name
- * @param string $view View name, empty string for headless.
- * @param string $middleware HTTP middleware name(s)
+ * @param string $view View name
+ * @param string ...$middleware HTTP middleware name(s)
  */
 function bind(
     string $controller = NullController::class,
@@ -234,7 +234,34 @@ function bind(
     return new Bind(
         new ControllerName($controller),
         new Middlewares(...$middlewares),
-        $view
+        view: $view
+    );
+}
+
+/**
+ * Binds a Controller to middleware (headless).
+ *
+ * @param string $controller HTTP controller name
+ * @param string ...$middleware HTTP middleware name(s)
+ */
+function attach(
+    string $controller = NullController::class,
+    string|MiddlewareNameInterface ...$middleware
+): BindInterface {
+    $middlewares = [];
+    foreach ($middleware as $name) {
+        if ($name instanceof MiddlewareNameInterface) {
+            $middlewares[] = $name;
+
+            continue;
+        }
+        $middlewares[] = new MiddlewareName($name);
+    }
+
+    return new Bind(
+        new ControllerName($controller),
+        new Middlewares(...$middlewares),
+        view: null
     );
 }
 

@@ -18,17 +18,17 @@ use Chevere\Http\Interfaces\MiddlewaresInterface;
 
 /**
  * Describes the component in charge of binding a ControllerNameInterface
- * to a view.
+ * to a view (if any) and middleware.
  */
 interface BindInterface
 {
     public function controllerName(): ControllerNameInterface;
 
-    public function view(): string;
+    public function view(): ?string;
 
     public function middlewares(): MiddlewaresInterface;
 
-    public function withView(string $view): self;
+    public function withView(?string $view = null): self;
 
     public function withMiddlewares(MiddlewaresInterface $middlewares): self;
 }

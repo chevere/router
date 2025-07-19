@@ -38,7 +38,7 @@ final class Views implements ViewsInterface
         $errors = [];
         foreach ($this->routes as $name => $route) {
             foreach ($route->endpoints() as $endpoint) {
-                $basename = $endpoint->bind()->view();
+                $basename = $endpoint->bind()->view() ?? '';
                 if ($basename === '') {
                     continue;
                 }
