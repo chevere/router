@@ -29,6 +29,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use function Chevere\Action\getParameters;
 use function Chevere\Router\bind;
+use function Chevere\Router\headless;
 use function Chevere\Router\route;
 use function Chevere\Router\routed;
 use function Chevere\Router\router;
@@ -91,7 +92,7 @@ final class FunctionsTest extends TestCase
             ],
             [
                 [
-                    'GET' => bind($controller, middleware: MiddlewareOne::class),
+                    'GET' => headless($controller, MiddlewareOne::class),
                 ],
                 '',
             ],

@@ -20,7 +20,7 @@ use Chevere\Router\Router;
 use Chevere\Tests\src\ControllerWithParameters;
 use FastRoute\RouteCollector;
 use PHPUnit\Framework\TestCase;
-use function Chevere\Router\bind;
+use function Chevere\Router\headless;
 use function Chevere\Router\route;
 
 final class RouterTest extends TestCase
@@ -35,7 +35,7 @@ final class RouterTest extends TestCase
     public function testRouter(): void
     {
         $controller = ControllerWithParameters::class;
-        $bind = bind($controller);
+        $bind = headless($controller);
         $route = route('/🐘/{id:\d+}/{name:\w+}');
         $route = $route->withEndpoint(
             new Endpoint(

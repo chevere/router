@@ -24,7 +24,7 @@ use InvalidArgumentException;
 use OutOfBoundsException;
 use OverflowException;
 use PHPUnit\Framework\TestCase;
-use function Chevere\Router\bind;
+use function Chevere\Router\headless;
 use function Chevere\Router\route;
 
 final class IndexTest extends TestCase
@@ -74,7 +74,7 @@ final class IndexTest extends TestCase
         $withEndpoint = $route->withEndpoint(
             new Endpoint(
                 new GetMethod(),
-                bind(ControllerWithParameters::class)
+                headless(ControllerWithParameters::class)
             )
         );
         $this->assertNotSame($route, $withEndpoint);
@@ -108,7 +108,7 @@ final class IndexTest extends TestCase
         $route2 = $route2->withEndpoint(
             new Endpoint(
                 new GetMethod(),
-                bind(ControllerWithParameters::class)
+                headless(ControllerWithParameters::class)
             )
         );
         $withAnotherAddedRoute = $indexWithAddedRoute->withAddedRoute($route2, $groupName);
@@ -126,7 +126,7 @@ final class IndexTest extends TestCase
             ->withEndpoint(
                 new Endpoint(
                     new GetMethod(),
-                    bind(ControllerWithParameters::class)
+                    headless(ControllerWithParameters::class)
                 )
             );
         $routerIndex = (new Index())->withAddedRoute($route, $repo);

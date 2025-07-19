@@ -22,7 +22,7 @@ use FastRoute\DataGenerator\GroupCountBased;
 use FastRoute\RouteCollector;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
-use function Chevere\Router\bind;
+use function Chevere\Router\headless;
 
 final class DispatcherTest extends TestCase
 {
@@ -37,7 +37,7 @@ final class DispatcherTest extends TestCase
     public function testFound(): void
     {
         $routeCollector = $this->getRouteCollector();
-        $bind = bind(ControllerWithParameters::class);
+        $bind = headless(ControllerWithParameters::class);
         $routeCollector->addRoute('GET', '/', $bind);
         $routeDispatcher = new Dispatcher($routeCollector);
         $request = new ServerRequest('GET', '/');
@@ -48,7 +48,7 @@ final class DispatcherTest extends TestCase
     public function testMatch(): void
     {
         $routeCollector = $this->getRouteCollector();
-        $bind = bind(ControllerWithParameters::class);
+        $bind = headless(ControllerWithParameters::class);
         $routeCollector->addRoute('GET', '/apps', $bind);
         $routeCollector->addRoute('GET', '/apps/{id}', $bind);
         $routeDispatcher = new Dispatcher($routeCollector);

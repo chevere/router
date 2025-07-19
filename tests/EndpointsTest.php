@@ -19,7 +19,7 @@ use Chevere\Router\Endpoints;
 use Chevere\Tests\src\ArticleGetController;
 use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
-use function Chevere\Router\bind;
+use function Chevere\Router\headless;
 
 final class EndpointsTest extends TestCase
 {
@@ -36,7 +36,7 @@ final class EndpointsTest extends TestCase
     public function testWithPut(): void
     {
         $method = new GetMethod();
-        $endpoint = new Endpoint($method, bind(ArticleGetController::class));
+        $endpoint = new Endpoint($method, headless(ArticleGetController::class));
         $endpoints = new Endpoints();
         $endpointsWithPut = $endpoints
             ->withPut($endpoint);

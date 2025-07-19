@@ -27,7 +27,7 @@ use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 use function Chevere\Http\middlewares;
-use function Chevere\Router\bind;
+use function Chevere\Router\headless;
 use function Chevere\Router\route;
 use function Chevere\Router\router;
 use function Chevere\Router\routes;
@@ -77,7 +77,7 @@ final class DependenciesTest extends TestCase
             route(
                 middleware: MiddlewareOne::class,
                 path: '/{id}',
-                GET: bind(ControllerWithDependencies::class, middleware: MiddlewareTwo::class)
+                GET: headless(ControllerWithDependencies::class, middleware: MiddlewareTwo::class)
             )
         );
         $router = router($routes);
@@ -122,7 +122,7 @@ final class DependenciesTest extends TestCase
             route(
                 middleware: MiddlewareOne::class,
                 path: '/{id}',
-                GET: bind(ControllerWithDependencies::class, middleware: MiddlewareTwo::class)
+                GET: headless(ControllerWithDependencies::class, middleware: MiddlewareTwo::class)
             )
         );
         $reflector = new \ReflectionMethod(ControllerWithDependencies::class, '__construct');
@@ -148,7 +148,7 @@ final class DependenciesTest extends TestCase
             route(
                 middleware: middlewares(MiddlewareOne::class, MiddlewareOneConflict::class),
                 path: '/{id}',
-                GET: bind(ControllerWithParameter::class, middleware: MiddlewareTwo::class)
+                GET: headless(ControllerWithParameter::class, middleware: MiddlewareTwo::class)
             )
         );
         $this->expectException(TypeError::class);

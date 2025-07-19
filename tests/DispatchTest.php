@@ -16,7 +16,7 @@ namespace Chevere\Tests;
 use Chevere\Router\Dispatch;
 use Chevere\Tests\src\ControllerWithParameters;
 use PHPUnit\Framework\TestCase;
-use function Chevere\Router\bind;
+use function Chevere\Router\headless;
 
 final class DispatchTest extends TestCase
 {
@@ -27,7 +27,7 @@ final class DispatchTest extends TestCase
             'name' => 'name-value',
             'id' => 'id-value',
         ];
-        $dispatch = new Dispatch(bind($controller), $arguments);
+        $dispatch = new Dispatch(headless($controller), $arguments);
         $this->assertSame($arguments, $dispatch->arguments());
         $this->assertSame($controller, $dispatch->bind()->controllerName()->__toString());
     }

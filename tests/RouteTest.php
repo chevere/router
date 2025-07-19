@@ -28,7 +28,7 @@ use InvalidArgumentException;
 use OutOfBoundsException;
 use OverflowException;
 use PHPUnit\Framework\TestCase;
-use function Chevere\Router\bind;
+use function Chevere\Router\headless;
 use function Chevere\Router\route;
 
 final class RouteTest extends TestCase
@@ -58,7 +58,7 @@ final class RouteTest extends TestCase
         $route = new Route(new Path('/test/{id}'), 'test');
         $method = new GetMethod();
         $controller = ControllerWithParameter::class;
-        $endpoint = new Endpoint($method, bind($controller));
+        $endpoint = new Endpoint($method, headless($controller));
         $routeWith = $route->withEndpoint($endpoint);
         $this->assertTrue($routeWith->endpoints()->has($method->name()));
         $this->assertSame($endpoint, $routeWith->endpoints()->get($method->name()));
@@ -70,8 +70,8 @@ final class RouteTest extends TestCase
         $fooMethod = new GetMethod();
         $barMethod = new PostMethod();
         $controller = ControllerWithParameter::class;
-        $foo = new Endpoint($fooMethod, bind($controller));
-        $bar = new Endpoint($barMethod, bind($controller));
+        $foo = new Endpoint($fooMethod, headless($controller));
+        $bar = new Endpoint($barMethod, headless($controller));
         $route = $route
             ->withEndpoint($foo)
             ->withEndpoint($bar);
@@ -84,7 +84,7 @@ final class RouteTest extends TestCase
         $route = new Route(new Path('/test'), 'test');
         $method = new GetMethod();
         $controller = ControllerWithParameter::class;
-        $foo = new Endpoint($method, bind($controller));
+        $foo = new Endpoint($method, headless($controller));
         $this->expectException(OutOfBoundsException::class);
         $route->withoutEndpoint($method);
     }
@@ -94,7 +94,7 @@ final class RouteTest extends TestCase
         $route = new Route(new Path('/test/{id}'), 'test');
         $method = new GetMethod();
         $controller = ControllerWithParameter::class;
-        $endpoint = new Endpoint($method, bind($controller));
+        $endpoint = new Endpoint($method, headless($controller));
         $this->expectNotToPerformAssertions();
         $route->withEndpoint($endpoint);
     }
@@ -104,7 +104,7 @@ final class RouteTest extends TestCase
         $route = new Route(new Path('/test/{id:[0-9]+}'), 'test');
         $method = new GetMethod();
         $controller = ControllerWithParameter::class;
-        $endpoint = new Endpoint($method, bind($controller));
+        $endpoint = new Endpoint($method, headless($controller));
         $this->expectNotToPerformAssertions();
         $route->withEndpoint($endpoint);
     }
@@ -114,7 +114,7 @@ final class RouteTest extends TestCase
         $route = new Route(new Path('/test/{foo}'), 'test');
         $method = new GetMethod();
         $controller = ControllerWithParameter::class;
-        $endpoint = new Endpoint($method, bind($controller));
+        $endpoint = new Endpoint($method, headless($controller));
         $this->expectException(OutOfBoundsException::class);
         $route->withEndpoint($endpoint);
     }
@@ -124,7 +124,7 @@ final class RouteTest extends TestCase
         $route = new Route(new Path('/test/{foo}'), 'test');
         $method = new GetMethod();
         $controller = ControllerNoParameters::class;
-        $endpoint = new Endpoint($method, bind($controller));
+        $endpoint = new Endpoint($method, headless($controller));
         $this->expectException(InvalidArgumentException::class);
         $route->withEndpoint($endpoint);
     }
@@ -135,7 +135,7 @@ final class RouteTest extends TestCase
         $controller = ControllerWithParameter::class;
         $endpoint = new Endpoint(
             new GetMethod(),
-            bind($controller)
+            headless($controller)
         );
         $route = new Route($path, 'test');
         $this->expectException(OutOfBoundsException::class);
@@ -148,7 +148,7 @@ final class RouteTest extends TestCase
         $route = new Route($path, 'test');
         $method = new GetMethod();
         $controller = ControllerWithParameter::class;
-        $endpoint = new Endpoint($method, bind($controller));
+        $endpoint = new Endpoint($method, headless($controller));
         $route = $route->withEndpoint($endpoint);
         $this->assertTrue($route->endpoints()->has($method->name()));
     }
@@ -158,7 +158,7 @@ final class RouteTest extends TestCase
         $route = new Route(new Path('/test/{id:[0-9]+}'), 'test');
         $endpoint = new Endpoint(
             new GetMethod(),
-            bind(ControllerWithParameter::class)
+            headless(ControllerWithParameter::class)
         );
         $route = $route->withEndpoint($endpoint);
         $this->expectException(OverflowException::class);
@@ -170,11 +170,11 @@ final class RouteTest extends TestCase
         $route = new Route(new Path('/test/{id:[0-9]+}'), 'test');
         $endpoint1 = new Endpoint(
             new GetMethod(),
-            bind(ControllerWithParameter::class)
+            headless(ControllerWithParameter::class)
         );
         $endpoint2 = new Endpoint(
             new PostMethod(),
-            bind(ControllerRegexConflict::class)
+            headless(ControllerRegexConflict::class)
         );
         $route = $route->withEndpoint($endpoint1);
         $this->expectException(EndpointConflictException::class);
@@ -187,11 +187,11 @@ final class RouteTest extends TestCase
         $route = new Route(new Path('/test/{id:[0-9]+}'), 'test');
         $endpoint1 = new Endpoint(
             new GetMethod(),
-            bind(ControllerWithParameter::class)
+            headless(ControllerWithParameter::class)
         );
         $endpoint2 = new Endpoint(
             new PostMethod(),
-            bind(ControllerNoParameters::class)
+            headless(ControllerNoParameters::class)
         );
         $route = $route->withEndpoint($endpoint1);
         $this->expectException(EndpointConflictException::class);
@@ -204,7 +204,7 @@ final class RouteTest extends TestCase
         $route = new Route(new Path('/test/{id:\w+}'), 'test');
         $endpoint = new Endpoint(
             new GetMethod(),
-            bind(ControllerWithParameter::class)
+            headless(ControllerWithParameter::class)
         );
         $this->expectException(VariableConflictException::class);
         $this->expectExceptionMessage('Variable `{id}` matches against');
@@ -216,7 +216,7 @@ final class RouteTest extends TestCase
         $route = new Route(new Path('/user/{id}'), 'test');
         $endpoint = new Endpoint(
             new GetMethod(),
-            bind(ControllerWithParameters::class)
+            headless(ControllerWithParameters::class)
         );
         $this->expectException(OutOfBoundsException::class);
         $route->withEndpoint($endpoint);

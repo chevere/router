@@ -34,6 +34,7 @@ use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use Closure;
+use InvalidArgumentException;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use OutOfBoundsException;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -151,9 +152,17 @@ function route(
         } else {
             try {
                 $controllerName = controllerName($item);
-                $item = bind($item, $view);
+                if ($view === '') {
+                    $item = headless($item);
+                } else {
+                    $item = bind($item, $view);
+                }
             } catch (Throwable) {
-                $item = bind(NullController::class, $item);
+                if ($view === '') {
+                    $item = headless(NullController::class);
+                } else {
+                    $item = bind(NullController::class, $item);
+                }
                 $controllerName = $item->controllerName();
             }
         }
@@ -230,6 +239,14 @@ function bind(
         }
         $middlewares[] = new MiddlewareName($name);
     }
+    if ($view === '') {
+        throw new InvalidArgumentException(
+            (string) message(
+                'Argument `view` provided is empty for controller `%controller%`',
+                controller: $controller
+            )
+        );
+    }
 
     return new Bind(
         new ControllerName($controller),
@@ -261,7 +278,7 @@ function headless(
     return new Bind(
         new ControllerName($controller),
         new Middlewares(...$middlewares),
-        view: null
+        view: ''
     );
 }
 

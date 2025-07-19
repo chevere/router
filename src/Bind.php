@@ -22,7 +22,7 @@ final class Bind implements BindInterface
     public function __construct(
         private ControllerNameInterface $controllerName,
         private MiddlewaresInterface $middlewares,
-        private ?string $view = null
+        private string $view = ''
     ) {
     }
 
@@ -31,7 +31,7 @@ final class Bind implements BindInterface
         return $this->controllerName;
     }
 
-    public function view(): ?string
+    public function view(): string
     {
         return $this->view;
     }
@@ -41,7 +41,7 @@ final class Bind implements BindInterface
         return $this->middlewares;
     }
 
-    public function withView(?string $view = null): BindInterface
+    public function withView(string $view): BindInterface
     {
         $new = clone $this;
         $new->view = $view;
