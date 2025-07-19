@@ -239,12 +239,12 @@ function bind(
 }
 
 /**
- * Binds a Controller to middleware (headless).
+ * Headless binds a Controller to middleware.
  *
  * @param string $controller HTTP controller name
  * @param string ...$middleware HTTP middleware name(s)
  */
-function attach(
+function headless(
     string $controller = NullController::class,
     string|MiddlewareNameInterface ...$middleware
 ): BindInterface {
