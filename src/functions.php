@@ -158,7 +158,7 @@ function route(
                     $item = bind($item, $view);
                 }
             } catch (Throwable) {
-                if ($view === '') {
+                if ($item === '') {
                     $item = headless(NullController::class);
                 } else {
                     $item = bind(NullController::class, $item);
