@@ -38,6 +38,7 @@ use InvalidArgumentException;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use OutOfBoundsException;
 use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Relay\Relay;
@@ -372,21 +373,34 @@ function routed(
         $code = $e instanceof ControllerException
             ? (int) $e->getCode()
             : 500;
+        $response = $responseFactory->createResponse($code);
+        mergeResponseHeaders($response, $controllerHeaders, $responseHeaders);
 
-        return (new Routed(
-            $responseFactory->createResponse($code),
-            $routed->bind(),
-        ))->withThrowable($e);
+        return (new Routed($response, $routed->bind()))
+            ->withThrowable($e);
     }
-    $response = $responseFactory->createResponse($controllerStatus);
-    $headers = array_merge($controllerHeaders, $responseHeaders);
-    foreach ($headers as $name => $value) {
-        $response = $response->withHeader($name, $value);
-    }
+    mergeResponseHeaders($response, $controllerHeaders, $responseHeaders);
 
     return new Routed(
         $controller->terminate($response),
         $routed->bind(),
         $controllerResponse
     );
+}
+
+/**
+ * Merges response headers from controller and response.
+ *
+ * @param array<string, string> $controllerHeaders Headers from the controller.
+ * @param array<string, string> $responseHeaders Headers from the response.
+ */
+function mergeResponseHeaders(
+    ResponseInterface &$response,
+    array $controllerHeaders,
+    array $responseHeaders
+): void {
+    $headers = array_merge($controllerHeaders, $responseHeaders);
+    foreach ($headers as $name => $value) {
+        $response = $response->withHeader($name, $value);
+    }
 }
