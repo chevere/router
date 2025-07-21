@@ -46,6 +46,7 @@ use Throwable;
 use TypeError;
 use function Chevere\Action\getParameters;
 use function Chevere\Http\middlewares;
+use function Chevere\Http\requestAttribute;
 use function Chevere\Http\responseAttribute;
 use function Chevere\Message\message;
 
@@ -335,26 +336,33 @@ function routed(
     }
     $controllerName = $routed->bind()->controllerName();
     $controllerNameString = $controllerName->__toString();
+    $requestAttribute = requestAttribute($controllerNameString);
     $responseAttribute = responseAttribute($controllerNameString);
     $controllerStatus = $responseAttribute?->status->success
         ?? 200;
-    $controllerHeaders = $responseAttribute?->headers->toArray()
+    $controllerRequestHeaders = $requestAttribute?->headers->toArray()
         ?? [];
-    foreach ($controllerHeaders as $name => $value) {
+    $controllerResponseHeaders = $responseAttribute?->headers->toArray()
+        ?? [];
+    foreach ($controllerResponseHeaders as $name => $value) {
         $response = $response->withHeader($name, $value);
     }
     if ($response->hasHeader('Location')) {
         return new Routed($response, $routed->bind());
     }
+    $request = $handle->request();
+    foreach ($controllerRequestHeaders as $name => $value) {
+        $request = $request->withHeader($name, $value);
+    }
     $container = array_merge($container, [
-        'request' => $handle->request(),
+        'request' => $request,
     ]);
     $controllerArguments = $router->dependencies()->extract($controllerNameString, $container);
     /** @var ControllerInterface $controller */
     $controller = new $controllerNameString(...$controllerArguments);
 
     try {
-        $controller = $controller->withServerRequest($handle->request());
+        $controller = $controller->withServerRequest($request);
         if (method_exists($controller, 'setUp')) {
             $controller->setUp(
                 ...$controllerName->arguments()
@@ -374,14 +382,14 @@ function routed(
             ? (int) $e->getCode()
             : 500;
         $response = $responseFactory->createResponse($code);
-        mergeResponseHeaders($response, $controllerHeaders, $responseHeaders);
+        mergeResponseHeaders($response, $controllerResponseHeaders, $responseHeaders);
 
         return (new Routed($response, $routed->bind()))
             ->withThrowable($e);
     }
 
     $response = $responseFactory->createResponse($controllerStatus);
-    mergeResponseHeaders($response, $controllerHeaders, $responseHeaders);
+    mergeResponseHeaders($response, $controllerResponseHeaders, $responseHeaders);
 
     return new Routed(
         $controller->terminate($response),
@@ -393,8 +401,8 @@ function routed(
 /**
  * Merges response headers from controller and response.
  *
- * @param array<string, string> $controllerHeaders Headers from the controller.
- * @param array<string, string> $responseHeaders Headers from the response.
+ * @param array<string, string> $controllerHeaders
+ * @param array<string, string> $responseHeaders
  */
 function mergeResponseHeaders(
     ResponseInterface &$response,
