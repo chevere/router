@@ -379,6 +379,8 @@ function routed(
         return (new Routed($response, $routed->bind()))
             ->withThrowable($e);
     }
+
+    $response = $responseFactory->createResponse($controllerStatus);
     mergeResponseHeaders($response, $controllerHeaders, $responseHeaders);
 
     return new Routed(
