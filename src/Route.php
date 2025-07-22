@@ -30,6 +30,7 @@ use OutOfBoundsException;
 use OverflowException;
 use function Chevere\Action\getParameters;
 use function Chevere\Message\message;
+use function Chevere\Parameter\string;
 
 final class Route implements RouteInterface
 {
@@ -85,14 +86,20 @@ final class Route implements RouteInterface
         $controllerFqn = $endpoint->bind()->controllerName()->__toString();
         $parameters = getParameters($controllerFqn);
         $new->assertVariableBounds($parameters, $controllerFqn);
+        $defaultStringRegex = string()->regex()->noDelimitersNoAnchors();
         foreach ($new->path->variables() as $variable) {
             $new->assertEndpoint($endpoint);
             /** @var StringParameterInterface $parameter */
             $parameter = $parameters->get(strval($variable));
             $parameterRegex = $parameter->regex()->noDelimitersNoAnchors();
+            if ($parameterRegex === $defaultStringRegex) {
+                $parameterRegex = '[^/]+';
+            }
             $variableRegex = strval($variable->regex());
             $variableString = strval($variable);
-            if (strpos(strval($this->path), $variableString . '}') !== false) {
+            if (strpos(strval($this->path), $variableString . '}') !== false
+                || $variableRegex === $defaultStringRegex
+            ) {
                 $variableRegex = $parameterRegex; // @codeCoverageIgnore
             }
             if ($parameterRegex !== $variableRegex) {

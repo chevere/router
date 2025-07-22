@@ -49,6 +49,7 @@ use function Chevere\Http\middlewares;
 use function Chevere\Http\requestAttribute;
 use function Chevere\Http\responseAttribute;
 use function Chevere\Message\message;
+use function Chevere\Parameter\string;
 
 /**
  * Creates Routes object for all `$routes`.
@@ -70,6 +71,7 @@ function routes(RouteInterface|RoutesInterface ...$routes): RoutesInterface
 
 function getPath(string $path, string|BindInterface ...$bind): string
 {
+    $defaultStringRegex = string()->regex()->noDelimitersNoAnchors();
     $routePath = new Path($path);
     foreach ($bind as $item) {
         try {
@@ -103,10 +105,14 @@ function getPath(string $path, string|BindInterface ...$bind): string
                     )
                 );
             }
+            $pattern = $stringParameter->regex()->noDelimitersNoAnchors();
+            if ($pattern === $defaultStringRegex) {
+                $pattern = '[^/]+';
+            }
             $path = str_replace(
                 $variableBracket,
                 <<<STRING
-                {{$variable}:{$stringParameter->regex()->noDelimitersNoAnchors()}}
+                {{$variable}:{$pattern}}
                 STRING,
                 $path
             );
