@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Router\Interfaces;
 
 use Chevere\Parameter\Interfaces\ParametersInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Describes the component in charge of defining the collection of Router
@@ -57,5 +58,5 @@ interface DependenciesInterface
     /**
      * Asserts that the given container has all dependencies.
      */
-    public function assert(mixed ...$container): void;
+    public function assert(ContainerInterface $container): void;
 }

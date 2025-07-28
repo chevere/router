@@ -17,13 +17,13 @@ use Chevere\DataStructure\Map;
 use Chevere\Parameter\Arguments;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Parameter\Parameters;
-use Chevere\Router\Interfaces\ContainerInterface;
 use Chevere\Router\Interfaces\DependenciesInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use LogicException;
 use OutOfBoundsException;
+use Psr\Container\ContainerInterface;
 use ReflectionMethod;
 use Stringable;
 use Throwable;
@@ -101,12 +101,12 @@ final class Dependencies implements DependenciesInterface
         return (new Arguments($parameters, $extracted))->toArray();
     }
 
-    public function assert(mixed ...$argument): void
+    public function assert(ContainerInterface $container): void
     {
         $errors = [];
         foreach ($this->parameters as $name => $parameter) {
             $name = (string) $name;
-            $hasArgument = array_key_exists($name, $argument);
+            $hasArgument = $container->has($name);
             if (! $hasArgument
                 && $this->parameters->optionalKeys()->contains($name)
             ) {
@@ -129,10 +129,11 @@ final class Dependencies implements DependenciesInterface
 
             try {
                 /** @var mixed $value */
-                $value = $argument[$name];
+                $value = $container->get($name);
                 // @phpstan-ignore-next-line
                 $parameter($value);
             } catch (Throwable) {
+                $value ??= null;
                 $provided = getType($value);
                 if (is_object($value)) {
                     $provided = get_class($value);

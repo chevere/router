@@ -99,8 +99,7 @@ final class DependenciesTest extends TestCase
             value: 'Middleware dependency',
             extra: 'Extra value',
         );
-        $dependencies->assert(int: 1);
-        $dependencies->assert(...$container);
+        $dependencies->assert($container);
         $this->assertSame(
             [
                 'int' => $container->get('int'),
@@ -140,7 +139,11 @@ final class DependenciesTest extends TestCase
             PLAIN
         );
         $dependencies = new Dependencies($routes);
-        $dependencies->assert(dependency: new Vector());
+        $dependencies->assert(
+            new Container(
+                dependency: new Vector()
+            )
+        );
     }
 
     public function testIncompatibleDependencies(): void
