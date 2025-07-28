@@ -25,6 +25,29 @@ Router is a library for creating routing systems for [chevere/http](https://chev
 - PSR-15: HTTP Server Request Handlers
 - PSR-17: HTTP Factories
 
+## Quick start
+
+```php
+// Define routes
+$routes = routes(
+    route('/hello', GET: 'hello.twig'),
+    route('/api/users',
+        GET: UserListController::class,
+        POST: headless(UserCreateController::class, CsrfMiddleware::class)
+    ),
+    route('/products/{id}',
+        GET: bind(ProductGetController::class, 'product.twig'),
+        PUT: ProductUpdateController::class,
+        DELETE: ProductDeleteController::class
+    )
+);
+// Create router
+$router = router($routes);
+// Handle request
+$routed = routed($serverRequest, $router, $responseFactory, $container);
+$response = $routed->response();
+```
+
 ## Installing
 
 Router is available through [Packagist](https://packagist.org/packages/chevere/router) and the repository source is at [chevere/router](https://github.com/chevere/router).
@@ -33,9 +56,9 @@ Router is available through [Packagist](https://packagist.org/packages/chevere/r
 composer require chevere/router
 ```
 
-## What it does?
+## What it does
 
-The Router library enables to bind paths to HTTP methods and logic. It enables to map paths to their corresponding HTTP controller action, view and middleware pipeline. It also enables to collect and assert the views and dependencies used in the routing process.
+The Router library allows you to bind paths to HTTP methods and logic. It maps paths to their corresponding HTTP controller actions, views, and middleware pipelines. It also collects and validates the views and dependencies used in the routing process.
 
 For example, to resolve this:
 
@@ -81,7 +104,7 @@ class ProductDelete extends Controller
 
 ## Bind
 
-A Bind is the conjunction of a controller, its middleware pipeline and a view. Use helper function `bind($controller, $view, ...$middleware)` to explicit create binding.
+A Bind is the conjunction of a controller, its middleware pipeline and a view. Use helper function `bind($controller, $view, ...$middleware)` to explicitly create a binding.
 
 ```php
 $bind = bind(
@@ -97,13 +120,13 @@ Use method `controllerName()` to access the ControllerName API.
 $bind->controllerName(); // ProductGet
 ```
 
-Use method `view()` to access to the view string.
+Use method `view()` to access the view string.
 
 ```php
 $bind->view(); // product.twig
 ```
 
-Use method `middlewares()` to access the [Middlewares](#middleware) collection API.
+Use method `middlewares()` to access the Middlewares collection API.
 
 ```php
 $bind->middlewares();
@@ -161,11 +184,13 @@ protected function main(string $id) {...}
 Path variables implicit match against `[^/]+`. To customize use `StringAttr` on main’s function parameters.
 
 ```php
+use Chevere\Parameter\Attributes\StringAttr;
+
 protected function main(
     #[StringAttr('/\d+/')]
     string $id
 ) {
-    // $id is digits
+    // $id is digits only
 }
 ```
 
@@ -218,6 +243,19 @@ route(
 )
 ```
 
+## Middlewares
+
+The Middlewares API enables you to organize PSR-15 middleware for your routes. Use the helper function `middlewares(...$middleware)` to create a Middlewares collection.
+
+```php
+$middlewares = middlewares(
+    SessionMiddleware::class,
+    AuthMiddleware::class
+);
+```
+
+You can use this collection in route definitions to apply middleware to specific routes.
+
 ## Routes
 
 The Routes API enables to collect, assert, inspect and organize Route objects.
@@ -259,10 +297,10 @@ $routes = $routes->withPrependMiddleware(
 )
 ```
 
-Use method `withAppendMiddleware($midlewares)` to append middleware to the end of the pipeline. Use this for middleware that cant resolve last in execution order.
+Use method `withAppendMiddleware($middlewares)` to append middleware to the end of the pipeline. Use this for middleware that must resolve last in execution order.
 
 ```php
-routes = $routes->withAppendMiddleware(
+$routes = $routes->withAppendMiddleware(
     middlewares(
         SessionCheckCSRFToken::class, // PSR-15
     )
@@ -289,13 +327,13 @@ $container = new Container(
 
 ### Automatic dependency injection
 
-Use method `withAutoInject($deps, ...$ignore)` to automatic recursive inject missing dependencies.
+Use method `withAutoInject($deps, ...$ignore)` to automatically inject missing dependencies recursively.
 
 ```php
 $container = $container->withAutoInject($deps, ...$ignore);
 ```
 
-The ignore argument enable to define dependencies that will be ignored, useful for dependencies that must be [late injected](#late-dependency-injection) after the middleware pipeline resolves.
+The `ignore` argument allows you to define dependencies that should be ignored, which is useful for dependencies that must be [late injected](#late-dependency-injection) after the middleware pipeline resolves.
 
 ## Dependencies
 
