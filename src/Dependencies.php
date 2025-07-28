@@ -17,6 +17,7 @@ use Chevere\DataStructure\Map;
 use Chevere\Parameter\Arguments;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Parameter\Parameters;
+use Chevere\Router\Interfaces\ContainerInterface;
 use Chevere\Router\Interfaces\DependenciesInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\RouteInterface;
@@ -81,16 +82,21 @@ final class Dependencies implements DependenciesInterface
         return $this->map->get($className);
     }
 
-    public function extract(string $className, array $container): array
+    public function extract(string $className, ContainerInterface $container): array
     {
         if (! $this->has($className)) {
             return [];
         }
         $parameters = $this->get($className);
-        $extracted = array_intersect_key(
-            $container,
-            array_flip($parameters->keys())
-        );
+        $extracted = [];
+        foreach ($parameters->keys() as $name) {
+            if (! $container->has($name)) {
+                throw new OutOfBoundsException(
+                    "Dependency `{$name}` not defined in container"
+                );
+            }
+            $extracted[$name] = $container->get($name);
+        }
 
         return (new Arguments($parameters, $extracted))->toArray();
     }

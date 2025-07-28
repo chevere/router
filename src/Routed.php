@@ -27,7 +27,7 @@ final class Routed implements RoutedInterface
     public function __construct(
         private ResponseInterface $response,
         private BindInterface $bind,
-        private mixed $raw = null,
+        private mixed $return = null,
     ) {
     }
 
@@ -55,9 +55,9 @@ final class Routed implements RoutedInterface
         return $this->hasThrowable;
     }
 
-    public function raw(): mixed
+    public function return(): mixed
     {
-        return $this->raw;
+        return $this->return;
     }
 
     public function throwable(): Throwable

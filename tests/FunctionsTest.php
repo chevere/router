@@ -215,7 +215,7 @@ final class FunctionsTest extends TestCase
             )
         );
         $routed = routed($request, $router);
-        $this->assertSame([], $routed->raw());
+        $this->assertSame([], $routed->return());
         $this->assertEquals($bind, $routed->bind());
     }
 

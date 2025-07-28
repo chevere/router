@@ -30,7 +30,7 @@ final class RoutedTest extends TestCase
         $routed = (new Routed($response, $bind));
         $this->assertSame($routed->bind(), $bind);
         $this->assertSame($routed->response(), $response);
-        $this->assertNull($routed->raw());
+        $this->assertNull($routed->return());
         $this->assertFalse($routed->hasThrowable());
     }
 
@@ -40,7 +40,7 @@ final class RoutedTest extends TestCase
         $response = new Response();
         $bind = bind(ControllerNoParameters::class, 'test');
         $routed = (new Routed($response, $bind, [], $raw));
-        $this->assertSame($raw, $routed->raw());
+        $this->assertSame($raw, $routed->return());
     }
 
     public function testWithThrowable(): void

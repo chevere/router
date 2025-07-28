@@ -45,9 +45,9 @@ interface RoutedInterface
     public function bind(): BindInterface;
 
     /**
-     * Provides access to the raw routed result.
+     * Provides access to the controller __invoke return value.
      */
-    public function raw(): mixed;
+    public function return(): mixed;
 
     /**
      * Provides access to the Throwable instance.

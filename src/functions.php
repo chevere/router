@@ -28,6 +28,7 @@ use Chevere\Router\Exceptions\NotFoundException;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\BindInterface;
+use Chevere\Router\Interfaces\ContainerInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\RoutedInterface;
 use Chevere\Router\Interfaces\RouteInterface;
@@ -302,18 +303,16 @@ function controllerName(BindInterface|string $item): ControllerNameInterface
 /**
  * Executes the request on router.
  *
- * @param array<string, mixed> $container Service container (name => instance).
- *
  * @throws NotFoundException|MethodNotAllowedException
  */
 function routed(
     ServerRequestInterface $serverRequest,
     RouterInterface $router,
     ResponseFactoryInterface $responseFactory = new Psr17Factory(),
-    array $container = [],
+    ContainerInterface $container = new Container(),
     ?Closure $callback = null
 ): RoutedInterface {
-    $container['responseFactory'] = $responseFactory;
+    $container = $container->withEntry(responseFactory: $responseFactory);
     $routed = $router->dispatcher()->dispatch($serverRequest);
     $queue = [];
     $middlewares = $routed->bind()->middlewares();
@@ -338,7 +337,7 @@ function routed(
         $responseHeaders[$name] = implode(', ', $values);
     }
     if ($callback) {
-        $callback($container);
+        $container = $callback($container);
     }
     $controllerName = $routed->bind()->controllerName();
     $controllerNameString = $controllerName->__toString();
@@ -360,9 +359,7 @@ function routed(
     foreach ($controllerRequestHeaders as $name => $value) {
         $request = $request->withHeader($name, $value);
     }
-    $container = array_merge($container, [
-        'request' => $request,
-    ]);
+    $container = $container->withEntry(request: $request);
     $controllerArguments = $router->dependencies()->extract($controllerNameString, $container);
     /** @var ControllerInterface $controller */
     $controller = new $controllerNameString(...$controllerArguments);
@@ -382,7 +379,7 @@ function routed(
     }
 
     try {
-        $controllerResponse = $controller->__invoke(...$routed->arguments());
+        $controllerReturn = $controller->__invoke(...$routed->arguments());
     } catch (Throwable $e) {
         $code = $e instanceof ControllerException
             ? (int) $e->getCode()
@@ -400,7 +397,7 @@ function routed(
     return new Routed(
         $controller->terminate($response),
         $routed->bind(),
-        $controllerResponse
+        $controllerReturn
     );
 }
 

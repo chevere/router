@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\DataStructure\Vector;
+use Chevere\Router\Container;
 use Chevere\Router\Dependencies;
 use Chevere\Router\Path;
 use Chevere\Tests\src\ControllerWithDependencies;
@@ -44,9 +45,9 @@ final class DependenciesTest extends TestCase
             [],
             $dependencies->extract(
                 'className',
-                [
-                    'key' => 'value',
-                ]
+                new Container(
+                    key: 'value',
+                )
             )
         );
         $this->expectException(OutOfBoundsException::class);
@@ -92,18 +93,18 @@ final class DependenciesTest extends TestCase
             ],
             $dependencies->parameters()->keys()
         );
-        $container = [
-            'dependency' => new Path('/test'),
-            'int' => 123,
-            'value' => 'Middleware dependency',
-            'extra' => 'Extra value',
-        ];
+        $container = new Container(
+            int: 123,
+            dependency: new Path('/test'),
+            value: 'Middleware dependency',
+            extra: 'Extra value',
+        );
         $dependencies->assert(int: 1);
         $dependencies->assert(...$container);
         $this->assertSame(
             [
-                'dependency' => $container['dependency'],
-                'int' => $container['int'],
+                'int' => $container->get('int'),
+                'dependency' => $container->get('dependency'),
             ],
             $dependencies->extract(ControllerWithDependencies::class, $container)
         );

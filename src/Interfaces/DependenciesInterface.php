@@ -45,10 +45,9 @@ interface DependenciesInterface
     /**
      * Provides access to the typed arguments for the given class name and container.
      *
-     * @param array<string, mixed> $container Service container
      * @return array<string, mixed> Constructor arguments, taken from the container
      */
-    public function extract(string $className, array $container): array;
+    public function extract(string $className, ContainerInterface $container): array;
 
     /**
      * Indicates the class name which declared the given dependency.
