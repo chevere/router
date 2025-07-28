@@ -2,11 +2,11 @@
 
 ![Chevere](chevere.svg)
 
-[![Build](https://img.shields.io/github/actions/workflow/status/chevere/router/test.yml?branch=0.8&style=flat-square)](https://github.com/chevere/router/actions)
+[![Build](https://img.shields.io/github/actions/workflow/status/chevere/router/test.yml?branch=0.9&style=flat-square)](https://github.com/chevere/router/actions)
 ![Code size](https://img.shields.io/github/languages/code-size/chevere/router?style=flat-square)
 [![Apache-2.0](https://img.shields.io/github/license/chevere/router?style=flat-square)](LICENSE)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%209-blueviolet?style=flat-square)](https://phpstan.org/)
-[![Mutation testing badge](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fchevere%2Frouter%2F0.8)](https://dashboard.stryker-mutator.io/reports/github.com/chevere/router/0.8)
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fchevere%2Frouter%2F0.9)](https://dashboard.stryker-mutator.io/reports/github.com/chevere/router/0.9)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=chevere_router&metric=alert_status)](https://sonarcloud.io/dashboard?id=chevere_router)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=chevere_router&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=chevere_router)
@@ -54,7 +54,7 @@ You need to write the following route code:
 $route = route(
     '/product/{id}',
     GET: bind(ProductGet::class, 'product.twig'),
-    DELETE: headless(ProductDelete::class),
+    DELETE: ProductDelete::class,
 );
 ```
 
@@ -146,7 +146,7 @@ route(
 
 ### Dynamic route
 
-Dynamic routes use variable wildcards (`{variable}`) to denote variable path components.
+Dynamic routes use variable wildcards (`{variable}` syntax) to denote variable path components.
 
 ```php
 route('/products/{id}', GET: MyController::class);
