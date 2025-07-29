@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
+use Chevere\Parameter\Interfaces\ParametersAccessInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Psr\Container\ContainerInterface;
 
@@ -24,7 +25,7 @@ use Psr\Container\ContainerInterface;
  * It refers to the parameters indicated at the `__construct` method of the
  * controller and middleware classes used in routing.
  */
-interface DependenciesInterface
+interface DependenciesInterface extends ParametersAccessInterface
 {
     public function withRoute(RouteInterface ...$route): self;
 

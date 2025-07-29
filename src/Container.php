@@ -16,12 +16,14 @@ namespace Chevere\Router;
 use Chevere\DataStructure\Map;
 use Chevere\DataStructure\Traits\MapTrait;
 use Chevere\Parameter\Interfaces\ObjectParameterInterface;
+use Chevere\Parameter\Interfaces\ParametersAccessInterface;
+use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Router\Exceptions\ContainerException;
 use Chevere\Router\Exceptions\ContainerNotFoundException;
 use Chevere\Router\Interfaces\ContainerInterface;
-use Chevere\Router\Interfaces\DependenciesInterface;
 use ReflectionMethod;
 use Throwable;
+use function Chevere\Parameter\getParameters;
 use function Chevere\Parameter\reflectionToParameters;
 
 final class Container implements ContainerInterface
@@ -58,20 +60,23 @@ final class Container implements ContainerInterface
     }
 
     public function withAutoInject(
-        DependenciesInterface $dependencies,
+        ParametersInterface|ParametersAccessInterface $dependencies,
         string ...$ignore
     ): ContainerInterface {
         $new = clone $this;
+        $parameters = getParameters($dependencies);
+        $ignore = array_values(array_intersect($ignore, $parameters->keys()));
         $missingDeps = array_diff(
-            $dependencies->parameters()->keys(),
+            $parameters->keys(),
             $new->keys(),
             $ignore
         );
         $failures = [];
-
         foreach ($missingDeps as $missingDep) {
             $arguments = [];
-            $parameter = $dependencies->parameters()->get($missingDep);
+            $parameter = $parameters->has($missingDep)
+                ? $parameters->get($missingDep)
+                : null;
             if (! ($parameter instanceof ObjectParameterInterface)) {
                 $failures[] = [$missingDep, "Parameter {$missingDep} is not an object type"];
 

@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Chevere\Router\Interfaces;
 
 use Chevere\DataStructure\Interfaces\StringMappedInterface;
+use Chevere\Parameter\Interfaces\ParametersAccessInterface;
+use Chevere\Parameter\Interfaces\ParametersInterface;
 use Psr\Container\ContainerInterface as Psr11ContainerInterface;
 
 /**
@@ -38,7 +40,7 @@ interface ContainerInterface extends Psr11ContainerInterface, StringMappedInterf
      * an instance that contains auto injected dependencies.
      */
     public function withAutoInject(
-        DependenciesInterface $dependencies,
+        ParametersInterface|ParametersAccessInterface $dependencies,
         string ...$ignore
     ): self;
 }
