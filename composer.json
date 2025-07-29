@@ -28,7 +28,8 @@
         "chevere/var-dump": "^2.0",
         "phpstan/phpstan": "^2.0",
         "phpunit/phpunit": "^10.5",
-        "symplify/easy-coding-standard": "^12.1"
+        "symplify/easy-coding-standard": "^12.1",
+        "xrdebug/php": "^3.0"
     },
     "autoload": {
         "files": [
