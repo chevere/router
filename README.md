@@ -25,6 +25,14 @@ Router is a library for creating routing systems for [chevere/http](https://chev
 - PSR-15: HTTP Server Request Handlers
 - PSR-17: HTTP Factories
 
+## Installing
+
+Router is available through [Packagist](https://packagist.org/packages/chevere/router) and the repository source is at [chevere/router](https://github.com/chevere/router).
+
+```sh
+composer require chevere/router
+```
+
 ## Quick start
 
 ```php
@@ -46,14 +54,6 @@ $router = router($routes);
 // Handle request
 $routed = routed($serverRequest, $router, $responseFactory, $container);
 $response = $routed->response();
-```
-
-## Installing
-
-Router is available through [Packagist](https://packagist.org/packages/chevere/router) and the repository source is at [chevere/router](https://github.com/chevere/router).
-
-```sh
-composer require chevere/router
 ```
 
 ## What it does
@@ -317,12 +317,33 @@ $router->views()->assert($viewsDir);
 
 ## Container
 
-Use `new Container(...)` to create the dependency container. You can pass entries you may need to manually crate.
+Use `new Container(...)` to create the dependency container by passing entries you may need to manually create.
 
 ```php
 $container = new Container(
     database: $database,
+    // other entries
 );
+```
+
+### Adding entries
+
+Use method `with(...$entries)` to add one or more named entries to the container.
+
+```php
+$container = $container->with(
+    status: 'challenged',
+    challenge: '2fa',
+);
+```
+
+### Accessing entries
+
+Use method `has($name)` to tell if the container has an entry by name. Use method `get($name)` to retrieve the entry value.
+
+```php
+$container->has('session'); // bool true
+$session = $container->get('session'); // SessionInterface
 ```
 
 ### Automatic dependency injection
@@ -372,12 +393,17 @@ $routed = routed(
 The `$callback` argument enables to pass logic that will resolve after the middleware pipeline and before the controller layer.
 
 ```php
-$callback = function (array &$container) {
-    $session = $container['sessionFactory']->newSession(
-        $container['requestUser']->sessionId
+use Chevere\Router\Interfaces\ContainerInterface;
+
+$callback = function (ContainerInterface $container): ContainerInterface {
+    $session = $container->get('sessionFactory')->newSession(
+        $container->get('requestUser')->sessionId
     );
-    $user = $session->getOrDefault('user');
-    $container['user'] = $user;
+
+    return $container->with(
+        session: $session,
+        user: $session->getOrDefault('user')
+    );
 };
 ```
 

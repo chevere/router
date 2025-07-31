@@ -99,7 +99,7 @@ final class Container implements ContainerInterface
             }
 
             try {
-                $new = $new->withEntry(
+                $new = $new->with(
                     ...[
                         $missingDep => new $className(...$arguments),
                     ]
@@ -108,29 +108,23 @@ final class Container implements ContainerInterface
                 $failures[] = [$missingDep, "Failed to instantiate {$className}: {$e->getMessage()}"];
             }
         }
-
         if ($failures !== []) {
             $lines = [];
             foreach ($failures as [$param, $message]) {
                 $lines[] = "[{$param}]: {$message}";
             }
 
-            throw new ContainerException(
-                implode("\n", $lines)
-            );
+            throw new ContainerException(implode("\n", $lines));
         }
 
         return $new;
     }
 
-    public function withEntry(mixed ...$entry): ContainerInterface
+    public function with(mixed ...$entry): ContainerInterface
     {
         $new = clone $this;
         foreach ($entry as $name => $value) {
-            $new->map = $new->map->withPut(
-                (string) $name,
-                $value
-            );
+            $new->map = $new->map->withPut((string) $name, $value);
         }
 
         return $new;

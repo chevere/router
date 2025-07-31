@@ -312,7 +312,7 @@ function routed(
     ContainerInterface $container = new Container(),
     ?Closure $callback = null
 ): RoutedInterface {
-    $container = $container->withEntry(responseFactory: $responseFactory);
+    $container = $container->with(responseFactory: $responseFactory);
     $routed = $router->dispatcher()->dispatch($serverRequest);
     $queue = [];
     $middlewares = $routed->bind()->middlewares();
@@ -359,7 +359,7 @@ function routed(
     foreach ($controllerRequestHeaders as $name => $value) {
         $request = $request->withHeader($name, $value);
     }
-    $container = $container->withEntry(request: $request);
+    $container = $container->with(request: $request);
     $controllerArguments = $router->dependencies()->extract($controllerNameString, $container);
     /** @var ControllerInterface $controller */
     $controller = new $controllerNameString(...$controllerArguments);

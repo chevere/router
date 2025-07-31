@@ -31,7 +31,7 @@ interface ContainerInterface extends Psr11ContainerInterface, StringMappedInterf
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified named entries.
      */
-    public function withEntry(mixed ...$entry): self;
+    public function with(mixed ...$entry): self;
 
     /**
      * Return an instance with auto injected dependencies.

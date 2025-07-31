@@ -43,11 +43,11 @@ final class ContainerTest extends TestCase
         $this->assertFalse($container->has('baz'));
     }
 
-    public function testWithEntry(): void
+    public function testWith(): void
     {
         $container = new Container(foo: 'bar');
         $path = new Path('/');
-        $newContainer = $container->withEntry(foo: $path);
+        $newContainer = $container->with(foo: $path);
         $this->assertNotSame($container, $newContainer);
         $this->assertTrue($newContainer->has('foo'));
         $this->assertSame($path, $newContainer->get('foo'));
