@@ -129,4 +129,12 @@ final class Container implements ContainerInterface
 
         return $new;
     }
+
+    public function without(string ...$entry): ContainerInterface
+    {
+        $new = clone $this;
+        $new->map = $new->map->without(...$entry);
+
+        return $new;
+    }
 }
