@@ -51,4 +51,11 @@ interface ContainerInterface extends Psr11ContainerInterface, StringMappedInterf
         ParametersInterface|ParametersAccessInterface $dependencies,
         string ...$ignore
     ): self;
+
+    /**
+     * Provides access to the container dependencies for a given class name.
+     *
+     * @return array<string, mixed> Constructor arguments found in the container
+     */
+    public function extract(string $className): array;
 }

@@ -137,4 +137,15 @@ final class Container implements ContainerInterface
 
         return $new;
     }
+
+    public function extract(string $className): array
+    {
+        $reflection = new ReflectionMethod($className, '__construct');
+        $dependencies = reflectionToParameters($reflection);
+        $extra = array_diff($this->keys(), $dependencies->keys());
+
+        return iterator_to_array(
+            $this->without(...$extra)
+        );
+    }
 }
