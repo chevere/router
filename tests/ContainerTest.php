@@ -19,9 +19,11 @@ use Chevere\Router\Exceptions\ContainerException;
 use Chevere\Router\Exceptions\ContainerNotFoundException;
 use Chevere\Router\Path;
 use Chevere\Tests\src\ControllerWithDependencies;
+use Chevere\Tests\src\Dependency;
 use Chevere\Tests\src\MiddlewareWithDependencies;
 use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use function Chevere\Router\headless;
 use function Chevere\Router\route;
 use function Chevere\Router\routes;
@@ -51,6 +53,15 @@ final class ContainerTest extends TestCase
         $this->assertNotSame($container, $newContainer);
         $this->assertTrue($newContainer->has('foo'));
         $this->assertSame($path, $newContainer->get('foo'));
+    }
+
+    public function testWithout(): void
+    {
+        $container = new Container(foo: 'bar');
+        $this->assertTrue($container->has('foo'));
+        $newContainer = $container->without('foo');
+        $this->assertNotSame($container, $newContainer);
+        $this->assertFalse($newContainer->has('foo'));
     }
 
     public function testWithAutoInject(): void
@@ -111,5 +122,14 @@ final class ContainerTest extends TestCase
             PLAIN
         );
         (new Container())->withAutoInject($dependencies);
+    }
+
+    public function testExtract(): void
+    {
+        $container = new Container();
+        $this->assertInstanceOf(
+            stdClass::class,
+            $container->extract(Dependency::class)['stdClass']
+        );
     }
 }

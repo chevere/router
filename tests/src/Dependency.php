@@ -13,12 +13,12 @@ declare(strict_types=1);
 
 namespace Chevere\Tests\src;
 
-use DateTime;
+use stdClass;
 
 final class Dependency
 {
     public function __construct(
-        private DateTime $dateTime,
+        private stdClass $stdClass,
     ) {
     }
 }
