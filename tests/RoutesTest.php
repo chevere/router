@@ -94,7 +94,8 @@ final class RoutesTest extends TestCase
         $route = $route->withEndpoint($endpoint);
         $routes = (new Routes())->withRoute($route);
         $routesWith = $routes->withAppendMiddleware(
-            middlewares(MiddlewareTwo::class, MiddlewareThree::class)
+            middlewares(MiddlewareTwo::class),
+            new MiddlewareName(MiddlewareThree::class)
         );
         $this->assertNotSame($routes, $routesWith);
         $middlewares = $routesWith->get('/some-path')->endpoints()->get('GET')->bind()->middlewares();
@@ -104,7 +105,8 @@ final class RoutesTest extends TestCase
             iterator_to_array($middlewares)
         );
         $routesWith = $routes->withPrependMiddleware(
-            middlewares(MiddlewareTwo::class, MiddlewareThree::class)
+            middlewares(MiddlewareTwo::class),
+            MiddlewareThree::class,
         );
         $this->assertNotSame($routes, $routesWith);
         $middlewares = $routesWith->get('/some-path')->endpoints()->get('GET')->bind()->middlewares();

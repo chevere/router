@@ -16,7 +16,9 @@ namespace Chevere\Router;
 use Chevere\DataStructure\Interfaces\MapInterface;
 use Chevere\DataStructure\Map;
 use Chevere\DataStructure\Traits\MapTrait;
+use Chevere\Http\Interfaces\MiddlewareNameInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
+use Chevere\Http\MiddlewareName;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use OutOfBoundsException;
@@ -66,18 +68,18 @@ final class Routes implements RoutesInterface
         return $new;
     }
 
-    public function withPrependMiddleware(MiddlewaresInterface $middleware): RoutesInterface
+    public function withPrependMiddleware(MiddlewaresInterface|MiddlewareNameInterface|string ...$middleware): RoutesInterface
     {
         $new = clone $this;
-        $new->addMiddleware('withPrepend', $middleware);
+        $new->addMiddleware('withPrepend', $new->getMiddlewares(...$middleware));
 
         return $new;
     }
 
-    public function withAppendMiddleware(MiddlewaresInterface $middleware): RoutesInterface
+    public function withAppendMiddleware(MiddlewaresInterface|MiddlewareNameInterface|string ...$middleware): RoutesInterface
     {
         $new = clone $this;
-        $new->addMiddleware('withAppend', $middleware);
+        $new->addMiddleware('withAppend', $new->getMiddlewares(...$middleware));
 
         return $new;
     }
@@ -94,6 +96,26 @@ final class Routes implements RoutesInterface
     {
         /** @return RouteInterface */
         return $this->map->get($path);
+    }
+
+    private function getMiddlewares(MiddlewaresInterface|MiddlewareNameInterface|string ...$middleware): MiddlewaresInterface
+    {
+        $middlewares = middlewares();
+        foreach ($middleware as $argument) {
+            if ($argument instanceof MiddlewareNameInterface) {
+                $middlewares = $middlewares->withAppend($argument);
+
+                continue;
+            }
+            if ($argument instanceof MiddlewaresInterface) {
+                $middlewares = $middlewares->withAppend(...$argument);
+
+                continue;
+            }
+            $middlewares = $middlewares->withAppend(new MiddlewareName($argument));
+        }
+
+        return $middlewares;
     }
 
     private function addMiddleware(string $method, MiddlewaresInterface $middlewares): void
