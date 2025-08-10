@@ -25,10 +25,12 @@ use Chevere\Parameter\Interfaces\ArrayStringParameterInterface;
 use Chevere\Parameter\Interfaces\CastInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 use function Chevere\Parameter\arguments;
 use function Chevere\Parameter\arrayp;
 use function Chevere\Parameter\arrayString;
 use function Chevere\Parameter\cast;
+use function Chevere\Writer\streamTemp;
 
 final class WrongController extends Action implements ControllerInterface
 {
@@ -66,6 +68,11 @@ final class WrongController extends Action implements ControllerInterface
             static::acceptBody()->parameters(),
             []
         );
+    }
+
+    public function bodyStream(): StreamInterface
+    {
+        return streamTemp();
     }
 
     public function body(): CastInterface
