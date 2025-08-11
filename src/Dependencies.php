@@ -105,7 +105,7 @@ final class Dependencies implements DependenciesInterface
     {
         $errors = [];
         foreach ($this->parameters as $name => $parameter) {
-            $name = (string) $name;
+            $name = strval($name);
             $hasArgument = $container->has($name);
             if (! $hasArgument
                 && $this->parameters->optionalKeys()->contains($name)
@@ -231,7 +231,7 @@ final class Dependencies implements DependenciesInterface
             } catch (Throwable $e) {
                 $requirer = $this->requirer($name);
                 $fileLine = $this->locate($requirer);
-                $errors[] = (string) message(
+                $errors[] = message(
                     <<<PLAIN
                     Variable `\${$name}` defined as `%provided%` is not compatible with `%expected%` as previously defined by `%requirer%` in %fileLine%
                     PLAIN,

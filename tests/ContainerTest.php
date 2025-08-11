@@ -82,6 +82,10 @@ final class ContainerTest extends TestCase
             dependency: $path,
         );
         $newContainer = $container->withAutoInject($dependencies, ...$ignore);
+        $this->assertNotSame(
+            spl_object_id($container),
+            spl_object_id($newContainer)
+        );
         $this->assertNotSame($container, $newContainer);
         $this->assertFalse($newContainer->has('int'));
         $this->assertTrue($newContainer->has('dependency'));
