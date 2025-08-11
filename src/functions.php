@@ -42,6 +42,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
+use ReflectionMethod;
 use Relay\Relay;
 use Throwable;
 use TypeError;
@@ -321,7 +322,16 @@ function routed(
         $middlewareDependencies = $router->dependencies()->extract($className, $container);
         $middleware = new $className(...$middlewareDependencies);
         if (method_exists($middleware, 'setUp')) {
-            $middleware->setUp(...$middlewareName->arguments());
+            $reflection = new ReflectionMethod($middleware, 'setUp');
+            $parameters = $reflection->getParameters();
+            $lastParameter = end($parameters);
+            if ($lastParameter && $lastParameter->isVariadic()) {
+                $arguments = $middlewareName->arguments();
+                $variadic = array_pop($arguments);
+                $middleware->setUp(...$arguments, ...$variadic);
+            } else {
+                $middleware->setUp(...$middlewareName->arguments());
+            }
         }
         $queue[$className] = $middleware;
     }
