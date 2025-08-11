@@ -325,9 +325,7 @@ function routed(
             $reflection = new ReflectionMethod($middleware, 'setUp');
             $parameters = $reflection->getParameters();
             $lastParameter = end($parameters);
-            if (count($parameters) > 1
-                && $lastParameter->isVariadic()
-            ) {
+            if ($lastParameter->isVariadic()) {
                 $arguments = $middlewareName->arguments();
                 $variadic = array_pop($arguments);
                 if (! is_iterable($variadic)) {
