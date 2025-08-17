@@ -62,7 +62,7 @@ final class IndexTest extends TestCase
         $routerIndex = new Index();
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid value provided for `$group` argument');
-        $routerIndex->withAddedRoute($route, ' ');
+        $routerIndex->withRoute($route, ' ');
     }
 
     public function testWithAddedRoute(): void
@@ -80,7 +80,7 @@ final class IndexTest extends TestCase
         $this->assertNotSame($route, $withEndpoint);
         $index = new Index();
         $indexWithAddedRoute = $index
-            ->withAddedRoute($withEndpoint, $groupName);
+            ->withRoute($withEndpoint, $groupName);
         $this->assertNotSame($index, $indexWithAddedRoute);
         $this->assertTrue($indexWithAddedRoute->hasRouteName($pathName));
         $this->assertInstanceOf(
@@ -111,7 +111,7 @@ final class IndexTest extends TestCase
                 headless(ControllerWithParameters::class)
             )
         );
-        $withAnotherAddedRoute = $indexWithAddedRoute->withAddedRoute($route2, $groupName);
+        $withAnotherAddedRoute = $indexWithAddedRoute->withRoute($route2, $groupName);
         $this->assertSame(
             [$pathName, $path2Name],
             $withAnotherAddedRoute->getGroupRouteNames($groupName)
@@ -129,8 +129,8 @@ final class IndexTest extends TestCase
                     headless(ControllerWithParameters::class)
                 )
             );
-        $routerIndex = (new Index())->withAddedRoute($route, $repo);
+        $routerIndex = (new Index())->withRoute($route, $repo);
         $this->expectException(OverflowException::class);
-        $routerIndex->withAddedRoute($route, 'other-group');
+        $routerIndex->withRoute($route, 'other-group');
     }
 }

@@ -24,12 +24,12 @@ use Iterator;
 interface EndpointsInterface extends StringMappedInterface
 {
     /**
-     * Return an instance with the specified `$endpoint` defined.
+     * Return an instance with the specified `$endpoint`.
      *
      * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified `$endpoint` defined.
+     * an instance that contains the specified `$endpoint`.
      */
-    public function withPut(EndpointInterface ...$endpoint): self;
+    public function with(EndpointInterface ...$endpoint): self;
 
     /**
      * Return an instance with the specified `$key` removed.

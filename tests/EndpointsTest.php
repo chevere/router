@@ -39,7 +39,7 @@ final class EndpointsTest extends TestCase
         $endpoint = new Endpoint($method, headless(ArticleGetController::class));
         $endpoints = new Endpoints();
         $endpointsWithPut = $endpoints
-            ->withPut($endpoint);
+            ->with($endpoint);
         $this->assertNotSame($endpoints, $endpointsWithPut);
         $this->assertTrue($endpointsWithPut->has($method->name()));
         $this->assertSame($endpointsWithPut->get($method->name()), $endpoint);

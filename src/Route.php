@@ -116,7 +116,7 @@ final class Route implements RouteInterface
                 );
             }
         }
-        $new->endpoints = $new->endpoints->withPut($endpoint);
+        $new->endpoints = $new->endpoints->with($endpoint);
 
         return $new;
     }

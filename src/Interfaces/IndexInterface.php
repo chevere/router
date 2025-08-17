@@ -24,7 +24,7 @@ interface IndexInterface
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified `$route` added.
      */
-    public function withAddedRoute(RouteInterface $route, string $group): self;
+    public function withRoute(RouteInterface $route, string $group): self;
 
     /**
      * Indicates whether the instance has a route identified by its `$name`.

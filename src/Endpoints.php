@@ -24,7 +24,7 @@ final class Endpoints implements EndpointsInterface
      */
     use MapTrait;
 
-    public function withPut(EndpointInterface ...$endpoint): EndpointsInterface
+    public function with(EndpointInterface ...$endpoint): EndpointsInterface
     {
         $new = clone $this;
         foreach ($endpoint as $item) {

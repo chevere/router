@@ -15,7 +15,6 @@ namespace Chevere\Router;
 
 use Chevere\Http\ControllerName;
 use Chevere\Http\Controllers\NullController;
-use Chevere\Http\Exceptions\ControllerException;
 use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Http\Interfaces\ControllerInterface;
 use Chevere\Http\Interfaces\ControllerNameInterface;
@@ -24,32 +23,21 @@ use Chevere\Http\Interfaces\MiddlewareNameInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\Http\MiddlewareName;
 use Chevere\Http\Middlewares;
-use Chevere\Router\Exceptions\NotFoundException;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\BindInterface;
-use Chevere\Router\Interfaces\ContainerInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
-use Chevere\Router\Interfaces\RoutedInterface;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
-use Closure;
 use InvalidArgumentException;
-use Nyholm\Psr7\Factory\Psr17Factory;
 use OutOfBoundsException;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
-use ReflectionMethod;
-use Relay\Relay;
 use Throwable;
 use TypeError;
 use function Chevere\Action\getParameters;
 use function Chevere\Http\middlewares;
-use function Chevere\Http\requestAttribute;
-use function Chevere\Http\responseAttribute;
 use function Chevere\Message\message;
 use function Chevere\Parameter\string;
 
@@ -221,7 +209,7 @@ function router(RoutesInterface ...$routes): RouterInterface
             default => strval($group)
         };
         foreach ($items as $route) {
-            $router = $router->withAddedRoute($route, $group);
+            $router = $router->withRoute($route, $group);
         }
     }
 
@@ -299,119 +287,6 @@ function controllerName(BindInterface|string $item): ControllerNameInterface
     }
 
     return $item->controllerName();
-}
-
-/**
- * Executes the request on router.
- *
- * @throws NotFoundException|MethodNotAllowedException
- */
-function routed(
-    ServerRequestInterface $serverRequest,
-    RouterInterface $router,
-    ResponseFactoryInterface $responseFactory = new Psr17Factory(),
-    ContainerInterface $container = new Container(),
-    ?Closure $callback = null
-): RoutedInterface {
-    $container = $container->with(responseFactory: $responseFactory);
-    $routed = $router->dispatcher()->dispatch($serverRequest);
-    $queue = [];
-    $middlewares = $routed->bind()->middlewares();
-    foreach ($middlewares as $middlewareName) {
-        $className = (string) $middlewareName;
-        $middlewareDependencies = $router->dependencies()->extract($className, $container);
-        $middleware = new $className(...$middlewareDependencies);
-        if (method_exists($middleware, 'setUp')) {
-            $reflection = new ReflectionMethod($middleware, 'setUp');
-            $parameters = $reflection->getParameters();
-            $lastParameter = end($parameters);
-            if ($lastParameter->isVariadic()) {
-                $arguments = $middlewareName->arguments();
-                $variadic = array_pop($arguments);
-                if (! is_iterable($variadic)) {
-                    $variadic = [$variadic];
-                }
-                $middleware->setUp(...$arguments, ...$variadic);
-            } else {
-                $middleware->setUp(...$middlewareName->arguments());
-            }
-        }
-        $queue[$className] = $middleware;
-    }
-    $handle = new RelayHandle($responseFactory, $serverRequest);
-    $queue[] = $handle;
-    $relay = new Relay($queue);
-    $response = $relay->handle($serverRequest);
-    if ($response->getStatusCode() !== 0) {
-        return new Routed($response, $routed->bind());
-    }
-    $responseHeaders = [];
-    foreach ($response->getHeaders() as $name => $values) {
-        $responseHeaders[$name] = implode(', ', $values);
-    }
-    if ($callback) {
-        $container = $callback($container);
-    }
-    $controllerName = $routed->bind()->controllerName();
-    $controllerNameString = $controllerName->__toString();
-    $requestAttribute = requestAttribute($controllerNameString);
-    $responseAttribute = responseAttribute($controllerNameString);
-    $controllerStatus = $responseAttribute?->status->success
-        ?? 200;
-    $controllerRequestHeaders = $requestAttribute?->headers->toArray()
-        ?? [];
-    $controllerResponseHeaders = $responseAttribute?->headers->toArray()
-        ?? [];
-    foreach ($controllerResponseHeaders as $name => $value) {
-        $response = $response->withHeader($name, $value);
-    }
-    if ($response->hasHeader('Location')) {
-        return new Routed($response, $routed->bind());
-    }
-    $request = $handle->request();
-    foreach ($controllerRequestHeaders as $name => $value) {
-        $request = $request->withHeader($name, $value);
-    }
-    $container = $container->with(request: $request);
-    $controllerArguments = $router->dependencies()->extract($controllerNameString, $container);
-    /** @var ControllerInterface $controller */
-    $controller = new $controllerNameString(...$controllerArguments);
-
-    try {
-        $controller = $controller->withServerRequest($request);
-        if (method_exists($controller, 'setUp')) {
-            $controller->setUp(
-                ...$controllerName->arguments()
-            );
-        }
-    } catch (Throwable $e) {
-        return (new Routed(
-            $responseFactory->createResponse(400),
-            $routed->bind(),
-        ))->withThrowable($e);
-    }
-
-    try {
-        $controllerReturn = $controller->__invoke(...$routed->arguments());
-    } catch (Throwable $e) {
-        $code = $e instanceof ControllerException
-            ? (int) $e->getCode()
-            : 500;
-        $response = $responseFactory->createResponse($code);
-        mergeResponseHeaders($response, $controllerResponseHeaders, $responseHeaders);
-
-        return (new Routed($response, $routed->bind()))
-            ->withThrowable($e);
-    }
-
-    $response = $responseFactory->createResponse($controllerStatus);
-    mergeResponseHeaders($response, $controllerResponseHeaders, $responseHeaders);
-
-    return new Routed(
-        $controller->terminate($response),
-        $routed->bind(),
-        $controllerReturn
-    );
 }
 
 /**

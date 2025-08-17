@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\Http\Exceptions\MethodNotAllowedException;
-use Chevere\Router\Exceptions\NotFoundException;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\EndpointInterface;
@@ -24,14 +23,12 @@ use Chevere\Tests\src\ControllerWithParameters;
 use Chevere\Tests\src\MiddlewareOne;
 use Chevere\Tests\src\WrongController;
 use InvalidArgumentException;
-use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use function Chevere\Action\getParameters;
 use function Chevere\Router\bind;
 use function Chevere\Router\headless;
 use function Chevere\Router\route;
-use function Chevere\Router\routed;
 use function Chevere\Router\router;
 use function Chevere\Router\routes;
 
@@ -200,59 +197,5 @@ final class FunctionsTest extends TestCase
         foreach (array_keys($routes) as $key) {
             $this->assertTrue($router->index()->hasGroup($key));
         }
-    }
-
-    public function testRoutedFound(): void
-    {
-        $request = new ServerRequest('GET', '/test');
-        $bind = bind(ControllerNoParameters::class, 'web/test.twig');
-        $router = router(
-            routes(
-                route(
-                    path: '/test',
-                    GET: $bind
-                )
-            )
-        );
-        $routed = routed($request, $router);
-        $this->assertSame([], $routed->return());
-        $this->assertEquals($bind, $routed->bind());
-    }
-
-    public static function provideRoutedNull(): array
-    {
-        return [
-            [
-                'GET',
-                '/test',
-                404,
-                'No route found for `/test`',
-                NotFoundException::class,
-            ],
-            [
-                'POST',
-                '/foo',
-                405,
-                'Method `POST` is not in the list of allowed methods: `PATCH`',
-                MethodNotAllowedException::class,
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider provideRoutedNull
-     */
-    public function testRoutedNull(string $method, string $path, int $code, string $reason, string $exception): void
-    {
-        $request = new ServerRequest($method, $path);
-        $router = router(
-            routes(
-                route('/foo', PATCH: ControllerNoParameters::class)
-            )
-        );
-        $this->expectException($exception);
-        $this->expectExceptionMessage($reason);
-        $this->expectExceptionCode($code);
-        routed($request, $router);
     }
 }

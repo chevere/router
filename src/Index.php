@@ -48,7 +48,7 @@ final class Index implements IndexInterface
         $this->groupsMap = new Map();
     }
 
-    public function withAddedRoute(RouteInterface $route, string $group = ''): IndexInterface
+    public function withRoute(RouteInterface $route, string $group = ''): IndexInterface
     {
         $new = clone $this;
         $id = $route->path()->regex()->noDelimiters();

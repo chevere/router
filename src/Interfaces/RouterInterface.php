@@ -13,7 +13,12 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
+use Chevere\Router\Container;
+use Closure;
 use FastRoute\RouteCollector;
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Describes the component in charge of handling router.
@@ -26,7 +31,7 @@ interface RouterInterface
      * This method MUST retain the state of the current instance, and return
      * an instance that contains the specified added `$route`.
      */
-    public function withAddedRoute(RouteInterface $route, string $group): self;
+    public function withRoute(RouteInterface $route, string $group): self;
 
     public function index(): IndexInterface;
 
@@ -39,4 +44,11 @@ interface RouterInterface
     public function dependencies(): DependenciesInterface;
 
     public function views(): ViewsInterface;
+
+    public function routed(
+        ServerRequestInterface $serverRequest,
+        ResponseFactoryInterface $responseFactory = new Psr17Factory(),
+        ContainerInterface $container = new Container(),
+        ?Closure $callback = null
+    ): RoutedInterface;
 }
