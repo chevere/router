@@ -97,11 +97,6 @@ final class Router implements RouterInterface
         return $this->collector;
     }
 
-    public function dispatcher(): DispatcherInterface
-    {
-        return $this->dispatcher;
-    }
-
     public function dependencies(): DependenciesInterface
     {
         return $this->dependencies;

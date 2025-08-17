@@ -153,13 +153,13 @@ function route(
                 if ($view === '') {
                     $item = headless($item);
                 } else {
-                    $item = bind($item, $view);
+                    $item = bind($view, $item);
                 }
             } catch (Throwable) {
                 if ($item === '') {
                     $item = headless(NullController::class);
                 } else {
-                    $item = bind(NullController::class, $item);
+                    $item = bind($item, NullController::class);
                 }
                 $controllerName = $item->controllerName();
             }
@@ -217,17 +217,25 @@ function router(RoutesInterface ...$routes): RouterInterface
 }
 
 /**
- * Binds a Controller to a view and middleware.
+ * Binds a view to a controller and middleware.
  *
- * @param string $controller HTTP controller name
  * @param string $view View name
+ * @param string $controller HTTP controller name
  * @param string ...$middleware HTTP middleware name(s)
  */
 function bind(
+    string $view,
     string $controller = NullController::class,
-    string $view = '',
     string|MiddlewareNameInterface ...$middleware
 ): BindInterface {
+    if ($view === '') {
+        throw new InvalidArgumentException(
+            (string) message(
+                'Argument `view` provided is empty for controller `%controller%`',
+                controller: $controller
+            )
+        );
+    }
     $middlewares = [];
     foreach ($middleware as $name) {
         if ($name instanceof MiddlewareNameInterface) {
@@ -236,14 +244,6 @@ function bind(
             continue;
         }
         $middlewares[] = new MiddlewareName($name);
-    }
-    if ($view === '') {
-        throw new InvalidArgumentException(
-            (string) message(
-                'Argument `view` provided is empty for controller `%controller%`',
-                controller: $controller
-            )
-        );
     }
 
     return new Bind(

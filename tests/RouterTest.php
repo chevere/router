@@ -86,7 +86,7 @@ final class RouterTest extends TestCase
     public function testRoutedFound(): void
     {
         $request = new ServerRequest('GET', '/test');
-        $bind = bind(ControllerNoParameters::class, 'web/test.twig');
+        $bind = bind('web/test.twig', ControllerNoParameters::class);
         $router = (new Router())->withRoute(
             route(
                 path: '/test',

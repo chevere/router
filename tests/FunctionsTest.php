@@ -95,7 +95,7 @@ final class FunctionsTest extends TestCase
             ],
             [
                 [
-                    'GET' => bind($controller, 'test.twig'),
+                    'GET' => bind('test.twig', $controller),
                 ],
                 'test.twig',
             ],
@@ -197,5 +197,11 @@ final class FunctionsTest extends TestCase
         foreach (array_keys($routes) as $key) {
             $this->assertTrue($router->index()->hasGroup($key));
         }
+    }
+
+    public function testBindEmptyString(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        bind('');
     }
 }

@@ -72,9 +72,9 @@ final class ViewsTest extends TestCase
         );
         $routeC = route(
             '/c',
-            GET: bind(ControllerNoParameters::class, view: 'missing'),
+            GET: bind('missing', ControllerNoParameters::class),
             PUT: ControllerNoParameters::class,
-            POST: bind(ControllerNoParameters::class, view: 'not-there')
+            POST: bind('not-there', ControllerNoParameters::class)
         );
         $routes = routes(
             a: route(

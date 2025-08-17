@@ -26,7 +26,7 @@ final class RoutedTest extends TestCase
     public function testConstruct(): void
     {
         $response = new Response();
-        $bind = bind(ControllerNoParameters::class, 'test');
+        $bind = bind('test', ControllerNoParameters::class);
         $routed = (new Routed($response, $bind));
         $this->assertSame($routed->bind(), $bind);
         $this->assertSame($routed->response(), $response);
@@ -38,7 +38,7 @@ final class RoutedTest extends TestCase
     {
         $raw = [];
         $response = new Response();
-        $bind = bind(ControllerNoParameters::class, 'test');
+        $bind = bind('test', ControllerNoParameters::class);
         $routed = (new Routed($response, $bind, [], $raw));
         $this->assertSame($raw, $routed->return());
     }
@@ -47,7 +47,7 @@ final class RoutedTest extends TestCase
     {
         $throwable = new Exception('test');
         $response = new Response();
-        $bind = bind(ControllerNoParameters::class, 'test');
+        $bind = bind('test', ControllerNoParameters::class);
         $routed = (new Routed($response, $bind));
         $with = $routed->withThrowable($throwable);
         $this->assertNotSame($routed, $with);
@@ -58,7 +58,7 @@ final class RoutedTest extends TestCase
     public function testWithNoThrowable(): void
     {
         $response = new Response();
-        $bind = bind(ControllerNoParameters::class, 'test');
+        $bind = bind('test', ControllerNoParameters::class);
         $routed = (new Routed($response, $bind));
         $this->expectException(Error::class);
         $this->expectExceptionMessage(
