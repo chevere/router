@@ -161,4 +161,20 @@ final class DependenciesTest extends TestCase
         );
         new Dependencies($routes);
     }
+
+    public function testExtract(): void
+    {
+        $dependencies = new Dependencies(
+            routes(
+                route('/test/{id}', GET: headless(ControllerWithDependencies::class))
+            )
+        );
+        $container = new Container();
+        $this->expectException(OutOfBoundsException::class);
+        $this->expectExceptionMessage('Dependency `int` not defined in container');
+        $dependencies->extract(
+            ControllerWithDependencies::class,
+            $container
+        );
+    }
 }

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\Http\Exceptions\MethodNotAllowedException;
+use Chevere\Http\MiddlewareName;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\EndpointInterface;
@@ -21,6 +22,7 @@ use Chevere\Router\Routes;
 use Chevere\Tests\src\ControllerNoParameters;
 use Chevere\Tests\src\ControllerWithParameters;
 use Chevere\Tests\src\MiddlewareOne;
+use Chevere\Tests\src\MiddlewareTwo;
 use Chevere\Tests\src\WrongController;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -203,5 +205,48 @@ final class FunctionsTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         bind('');
+    }
+
+    public function testBind(): void
+    {
+        $bind = bind(
+            'view',
+            ControllerNoParameters::class,
+            MiddlewareOne::class,
+            new MiddlewareName(MiddlewareTwo::class)
+        );
+        $this->assertSame(
+            ControllerNoParameters::class,
+            $bind->controllerName()->__toString(),
+        );
+        $this->assertSame('view', $bind->view());
+        $this->assertCount(
+            2,
+            $bind->middlewares()
+        );
+        $this->assertTrue(
+            $bind->middlewares()->has(MiddlewareOne::class, MiddlewareTwo::class)
+        );
+    }
+
+    public function testHeadless(): void
+    {
+        $bind = headless(
+            ControllerNoParameters::class,
+            MiddlewareOne::class,
+            new MiddlewareName(MiddlewareTwo::class)
+        );
+        $this->assertSame(
+            ControllerNoParameters::class,
+            $bind->controllerName()->__toString(),
+        );
+        $this->assertSame('', $bind->view());
+        $this->assertCount(
+            2,
+            $bind->middlewares()
+        );
+        $this->assertTrue(
+            $bind->middlewares()->has(MiddlewareOne::class, MiddlewareTwo::class)
+        );
     }
 }

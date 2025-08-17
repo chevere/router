@@ -257,20 +257,20 @@ function bind(
  * Headless binds a Controller to middleware.
  *
  * @param string $controller HTTP controller name
- * @param string ...$middleware HTTP middleware name(s)
+ * @param string|MiddlewareNameInterface ...$middleware HTTP middleware name(s)
  */
 function headless(
     string $controller = NullController::class,
     string|MiddlewareNameInterface ...$middleware
 ): BindInterface {
     $middlewares = [];
-    foreach ($middleware as $name) {
-        if ($name instanceof MiddlewareNameInterface) {
-            $middlewares[] = $name;
+    foreach ($middleware as $value) {
+        if (is_object($value)) {
+            $middlewares[] = $value;
 
             continue;
         }
-        $middlewares[] = new MiddlewareName($name);
+        $middlewares[] = new MiddlewareName($value);
     }
 
     return new Bind(
