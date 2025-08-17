@@ -52,7 +52,7 @@ $routes = routes(
 // Create router
 $router = router($routes);
 // Handle request
-$routed = routed($serverRequest, $router, $responseFactory, $container);
+$routed = $router->routed($serverRequest, $responseFactory, $container);
 $response = $routed->response();
 $return = $routed->return(); // Controller return value
 ```
@@ -377,12 +377,11 @@ This is an additional guard that can be used to static detect missing dependenci
 
 ## Routed
 
-The Routed API enables to interact with the outcome result of the routing process. Use helper function `routed(...)` to resolve routing.
+The Routed API enables to interact with the outcome result of the routing process. Use method `routed(...)` to resolve routing.
 
 ```php
-$routed = routed(
+$routed = $router->routed(
     $serverRequest,   // PSR-7
-    $router,
     $responseFactory, // PSR-17
     $container,       // PSR-11
     $callback
