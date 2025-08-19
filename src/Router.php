@@ -107,7 +107,7 @@ final class Router implements RouterInterface
         return $this->views;
     }
 
-    public function routed(
+    public function getRouted(
         ServerRequestInterface $serverRequest,
         ResponseFactoryInterface $responseFactory = new Psr17Factory(),
         ContainerInterface $container = new Container(),

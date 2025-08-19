@@ -46,7 +46,7 @@ final class Dispatcher implements DispatcherInterface
             GroupCountBased::FOUND => new Dispatch($format[1], $format[2]),
             GroupCountBased::NOT_FOUND => throw new NotFoundException(
                 (string) message(
-                    'No routing found for %method% `%uri%`',
+                    'No route found for %method% `%uri%`',
                     method: $method,
                     uri: $uri,
                 ),

@@ -43,7 +43,10 @@ interface RouterInterface
 
     public function views(): ViewsInterface;
 
-    public function routed(
+    /**
+     * Gets a new RoutedInterface instance for the given server request.
+     */
+    public function getRouted(
         ServerRequestInterface $serverRequest,
         ResponseFactoryInterface $responseFactory = new Psr17Factory(),
         ContainerInterface $container = new Container(),

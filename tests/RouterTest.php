@@ -94,7 +94,7 @@ final class RouterTest extends TestCase
             ),
             ''
         );
-        $routed = $router->routed($request);
+        $routed = $router->getRouted($request);
         $this->assertSame([], $routed->return());
         $this->assertEquals($bind, $routed->bind());
     }
@@ -106,7 +106,7 @@ final class RouterTest extends TestCase
                 'GET',
                 '/test',
                 404,
-                'No route found for `/test`',
+                'No route found for GET `/test`',
                 NotFoundException::class,
             ],
             [
@@ -133,6 +133,6 @@ final class RouterTest extends TestCase
         $this->expectException($exception);
         $this->expectExceptionMessage($reason);
         $this->expectExceptionCode($code);
-        $router->routed($request);
+        $router->getRouted($request);
     }
 }
