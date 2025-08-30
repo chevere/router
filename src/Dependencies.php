@@ -98,6 +98,7 @@ final class Dependencies implements DependenciesInterface
             $extracted[$name] = $container->get($name);
         }
 
+        /** @var array<string, mixed> */
         return (new Arguments($parameters, $extracted))->toArray();
     }
 

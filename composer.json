@@ -18,7 +18,7 @@
         "chevere/data-structure": "^1.1.0",
         "chevere/http": "^0.6.x-dev",
         "chevere/message": "^1.0.0",
-        "chevere/parameter": "^1.0.7",
+        "chevere/parameter": "^1.1.x-dev",
         "chevere/regex": "^1.0.2",
         "nikic/fast-route": "^1.3",
         "psr/container": "^2.0",

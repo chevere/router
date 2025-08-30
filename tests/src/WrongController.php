@@ -19,7 +19,9 @@ use Chevere\DataStructure\Map;
 use Chevere\Http\Interfaces\ControllerInterface;
 use Chevere\Http\Interfaces\StatusInterface;
 use Chevere\Http\Status;
+use Chevere\Parameter\ArgumentsString;
 use Chevere\Parameter\Interfaces\ArgumentsInterface;
+use Chevere\Parameter\Interfaces\ArgumentsStringInterface;
 use Chevere\Parameter\Interfaces\ArrayParameterInterface;
 use Chevere\Parameter\Interfaces\ArrayStringParameterInterface;
 use Chevere\Parameter\Interfaces\CastInterface;
@@ -34,6 +36,11 @@ use function Chevere\Writer\streamTemp;
 
 final class WrongController extends Action implements ControllerInterface
 {
+    public static function acceptHeaders(): ArrayStringParameterInterface
+    {
+        return arrayString();
+    }
+
     public static function acceptQuery(): ArrayStringParameterInterface
     {
         return arrayString();
@@ -54,9 +61,9 @@ final class WrongController extends Action implements ControllerInterface
         return $this;
     }
 
-    public function query(): ArgumentsInterface
+    public function query(): ArgumentsStringInterface
     {
-        return arguments(
+        return new ArgumentsString(
             static::acceptQuery()->parameters(),
             []
         );
@@ -98,9 +105,12 @@ final class WrongController extends Action implements ControllerInterface
         return new Map();
     }
 
-    public function headers(): MapInterface
+    public function headers(): ArgumentsStringInterface
     {
-        return new Map();
+        return new ArgumentsString(
+            static::acceptHeaders()->parameters(),
+            []
+        );
     }
 
     public function cookieParams(): MapInterface
