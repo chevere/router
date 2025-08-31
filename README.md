@@ -44,7 +44,7 @@ $routes = routes(
         POST: headless(UserCreateController::class, CsrfMiddleware::class)
     ),
     route('/products/{id}',
-        GET: bind(ProductGetController::class, 'product.twig'),
+        GET: bind('product.twig', ProductGetController::class),
         PUT: ProductUpdateController::class,
         DELETE: ProductDeleteController::class
     )
@@ -77,7 +77,7 @@ You need to write the following route code:
 ```php
 $route = route(
     '/product/{id}',
-    GET: bind(ProductGet::class, 'product.twig'),
+    GET: bind('product.twig', ProductGet::class),
     DELETE: ProductDelete::class,
 );
 ```
@@ -105,12 +105,12 @@ class ProductDelete extends Controller
 
 ## Bind
 
-A Bind is the conjunction of a controller, its middleware pipeline and a view. Use helper function `bind($controller, $view, ...$middleware)` to explicitly create a binding.
+A Bind is the conjunction of a controller, its middleware pipeline and a view. Use helper function `bind($view, $controller, ...$middleware)` to explicitly create a binding.
 
 ```php
 $bind = bind(
-    controller: ProductGet::class,
     view: 'product.twig',
+    controller: ProductGet::class,
     ...$middleware // PSR-15
 )
 ```
