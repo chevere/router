@@ -1,6 +1,6 @@
 {
     "name": "chevere/router",
-    "description": "Chevere router package",
+    "description": "PSR-7/11/15/17 compatible PHP library for creating HTTP routing systems",
     "homepage": "https://chevere.org",
     "type": "library",
     "license": "Apache-2.0",
