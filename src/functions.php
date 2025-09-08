@@ -69,7 +69,7 @@ function getPath(string $path, string|BindInterface ...$bind): string
         } catch (Throwable) {
             continue;
         }
-        $controllerName::newReflection();
+        $controllerName::reflection();
         foreach ($routePath->variables()->keys() as $variable) {
             $variableBracket = <<<STRING
             {{$variable}}
