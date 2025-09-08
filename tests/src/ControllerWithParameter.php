@@ -18,7 +18,7 @@ use Chevere\Parameter\Attributes\StringAttr;
 
 final class ControllerWithParameter extends Controller
 {
-    protected function main(
+    public function __invoke(
         #[StringAttr('/[0-9]+/')]
         string $id
     ): array {

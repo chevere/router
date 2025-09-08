@@ -36,6 +36,11 @@ use function Chevere\Writer\streamTemp;
 
 final class WrongController extends Action implements ControllerInterface
 {
+    public function __invoke(int $id): array
+    {
+        return [];
+    }
+
     public static function acceptHeaders(): ArrayStringParameterInterface
     {
         return arrayString();
@@ -126,10 +131,5 @@ final class WrongController extends Action implements ControllerInterface
     public function status(): StatusInterface
     {
         return new Status();
-    }
-
-    protected function main(int $id): array
-    {
-        return [];
     }
 }

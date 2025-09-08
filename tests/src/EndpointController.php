@@ -18,7 +18,7 @@ use Chevere\Parameter\Attributes\StringAttr;
 
 final class EndpointController extends Controller
 {
-    protected function main(
+    public function __invoke(
         #[StringAttr('/[\w]+/')]
         string $name,
         #[StringAttr('/[0-9]+/')]

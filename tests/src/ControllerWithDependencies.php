@@ -25,7 +25,7 @@ final class ControllerWithDependencies extends Controller
     ) {
     }
 
-    protected function main(
+    public function __invoke(
         #[StringAttr('/[0-9]+/')]
         string $id
     ): array {

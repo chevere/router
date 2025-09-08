@@ -24,7 +24,7 @@ use Chevere\Http\Status;
 )]
 final class ControllerNoParameters extends Controller
 {
-    protected function main(): array
+    public function __invoke(): array
     {
         return [];
     }
