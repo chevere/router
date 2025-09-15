@@ -65,11 +65,11 @@ For example, to resolve this:
 
 ```plain
 GET /product/123
-    -> ProductGet::main(123):context
+    -> ProductGet->__invoke(123):context
     -> product.twig
 
 DELETE /product/123
-    -> ProductDelete::main(123)
+    -> ProductDelete->__invoke(123)
 ```
 
 You need to write the following route code:
@@ -176,7 +176,7 @@ Dynamic routes use variable wildcards (`{variable}` syntax) to denote variable p
 route('/products/{id}', GET: MyController::class);
 ```
 
-Where `MyController::main` method parameters must match the defined wildcards:
+Where `MyController` class method `__invoke()` parameters must match the defined wildcards:
 
 ```php
 public function __invoke(string $id) {...}
