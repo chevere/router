@@ -36,7 +36,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Throwable;
 use TypeError;
-use function Chevere\Action\getParameters;
 use function Chevere\Http\middlewares;
 use function Chevere\Message\message;
 use function Chevere\Parameter\string;
@@ -76,7 +75,7 @@ function getPath(string $path, string|BindInterface ...$bind): string
             STRING;
 
             try {
-                $parameters = getParameters($controllerName);
+                $parameters = $controllerName::reflection()->parameters();
                 $stringParameter = $parameters->required($variable)->string();
             } catch (OutOfBoundsException) {
                 throw new VariableNotFoundException(

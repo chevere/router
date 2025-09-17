@@ -28,7 +28,6 @@ use Chevere\Router\Interfaces\RouteInterface;
 use InvalidArgumentException;
 use OutOfBoundsException;
 use OverflowException;
-use function Chevere\Action\getParameters;
 use function Chevere\Message\message;
 use function Chevere\Parameter\string;
 
@@ -84,7 +83,7 @@ final class Route implements RouteInterface
         $new->assertUnique($endpoint);
         $new->assertNoConflict($endpoint);
         $controllerFqn = $endpoint->bind()->controllerName()->__toString();
-        $parameters = getParameters($controllerFqn);
+        $parameters = $controllerFqn::reflection()->parameters();
         $new->assertVariableBounds($parameters, $controllerFqn);
         $defaultStringRegex = string()->regex()->noDelimitersNoAnchors();
         foreach ($new->path->variables() as $variable) {
@@ -176,14 +175,14 @@ final class Route implements RouteInterface
             return;
         }
         $firstControllerName = $this->firstEndpoint->bind()->controllerName()->__toString();
-        $parameters = getParameters($firstControllerName);
+        $parameters = $firstControllerName::reflection()->parameters();
         /** @var StringParameterInterface $parameter */
         foreach ($parameters as $name => $parameter) {
             $match = $parameter->regex()->__toString();
             $controllerName = $endpoint->bind()->controllerName()->__toString();
 
             try {
-                $string = getParameters($controllerName)->required($name)->string();
+                $string = $controllerName::reflection()->parameters()->required($name)->string();
                 $controllerRegex = $string->regex()->__toString();
             } catch (OutOfBoundsException) {
                 $controllerRegex = '<none>';
@@ -207,7 +206,7 @@ final class Route implements RouteInterface
 
     private function assertEndpoint(EndpointInterface $endpoint): void
     {
-        $parameters = getParameters($endpoint->bind()->controllerName()->__toString());
+        $parameters = $endpoint->bind()->controllerName()->__toString()::reflection()->parameters();
         if (count($parameters) === 0) {
             throw new InvalidArgumentException(
                 (string) message(
