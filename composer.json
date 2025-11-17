@@ -16,7 +16,7 @@
         "chevere/action": "^2.0.0",
         "chevere/caller": "1.0.0",
         "chevere/data-structure": "^1.1.0",
-        "chevere/http": "^0.7.x-dev",
+        "chevere/http": "^0.7.0",
         "chevere/message": "^1.0.0",
         "chevere/parameter": "^1.2.0",
         "chevere/regex": "^1.0.2",
