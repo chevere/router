@@ -154,11 +154,11 @@ function route(
                 } else {
                     $item = bind($view, $item);
                 }
-            } catch (Throwable) {
+            } catch (Throwable $e) {
                 if ($item === '') {
                     $item = headless(NullController::class);
                 } else {
-                    $item = bind($item, NullController::class);
+                    throw $e;
                 }
                 $controllerName = $item->controllerName();
             }
