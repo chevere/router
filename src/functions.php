@@ -23,6 +23,8 @@ use Chevere\Http\Interfaces\MiddlewareNameInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\Http\MiddlewareName;
 use Chevere\Http\Middlewares;
+use Chevere\Router\Exceptions\ControllerNotFoundException;
+use Chevere\Router\Exceptions\MiddlewareNotFoundException;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\BindInterface;
@@ -147,19 +149,25 @@ function route(
         if ($item instanceof BindInterface) {
             $controllerName = $item->controllerName();
         } else {
+            if ($item === '') {
+                throw new InvalidArgumentException(
+                    (string) message(
+                        'Binding for `%method%` HTTP method cannot be an empty string for route `%route%`',
+                        method: strval($method),
+                        route: $name,
+                    )
+                );
+            }
+
             try {
                 $controllerName = controllerName($item);
-                if ($view === '') {
-                    $item = headless($item);
-                } else {
-                    $item = bind($view, $item);
-                }
-            } catch (Throwable $e) {
-                if ($item === '') {
-                    $item = headless(NullController::class);
-                } else {
-                    throw $e;
-                }
+                $item = match ($view) {
+                    '' => headless($item),
+                    default => bind($view, $item),
+                };
+            } catch (ControllerNotFoundException $e) {
+                $item = bind($item, NullController::class);
+
                 $controllerName = $item->controllerName();
             }
         }
@@ -221,6 +229,9 @@ function router(RoutesInterface ...$routes): RouterInterface
  * @param string $view View name
  * @param string $controller HTTP controller name
  * @param string ...$middleware HTTP middleware name(s)
+ *
+ * @throws ControllerNotFoundException
+ * @throws MiddlewareNotFoundException
  */
 function bind(
     string $view,
@@ -242,11 +253,33 @@ function bind(
 
             continue;
         }
-        $middlewares[] = new MiddlewareName($name);
+
+        try {
+            $middlewares[] = new MiddlewareName($name);
+        } catch (Throwable) {
+            throw new MiddlewareNotFoundException(
+                (string) message(
+                    'Middleware `%middleware%` not found for controller `%controller%`',
+                    middleware: $name,
+                    controller: $controller
+                )
+            );
+        }
+    }
+
+    try {
+        $controllerName = new ControllerName($controller);
+    } catch (Throwable) {
+        throw new ControllerNotFoundException(
+            (string) message(
+                'Controller `%controller%` not found',
+                controller: $controller
+            )
+        );
     }
 
     return new Bind(
-        new ControllerName($controller),
+        $controllerName,
         new Middlewares(...$middlewares),
         view: $view
     );
@@ -257,6 +290,8 @@ function bind(
  *
  * @param string $controller HTTP controller name
  * @param string|MiddlewareNameInterface ...$middleware HTTP middleware name(s)
+ *
+ * @throws MiddlewareNotFoundException
  */
 function headless(
     string $controller = NullController::class,
@@ -269,7 +304,18 @@ function headless(
 
             continue;
         }
-        $middlewares[] = new MiddlewareName($value);
+
+        try {
+            $middlewares[] = new MiddlewareName($value);
+        } catch (Throwable) {
+            throw new MiddlewareNotFoundException(
+                (string) message(
+                    'Middleware `%middleware%` not found for controller `%controller%`',
+                    middleware: $value,
+                    controller: $controller
+                )
+            );
+        }
     }
 
     return new Bind(
@@ -279,10 +325,22 @@ function headless(
     );
 }
 
+/**
+ * @throws ControllerNotFoundException
+ */
 function controllerName(BindInterface|string $item): ControllerNameInterface
 {
     if (is_string($item)) {
-        return new ControllerName($item);
+        try {
+            return new ControllerName($item);
+        } catch (Throwable) {
+            throw new ControllerNotFoundException(
+                (string) message(
+                    'Controller `%controller%` not found',
+                    controller: $item
+                )
+            );
+        }
     }
 
     return $item->controllerName();

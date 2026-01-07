@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
+use Chevere\Http\Controllers\NullController;
 use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Http\MiddlewareName;
 use Chevere\Router\Exceptions\VariableInvalidException;
@@ -247,6 +248,52 @@ final class FunctionsTest extends TestCase
         );
         $this->assertTrue(
             $bind->middlewares()->has(MiddlewareOne::class, MiddlewareTwo::class)
+        );
+    }
+
+    public static function functionRouteBindingsDataProvider(): array
+    {
+        return [
+            [
+                [
+                    'path' => '/',
+                    'GET' => 'home.twig',
+                ],
+            ],
+            [
+                [
+                    'path' => '/',
+                    'GET' => bind('home.twig'),
+                ],
+            ],
+            [
+                [
+                    'path' => '/',
+                    'GET' => bind('home.twig', NullController::class),
+                ],
+            ],
+            [
+                [
+                    'path' => '/',
+                    'view' => 'home.twig',
+                    'GET' => NullController::class,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider functionRouteBindingsDataProvider
+     */
+    public function testRouteBindings(array $arguments): void
+    {
+        $route = route(
+            '/',
+            GET: 'home.twig'
+        );
+        $this->assertEquals(
+            $route->endpoints(),
+            route(...$arguments)->endpoints(),
         );
     }
 }
