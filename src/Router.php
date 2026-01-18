@@ -13,12 +13,15 @@ declare(strict_types=1);
 
 namespace Chevere\Router;
 
+use Chevere\Container\Container;
+use Chevere\Container\Dependencies;
+use Chevere\Container\Interfaces\ContainerInterface;
+use Chevere\Container\Interfaces\DependenciesInterface;
 use Chevere\Http\Exceptions\ControllerException;
 use Chevere\Http\Interfaces\ControllerInterface;
 use Chevere\Router\Exceptions\WithoutEndpointsException;
-use Chevere\Router\Interfaces\ContainerInterface;
-use Chevere\Router\Interfaces\DependenciesInterface;
 use Chevere\Router\Interfaces\DispatcherInterface;
+use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\IndexInterface;
 use Chevere\Router\Interfaces\RoutedInterface;
 use Chevere\Router\Interfaces\RouteInterface;
@@ -69,8 +72,8 @@ final class Router implements RouterInterface
         $new = clone $this;
         $new->index = $new->index->withRoute($route, $group);
         $new->routes = $new->routes->withRoute($route);
-        $new->dependencies = $new->dependencies->withRoute($route);
         foreach ($route->endpoints() as $endpoint) {
+            $new->addEndpoint($endpoint);
             $new->collector->addRoute(
                 $endpoint->method()::name(),
                 $route->path()->__toString(),
@@ -226,5 +229,16 @@ final class Router implements RouterInterface
                 path: $route->path()->__toString()
             )
         );
+    }
+
+    private function addEndpoint(EndpointInterface $endpoint): void
+    {
+        $this->dependencies = $this->dependencies
+            ->withClass($endpoint->bind()->controllerName()->__toString());
+        $middlewares = $endpoint->bind()->middlewares();
+        foreach ($middlewares as $middlewareName) {
+            $this->dependencies = $this->dependencies
+                ->withClass($middlewareName->__toString());
+        }
     }
 }

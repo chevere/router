@@ -13,7 +13,9 @@ declare(strict_types=1);
 
 namespace Chevere\Router\Interfaces;
 
-use Chevere\Router\Container;
+use Chevere\Container\Container;
+use Chevere\Container\Interfaces\ContainerInterface;
+use Chevere\Container\Interfaces\DependenciesInterface;
 use Closure;
 use FastRoute\RouteCollector;
 use Nyholm\Psr7\Factory\Psr17Factory;
