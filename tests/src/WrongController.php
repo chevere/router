@@ -24,14 +24,14 @@ use Chevere\Parameter\Interfaces\ArgumentsInterface;
 use Chevere\Parameter\Interfaces\ArgumentsStringInterface;
 use Chevere\Parameter\Interfaces\ArrayParameterInterface;
 use Chevere\Parameter\Interfaces\ArrayStringParameterInterface;
-use Chevere\Parameter\Interfaces\CastInterface;
+use Chevere\Parameter\Interfaces\TypedInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use function Chevere\Parameter\arguments;
 use function Chevere\Parameter\arrayp;
 use function Chevere\Parameter\arrayString;
-use function Chevere\Parameter\cast;
+use function Chevere\Parameter\typed;
 use function Chevere\Writer\streamTemp;
 
 final class WrongController extends Action implements ControllerInterface
@@ -87,9 +87,9 @@ final class WrongController extends Action implements ControllerInterface
         return streamTemp();
     }
 
-    public function body(): CastInterface
+    public function body(): TypedInterface
     {
-        return cast('');
+        return typed('');
     }
 
     public function files(): ArgumentsInterface
