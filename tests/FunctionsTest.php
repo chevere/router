@@ -16,6 +16,8 @@ namespace Chevere\Tests;
 use Chevere\Http\Controllers\NullController;
 use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Http\MiddlewareName;
+use Chevere\Router\Exceptions\ControllerNotFoundException;
+use Chevere\Router\Exceptions\MiddlewareNotFoundException;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\EndpointInterface;
@@ -230,6 +232,38 @@ final class FunctionsTest extends TestCase
         );
     }
 
+    public function testBindMiddlewareNotFound(): void
+    {
+        $this->expectException(MiddlewareNotFoundException::class);
+        $this->expectExceptionMessage(
+            'Middleware `InvalidMiddleware` not found for controller `Chevere\Tests\src\ControllerNoParameters`'
+        );
+        bind(
+            'view',
+            ControllerNoParameters::class,
+            'InvalidMiddleware'
+        );
+    }
+
+    public function testBindControllerNotFound(): void
+    {
+        $this->expectException(ControllerNotFoundException::class);
+        $this->expectExceptionMessage(
+            'Controller `InvalidController` not found'
+        );
+        bind(
+            'view',
+            'InvalidController'
+        );
+    }
+
+    public function testRouteMethodEmptyIdentifier(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Binding for `GET` HTTP method cannot be an empty string for route `/`');
+        route(path: '/', GET: '');
+    }
+
     public function testHeadless(): void
     {
         $bind = headless(
@@ -248,6 +282,18 @@ final class FunctionsTest extends TestCase
         );
         $this->assertTrue(
             $bind->middlewares()->has(MiddlewareOne::class, MiddlewareTwo::class)
+        );
+    }
+
+    public function testHeadlessMiddlewareNotFound(): void
+    {
+        $this->expectException(MiddlewareNotFoundException::class);
+        $this->expectExceptionMessage(
+            'Middleware `InvalidMiddleware` not found for controller `Chevere\Tests\src\ControllerNoParameters`'
+        );
+        headless(
+            ControllerNoParameters::class,
+            'InvalidMiddleware'
         );
     }
 
