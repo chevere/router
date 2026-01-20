@@ -24,6 +24,7 @@ use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Routes;
 use Chevere\Tests\src\ControllerNoParameters;
 use Chevere\Tests\src\ControllerWithParameters;
+use Chevere\Tests\src\ControllerWithParameterWithoutAttr;
 use Chevere\Tests\src\MiddlewareOne;
 use Chevere\Tests\src\MiddlewareTwo;
 use Chevere\Tests\src\WrongController;
@@ -352,6 +353,18 @@ final class FunctionsTest extends TestCase
         $this->assertEquals(
             $route->endpoints(),
             route(...$arguments)->endpoints(),
+        );
+    }
+
+    public function testRouteDefaultRegex(): void
+    {
+        $route = route(
+            path: '/test/{id}',
+            GET: ControllerWithParameterWithoutAttr::class,
+        );
+        $this->assertSame(
+            '/test/{id:[^/]+}',
+            strval($route->path())
         );
     }
 }
