@@ -114,7 +114,7 @@ function getPath(string $path, string|BindInterface ...$bind): string
 }
 
 /**
- * Creates Route binding.
+ * Creates Route binding HTTP methods to controllers, views, and middleware.
  *
  * `$bind` examples:
  *

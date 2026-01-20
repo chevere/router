@@ -232,6 +232,18 @@ final class FunctionsTest extends TestCase
         );
     }
 
+    public function testRouteExclude(): void
+    {
+        $route = route(
+            path: '/',
+            GET: ControllerNoParameters::class,
+            exclude: MiddlewareOne::class
+        );
+        $this->assertTrue(
+            $route->excluded()->has(MiddlewareOne::class)
+        );
+    }
+
     public function testBindMiddlewareNotFound(): void
     {
         $this->expectException(MiddlewareNotFoundException::class);
