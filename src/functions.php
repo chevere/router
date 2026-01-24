@@ -21,7 +21,7 @@ use Chevere\Http\Interfaces\ControllerNameInterface;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Http\Interfaces\MiddlewareNameInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
-use Chevere\Http\MiddlewareName;
+use Chevere\Http\MiddlewareNameWithArguments;
 use Chevere\Http\Middlewares;
 use Chevere\Router\Exceptions\ControllerNotFoundException;
 use Chevere\Router\Exceptions\MiddlewareNotFoundException;
@@ -255,7 +255,7 @@ function bind(
         }
 
         try {
-            $middlewares[] = new MiddlewareName($name);
+            $middlewares[] = new MiddlewareNameWithArguments($name);
         } catch (Throwable) {
             throw new MiddlewareNotFoundException(
                 (string) message(
@@ -306,7 +306,7 @@ function headless(
         }
 
         try {
-            $middlewares[] = new MiddlewareName($value);
+            $middlewares[] = new MiddlewareNameWithArguments($value);
         } catch (Throwable) {
             throw new MiddlewareNotFoundException(
                 (string) message(
