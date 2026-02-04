@@ -21,7 +21,7 @@ use Chevere\Http\Interfaces\ControllerNameInterface;
 use Chevere\Http\Interfaces\MethodInterface;
 use Chevere\Http\Interfaces\MiddlewareNameInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
-use Chevere\Http\MiddlewareNameWithArguments;
+use Chevere\Http\MiddlewareName;
 use Chevere\Http\Middlewares;
 use Chevere\Router\Exceptions\ControllerNotFoundException;
 use Chevere\Router\Exceptions\MiddlewareNotFoundException;
@@ -127,6 +127,7 @@ function getPath(string $path, string|BindInterface ...$bind): string
  * @param string $path Route path like `/my-route/{id}`.
  * @param string $name Route name, if not provided will be same as `$path`.
  * @param null|MiddlewaresInterface|MiddlewareNameInterface|class-string<MiddlewareInterface> $middleware PSR-15 HTTP Server Middleware.
+ * @param null|MiddlewaresInterface|MiddlewareNameInterface|class-string<MiddlewareInterface> $exclude PSR-15 HTTP Server Middleware to exclude.
  * @param BindInterface|class-string<ControllerInterface>|string ...$bind Binding for HTTP methods to a handler (controller, view, middleware).
  */
 function route(
@@ -255,7 +256,7 @@ function bind(
         }
 
         try {
-            $middlewares[] = new MiddlewareNameWithArguments($name);
+            $middlewares[] = new MiddlewareName($name);
         } catch (Throwable) {
             throw new MiddlewareNotFoundException(
                 (string) message(
@@ -306,7 +307,7 @@ function headless(
         }
 
         try {
-            $middlewares[] = new MiddlewareNameWithArguments($value);
+            $middlewares[] = new MiddlewareName($value);
         } catch (Throwable) {
             throw new MiddlewareNotFoundException(
                 (string) message(

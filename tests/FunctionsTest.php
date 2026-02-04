@@ -15,7 +15,7 @@ namespace Chevere\Tests;
 
 use Chevere\Http\Controllers\NullController;
 use Chevere\Http\Exceptions\MethodNotAllowedException;
-use Chevere\Http\MiddlewareNameWithArguments;
+use Chevere\Http\MiddlewareName;
 use Chevere\Router\Exceptions\ControllerNotFoundException;
 use Chevere\Router\Exceptions\MiddlewareNotFoundException;
 use Chevere\Router\Exceptions\VariableInvalidException;
@@ -217,7 +217,7 @@ final class FunctionsTest extends TestCase
             'view',
             ControllerNoParameters::class,
             MiddlewareOne::class,
-            new MiddlewareNameWithArguments(MiddlewareTwo::class)
+            new MiddlewareName(MiddlewareTwo::class)
         );
         $this->assertSame(
             ControllerNoParameters::class,
@@ -282,7 +282,7 @@ final class FunctionsTest extends TestCase
         $bind = headless(
             ControllerNoParameters::class,
             MiddlewareOne::class,
-            new MiddlewareNameWithArguments(MiddlewareTwo::class)
+            new MiddlewareName(MiddlewareTwo::class)
         );
         $this->assertSame(
             ControllerNoParameters::class,

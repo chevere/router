@@ -15,7 +15,7 @@ namespace Chevere\Tests;
 
 use Chevere\Http\ControllerName;
 use Chevere\Http\Methods\GetMethod;
-use Chevere\Http\MiddlewareNameWithArguments;
+use Chevere\Http\MiddlewareName;
 use Chevere\Http\Middlewares;
 use Chevere\Router\Bind;
 use Chevere\Router\Endpoint;
@@ -82,9 +82,9 @@ final class RoutesTest extends TestCase
             name: $name,
             path: new Path('/some-path')
         ));
-        $one = new MiddlewareNameWithArguments(MiddlewareOne::class);
-        $two = new MiddlewareNameWithArguments(MiddlewareTwo::class);
-        $three = new MiddlewareNameWithArguments(MiddlewareThree::class);
+        $one = new MiddlewareName(MiddlewareOne::class);
+        $two = new MiddlewareName(MiddlewareTwo::class);
+        $three = new MiddlewareName(MiddlewareThree::class);
         $controllerName = new ControllerName(ControllerNoParameters::class);
         $middlewares = new Middlewares($one);
         $endpoint = new Endpoint(
@@ -95,7 +95,7 @@ final class RoutesTest extends TestCase
         $routes = (new Routes())->withRoute($route);
         $routesWith = $routes->withAppendMiddleware(
             middlewares(MiddlewareTwo::class),
-            new MiddlewareNameWithArguments(MiddlewareThree::class)
+            new MiddlewareName(MiddlewareThree::class)
         );
         $this->assertNotSame($routes, $routesWith);
         $middlewares = $routesWith->get('/some-path')->endpoints()->get('GET')->bind()->middlewares();

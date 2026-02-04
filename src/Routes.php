@@ -18,7 +18,7 @@ use Chevere\DataStructure\Map;
 use Chevere\DataStructure\Traits\MapTrait;
 use Chevere\Http\Interfaces\MiddlewareNameInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
-use Chevere\Http\MiddlewareNameWithArguments;
+use Chevere\Http\MiddlewareName;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
 use OutOfBoundsException;
@@ -113,7 +113,7 @@ final class Routes implements RoutesInterface
                 continue;
             }
             $middlewares = $middlewares->withAppend(
-                new MiddlewareNameWithArguments($argument)
+                new MiddlewareName($argument)
             );
         }
 
