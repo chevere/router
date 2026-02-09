@@ -176,6 +176,7 @@ final class Router implements RouterInterface
             $request = $request->withHeader($name, $value);
         }
         $container = $container->with(request: $request);
+        $container = $container->with(container: $container);
         $controllerArguments = $this->dependencies->extract($controllerNameString, $container);
         /** @var ControllerInterface $controller */
         $controller = new $controllerNameString(...$controllerArguments);
