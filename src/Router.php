@@ -196,7 +196,9 @@ final class Router implements RouterInterface
         }
 
         try {
-            $controllerReturn = $controller->__invoke(...$routed->arguments());
+            $controllerReturn = $controller->assertReturn(
+                $controller->__invoke(...$routed->arguments())
+            );
         } catch (Throwable $e) {
             $code = $e instanceof ControllerException
                 ? (int) $e->getCode()
