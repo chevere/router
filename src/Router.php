@@ -196,6 +196,7 @@ final class Router implements RouterInterface
         }
 
         try {
+            $controller->assertArguments(...$routed->arguments());
             $controllerReturn = $controller->assertReturn(
                 $controller->__invoke(...$routed->arguments())
             );
