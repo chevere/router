@@ -39,6 +39,7 @@ use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Interfaces\RouteInterface;
 use Chevere\Router\Interfaces\RouterInterface;
 use Chevere\Router\Interfaces\RoutesInterface;
+use Chevere\Router\Interfaces\VariableRegexInterface;
 use InvalidArgumentException;
 use OutOfBoundsException;
 use Psr\Http\Message\ResponseInterface;
@@ -94,7 +95,7 @@ function getPath(string $path, string|BindInterface ...$bind): string
                     )
                 );
             }
-            $regex = parameterToRegex($parameter);
+            $regex = parameterToVariableRegex($parameter);
             if ($regex === null) {
                 throw new VariableInvalidException(
                     (string) message(
@@ -104,7 +105,7 @@ function getPath(string $path, string|BindInterface ...$bind): string
                     )
                 );
             }
-            $pattern = $regex->noDelimitersNoAnchors();
+            $pattern = $regex->noDelimiters();
             $path = str_replace(
                 $variableBracket,
                 <<<STRING
@@ -118,14 +119,12 @@ function getPath(string $path, string|BindInterface ...$bind): string
     return $path;
 }
 
-function parameterToRegex(ParameterInterface $parameter): ?RegexInterface
+function parameterToVariableRegex(ParameterInterface $parameter): ?VariableRegexInterface
 {
-    if ($parameter instanceof StringParameterInterface) {
-        return $parameter->regex();
-    }
     $pattern = match (true) {
-        $parameter instanceof IntParameterInterface => '^\d+$',
-        $parameter instanceof FloatParameterInterface => '^\d*\.?\d*$',
+        $parameter instanceof IntParameterInterface => '\d+',
+        $parameter instanceof FloatParameterInterface => '\d*\.?\d*',
+        $parameter instanceof StringParameterInterface => $parameter->regex()->noDelimitersNoAnchors(),
         default => null,
     };
     if ($pattern === string()->regex()->noDelimitersNoAnchors()) {
@@ -133,8 +132,23 @@ function parameterToRegex(ParameterInterface $parameter): ?RegexInterface
     }
 
     return $pattern !== null
-        ? new Regex($pattern)
+        ? new VariableRegex($pattern)
         : null;
+}
+
+function parameterToRegex(ParameterInterface $parameter): RegexInterface
+{
+    return match (true) {
+        $parameter instanceof IntParameterInterface => new Regex('\d+'),
+        $parameter instanceof FloatParameterInterface => new Regex('\d*\.?\d*'),
+        $parameter instanceof StringParameterInterface => $parameter->regex(),
+        default => throw new InvalidArgumentException(
+            (string) message(
+                'Parameter of type `%type%` is not supported for parameter to regex conversion',
+                type: $parameter::class
+            )
+        ),
+    };
 }
 
 /**

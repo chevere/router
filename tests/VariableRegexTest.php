@@ -49,6 +49,6 @@ final class VariableRegexTest extends TestCase
         $string = '[a-z]+';
         $variableRegex = new VariableRegex($string);
         $this->assertSame($string, $variableRegex->__toString());
-        $this->assertSame('^' . $string . '$', $variableRegex->noDelimiters());
+        $this->assertSame($string, $variableRegex->noDelimiters());
     }
 }

@@ -90,10 +90,10 @@ final class Route implements RouteInterface
             $new->assertEndpoint($endpoint);
             /** @var StringParameterInterface $parameter */
             $parameter = $parameters->get($variable->__toString());
-            $parameterRegex = parameterToRegex($parameter);
+            $parameterVariableRegex = parameterToVariableRegex($parameter);
             $variableRegexString = $variable->regex()->__toString();
             $variableString = $variable->__toString();
-            if ($parameterRegex === null) {
+            if ($parameterVariableRegex === null) {
                 throw new InvalidArgumentException(
                     (string) message(
                         'Variable `%variable%` is not a `string|int|float` type in controller `%controller%`',
@@ -102,7 +102,7 @@ final class Route implements RouteInterface
                     )
                 );
             }
-            $parameterRegexString = $parameterRegex->noDelimitersNoAnchors();
+            $parameterRegexString = $parameterVariableRegex->__toString();
             if (strpos(strval($this->path), $variableString . '}') !== false
                 || $variableRegexString === $defaultStringRegex
             ) {
@@ -112,7 +112,7 @@ final class Route implements RouteInterface
                 throw new VariableConflictException(
                     (string) message(
                         <<<MESSAGE
-                        Variable `%parameter%` matches against `%match%` which is incompatible with the match `%controllerRegex%` defined by `%controller%`
+                        Variable `%parameter%` matches against `%match%` which is incompatible with the controller regex `%controllerRegex%` defined by `%controller%`
                         MESSAGE,
                         parameter: '{' . $variableString . '}',
                         match: $variableRegexString,
@@ -185,12 +185,12 @@ final class Route implements RouteInterface
         $parameters = $firstControllerName::reflection()->parameters();
         /** @var StringParameterInterface $parameter */
         foreach ($parameters as $name => $parameter) {
-            $match = parameterToRegex($parameter);
+            $match = parameterToRegex($parameter)->__toString();
             $controllerName = $endpoint->bind()->controllerName()->__toString();
 
             try {
                 $string = $controllerName::reflection()->parameters()->get($name);
-                $controllerRegex = parameterToRegex($string);
+                $controllerRegex = parameterToRegex($string)->__toString();
             } catch (OutOfBoundsException) {
                 $controllerRegex = '<none>';
             }
@@ -198,7 +198,7 @@ final class Route implements RouteInterface
                 throw new EndpointConflictException(
                     (string) message(
                         <<<MESSAGE
-                        Controller parameter `%parameter%` first defined at `%firstController%` matches against `%match%` which is incompatible with the match `%controllerRegex%` defined by `%controller%`
+                        Controller parameter `{%parameter%}` first defined at `%firstController%` matches against `%match%` which is incompatible with the match `%controllerRegex%` defined by `%controller%`
                         MESSAGE,
                         parameter: $name,
                         match: $match,

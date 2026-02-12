@@ -28,7 +28,7 @@ final class VariableRegex implements VariableRegexInterface
         private string $string
     ) {
         $this->assertFormat();
-        $this->regex = new Regex('#^' . $this->string . '$#');
+        $this->regex = new Regex("#{$string}#");
         $this->assertRegexNoCapture();
     }
 
