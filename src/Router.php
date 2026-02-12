@@ -196,7 +196,7 @@ final class Router implements RouterInterface
             ))->withThrowable($e);
         }
         $arguments = castValues(
-            $controller->acceptParameters(),
+            $controller::reflection()->parameters(),
             $routed->arguments()
         );
 
