@@ -18,7 +18,6 @@ use Chevere\Http\Exceptions\MethodNotAllowedException;
 use Chevere\Http\MiddlewareName;
 use Chevere\Router\Exceptions\ControllerNotFoundException;
 use Chevere\Router\Exceptions\MiddlewareNotFoundException;
-use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Exceptions\VariableNotFoundException;
 use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Routes;
@@ -27,7 +26,7 @@ use Chevere\Tests\src\ControllerWithParameters;
 use Chevere\Tests\src\ControllerWithParameterWithoutAttr;
 use Chevere\Tests\src\MiddlewareOne;
 use Chevere\Tests\src\MiddlewareTwo;
-use Chevere\Tests\src\WrongController;
+use Chevere\Tests\src\TestControllerSupportedParameters;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -155,10 +154,13 @@ final class FunctionsTest extends TestCase
         route('/test/', 'name', TEST: $controller);
     }
 
-    public function testRouteInvalidController(): void
+    public function testRouteControllerParameters(): void
     {
-        $this->expectException(VariableInvalidException::class);
-        route(path: '/{id}', GET: WrongController::class);
+        $route = route(path: '/{id}/{name}/{rate}/', GET: TestControllerSupportedParameters::class);
+        $this->assertSame(
+            '/{id:\d+}/{name:[^/]+}/{rate:\d*\.?\d*}/',
+            strval($route->path())
+        );
     }
 
     public function testRoutes(): void

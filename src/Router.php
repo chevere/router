@@ -41,6 +41,7 @@ use Throwable;
 use function Chevere\Http\requestAttribute;
 use function Chevere\Http\responseAttribute;
 use function Chevere\Message\message;
+use function Chevere\Parameter\castValues;
 
 final class Router implements RouterInterface
 {
@@ -129,12 +130,12 @@ final class Router implements RouterInterface
                 $parameters = $reflection->getParameters();
                 $lastParameter = end($parameters);
                 if ($lastParameter && $lastParameter->isVariadic()) {
-                    $arguments = $middlewareName->arguments();
-                    $variadic = array_pop($arguments);
+                    $middlewareArguments = $middlewareName->arguments();
+                    $variadic = array_pop($middlewareArguments);
                     if (! is_iterable($variadic)) {
                         $variadic = [$variadic];
                     }
-                    $middleware->setUp(...$arguments, ...$variadic);
+                    $middleware->setUp(...$middlewareArguments, ...$variadic);
                 } else {
                     $middleware->setUp(...$middlewareName->arguments());
                 }
@@ -194,10 +195,14 @@ final class Router implements RouterInterface
                 $routed->bind(),
             ))->withThrowable($e);
         }
+        $arguments = castValues(
+            $controller->acceptParameters(),
+            $routed->arguments()
+        );
 
         try {
             $controllerReturn = $controller->assertReturn(
-                $controller->__invoke(...$controller->assertArguments(...$routed->arguments()))
+                $controller->__invoke(...$controller->assertArguments(...$arguments))
             );
         } catch (Throwable $e) {
             $code = $e instanceof ControllerException

@@ -34,9 +34,9 @@ use function Chevere\Parameter\arrayString;
 use function Chevere\Parameter\typed;
 use function Chevere\Writer\streamTemp;
 
-final class WrongController extends Action implements ControllerInterface
+final class TestControllerSupportedParameters extends Action implements ControllerInterface
 {
-    public function __invoke(int $id): array
+    public function __invoke(int $id, string $name, float $rate): array
     {
         return [];
     }

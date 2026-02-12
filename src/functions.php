@@ -23,6 +23,11 @@ use Chevere\Http\Interfaces\MiddlewareNameInterface;
 use Chevere\Http\Interfaces\MiddlewaresInterface;
 use Chevere\Http\MiddlewareName;
 use Chevere\Http\Middlewares;
+use Chevere\Parameter\Interfaces\FloatParameterInterface;
+use Chevere\Parameter\Interfaces\IntParameterInterface;
+use Chevere\Parameter\Interfaces\ParameterInterface;
+use Chevere\Parameter\Interfaces\ParametersInterface;
+use Chevere\Parameter\Interfaces\StringParameterInterface;
 use Chevere\Router\Exceptions\ControllerNotFoundException;
 use Chevere\Router\Exceptions\MiddlewareNotFoundException;
 use Chevere\Router\Exceptions\VariableInvalidException;
@@ -37,7 +42,6 @@ use OutOfBoundsException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Throwable;
-use TypeError;
 use function Chevere\Http\middlewares;
 use function Chevere\Message\message;
 use function Chevere\Parameter\string;
@@ -62,7 +66,6 @@ function routes(RouteInterface|RoutesInterface ...$routes): RoutesInterface
 
 function getPath(string $path, string|BindInterface ...$bind): string
 {
-    $defaultStringRegex = string()->regex()->noDelimitersNoAnchors();
     $routePath = new Path($path);
     foreach ($bind as $item) {
         try {
@@ -77,8 +80,9 @@ function getPath(string $path, string|BindInterface ...$bind): string
             STRING;
 
             try {
+                /** @var ParametersInterface $parameters */
                 $parameters = $controllerName::reflection()->parameters();
-                $stringParameter = $parameters->required($variable)->string();
+                $parameter = $parameters->get($variable);
             } catch (OutOfBoundsException) {
                 throw new VariableNotFoundException(
                     (string) message(
@@ -87,18 +91,16 @@ function getPath(string $path, string|BindInterface ...$bind): string
                         controller: $controllerName,
                     )
                 );
-            } catch (TypeError) {
+            }
+            $pattern = parameterToRegex($parameter);
+            if ($pattern === '') {
                 throw new VariableInvalidException(
                     (string) message(
-                        'Variable `%variable%` is not a string parameter in controller `%controller%`',
+                        'Variable `%variable%` is not a `string|int|float` type in controller `%controller%`',
                         variable: $variableBracket,
                         controller: $controllerName,
                     )
                 );
-            }
-            $pattern = $stringParameter->regex()->noDelimitersNoAnchors();
-            if ($pattern === $defaultStringRegex) {
-                $pattern = '[^/]+';
             }
             $path = str_replace(
                 $variableBracket,
@@ -111,6 +113,21 @@ function getPath(string $path, string|BindInterface ...$bind): string
     }
 
     return $path;
+}
+
+function parameterToRegex(ParameterInterface $parameter): string
+{
+    $pattern = match (true) {
+        $parameter instanceof IntParameterInterface => '\d+',
+        $parameter instanceof FloatParameterInterface => '\d*\.?\d*',
+        $parameter instanceof StringParameterInterface => $parameter->regex()->noDelimitersNoAnchors(),
+        default => '',
+    };
+    if ($pattern === string()->regex()->noDelimitersNoAnchors()) {
+        $pattern = '[^/]+';
+    }
+
+    return $pattern;
 }
 
 /**

@@ -90,9 +90,8 @@ final class Route implements RouteInterface
             $new->assertEndpoint($endpoint);
             /** @var StringParameterInterface $parameter */
             $parameter = $parameters->get(strval($variable));
-            $parameterRegex = $parameter->regex()->noDelimitersNoAnchors();
-            if ($parameterRegex === $defaultStringRegex) {
-                $parameterRegex = '[^/]+';
+            $parameterRegex = parameterToRegex($parameter);
+            if ($parameterRegex === '') {
             }
             $variableRegex = strval($variable->regex());
             $variableString = strval($variable);
