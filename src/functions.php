@@ -139,8 +139,8 @@ function parameterToVariableRegex(ParameterInterface $parameter): ?VariableRegex
 function parameterToRegex(ParameterInterface $parameter): RegexInterface
 {
     return match (true) {
-        $parameter instanceof IntParameterInterface => new Regex('\d+'),
-        $parameter instanceof FloatParameterInterface => new Regex('\d*\.?\d*'),
+        $parameter instanceof IntParameterInterface => new Regex('/^\d+$/'),
+        $parameter instanceof FloatParameterInterface => new Regex('/^\d*\.?\d*$/'),
         $parameter instanceof StringParameterInterface => $parameter->regex(),
         default => throw new InvalidArgumentException(
             (string) message(
