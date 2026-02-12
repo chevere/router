@@ -89,26 +89,34 @@ final class Route implements RouteInterface
         foreach ($new->path->variables() as $variable) {
             $new->assertEndpoint($endpoint);
             /** @var StringParameterInterface $parameter */
-            $parameter = $parameters->get(strval($variable));
+            $parameter = $parameters->get($variable->__toString());
             $parameterRegex = parameterToRegex($parameter);
-            if ($parameterRegex === '') {
+            $variableRegexString = $variable->regex()->__toString();
+            $variableString = $variable->__toString();
+            if ($parameterRegex === null) {
+                throw new InvalidArgumentException(
+                    (string) message(
+                        'Variable `%variable%` is not a `string|int|float` type in controller `%controller%`',
+                        variable: '{' . $variableString . '}',
+                        controller: $controllerFqn,
+                    )
+                );
             }
-            $variableRegex = strval($variable->regex());
-            $variableString = strval($variable);
+            $parameterRegexString = $parameterRegex->noDelimitersNoAnchors();
             if (strpos(strval($this->path), $variableString . '}') !== false
-                || $variableRegex === $defaultStringRegex
+                || $variableRegexString === $defaultStringRegex
             ) {
-                $variableRegex = $parameterRegex; // @codeCoverageIgnore
+                $variableRegexString = $parameterRegexString; // @codeCoverageIgnore
             }
-            if ($parameterRegex !== $variableRegex) {
+            if ($parameterRegexString !== $variableRegexString) {
                 throw new VariableConflictException(
                     (string) message(
                         <<<MESSAGE
                         Variable `%parameter%` matches against `%match%` which is incompatible with the match `%controllerRegex%` defined by `%controller%`
                         MESSAGE,
-                        parameter: '{' . strval($variable) . '}',
-                        match: $variableRegex,
-                        controllerRegex: $parameterRegex,
+                        parameter: '{' . $variableString . '}',
+                        match: $variableRegexString,
+                        controllerRegex: $parameterRegexString,
                         controller: $endpoint->bind()->controllerName()->__toString(),
                     )
                 );
@@ -177,12 +185,12 @@ final class Route implements RouteInterface
         $parameters = $firstControllerName::reflection()->parameters();
         /** @var StringParameterInterface $parameter */
         foreach ($parameters as $name => $parameter) {
-            $match = $parameter->regex()->__toString();
+            $match = parameterToRegex($parameter);
             $controllerName = $endpoint->bind()->controllerName()->__toString();
 
             try {
-                $string = $controllerName::reflection()->parameters()->required($name)->string();
-                $controllerRegex = $string->regex()->__toString();
+                $string = $controllerName::reflection()->parameters()->get($name);
+                $controllerRegex = parameterToRegex($string);
             } catch (OutOfBoundsException) {
                 $controllerRegex = '<none>';
             }

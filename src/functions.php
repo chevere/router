@@ -28,6 +28,8 @@ use Chevere\Parameter\Interfaces\IntParameterInterface;
 use Chevere\Parameter\Interfaces\ParameterInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
+use Chevere\Regex\Interfaces\RegexInterface;
+use Chevere\Regex\Regex;
 use Chevere\Router\Exceptions\ControllerNotFoundException;
 use Chevere\Router\Exceptions\MiddlewareNotFoundException;
 use Chevere\Router\Exceptions\VariableInvalidException;
@@ -92,8 +94,8 @@ function getPath(string $path, string|BindInterface ...$bind): string
                     )
                 );
             }
-            $pattern = parameterToRegex($parameter);
-            if ($pattern === '') {
+            $regex = parameterToRegex($parameter);
+            if ($regex === null) {
                 throw new VariableInvalidException(
                     (string) message(
                         'Variable `%variable%` is not a `string|int|float` type in controller `%controller%`',
@@ -102,6 +104,7 @@ function getPath(string $path, string|BindInterface ...$bind): string
                     )
                 );
             }
+            $pattern = $regex->noDelimitersNoAnchors();
             $path = str_replace(
                 $variableBracket,
                 <<<STRING
@@ -115,19 +118,23 @@ function getPath(string $path, string|BindInterface ...$bind): string
     return $path;
 }
 
-function parameterToRegex(ParameterInterface $parameter): string
+function parameterToRegex(ParameterInterface $parameter): ?RegexInterface
 {
+    if ($parameter instanceof StringParameterInterface) {
+        return $parameter->regex();
+    }
     $pattern = match (true) {
-        $parameter instanceof IntParameterInterface => '\d+',
-        $parameter instanceof FloatParameterInterface => '\d*\.?\d*',
-        $parameter instanceof StringParameterInterface => $parameter->regex()->noDelimitersNoAnchors(),
-        default => '',
+        $parameter instanceof IntParameterInterface => '^\d+$',
+        $parameter instanceof FloatParameterInterface => '^\d*\.?\d*$',
+        default => null,
     };
     if ($pattern === string()->regex()->noDelimitersNoAnchors()) {
         $pattern = '[^/]+';
     }
 
-    return $pattern;
+    return $pattern !== null
+        ? new Regex($pattern)
+        : null;
 }
 
 /**
