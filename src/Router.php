@@ -19,6 +19,7 @@ use Chevere\Container\Interfaces\ContainerInterface;
 use Chevere\Container\Interfaces\DependenciesInterface;
 use Chevere\Http\Exceptions\ControllerException;
 use Chevere\Http\Interfaces\ControllerInterface;
+use Chevere\Router\Exceptions\NotFoundException;
 use Chevere\Router\Exceptions\WithoutEndpointsException;
 use Chevere\Router\Interfaces\DispatcherInterface;
 use Chevere\Router\Interfaces\EndpointInterface;
@@ -199,6 +200,19 @@ final class Router implements RouterInterface
             $controller::reflection()->parameters(),
             $routed->arguments()
         );
+
+        try {
+            $arguments = $controller->assertArguments(...$arguments);
+        } catch (Throwable $e) {
+            throw new NotFoundException(
+                (string) message(
+                    'No route found for %method% `%uri%`',
+                    method: $serverRequest->getMethod(),
+                    uri: $serverRequest->getUri()->getPath(),
+                ),
+                404
+            );
+        }
 
         try {
             $controllerReturn = $controller->assertReturn(
