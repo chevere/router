@@ -182,13 +182,13 @@ Where `MyController` class method `__invoke()` parameters must match the defined
 public function __invoke(string $id) {...}
 ```
 
-Path variables implicit match against `[^/]+`. To customize use `StringAttr` on main’s function parameters.
+Path variables implicit match against `[^/]+`. To customize use `_string` on main’s function parameters.
 
 ```php
-use Chevere\Parameter\Attributes\StringAttr;
+use Chevere\Parameter\Attributes\_string;
 
 public function __invoke(
-    #[StringAttr('/\d+/')]
+    #[_string('/\d+/')]
     string $id
 ) {
     // $id is digits only

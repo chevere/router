@@ -25,7 +25,7 @@ use Chevere\Router\Interfaces\EndpointInterface;
 use Chevere\Router\Routes;
 use Chevere\Tests\src\ControllerNoParameters;
 use Chevere\Tests\src\ControllerWithParameters;
-use Chevere\Tests\src\ControllerWithParameterWithoutAttr;
+use Chevere\Tests\src\ControllerWithParameterWithoutAttribute;
 use Chevere\Tests\src\MiddlewareOne;
 use Chevere\Tests\src\MiddlewareTwo;
 use Chevere\Tests\src\TestControllerSupportedParameters;
@@ -369,7 +369,7 @@ final class FunctionsTest extends TestCase
     {
         $route = route(
             path: '/test/{id}',
-            GET: ControllerWithParameterWithoutAttr::class,
+            GET: ControllerWithParameterWithoutAttribute::class,
         );
         $this->assertSame(
             '/test/{id:[^/]+}',

@@ -15,7 +15,7 @@ namespace Chevere\Tests\src;
 
 use Chevere\Http\Controller;
 
-final class ControllerWithParameterWithoutAttr extends Controller
+final class ControllerWithParameterWithoutAttribute extends Controller
 {
     public function __invoke(
         string $id

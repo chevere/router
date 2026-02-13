@@ -14,12 +14,12 @@ declare(strict_types=1);
 namespace Chevere\Tests\src;
 
 use Chevere\Http\Controller;
-use Chevere\Parameter\Attributes\StringAttr;
+use Chevere\Parameter\Attributes\_string;
 
 final class ControllerWithParameter extends Controller
 {
     public function __invoke(
-        #[StringAttr('/[0-9]+/')]
+        #[_string('/[0-9]+/')]
         string $id
     ): array {
         return [];

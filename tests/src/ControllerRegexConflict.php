@@ -14,12 +14,12 @@ declare(strict_types=1);
 namespace Chevere\Tests\src;
 
 use Chevere\Http\Controller;
-use Chevere\Parameter\Attributes\StringAttr;
+use Chevere\Parameter\Attributes\_string;
 
 final class ControllerRegexConflict extends Controller
 {
     public function __invoke(
-        #[StringAttr('/\W+/')]
+        #[_string('/\W+/')]
         string $id
     ): array {
         return [];

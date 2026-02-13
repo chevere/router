@@ -15,13 +15,13 @@ namespace Chevere\Tests\src;
 
 use Chevere\Http\Attributes\Description;
 use Chevere\Http\Controller;
-use Chevere\Parameter\Attributes\StringAttr;
+use Chevere\Parameter\Attributes\_string;
 
 #[Description('Endpoint description')]
 final class ArticleGetController extends Controller
 {
     public function __invoke(
-        #[StringAttr('/\d+/')]
+        #[_string('/\d+/')]
         string $id
     ): array {
         return [];
