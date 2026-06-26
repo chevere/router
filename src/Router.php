@@ -123,6 +123,7 @@ final class Router implements RouterInterface
         $queue = [];
         $middlewares = $routed->bind()->middlewares();
         foreach ($middlewares as $middlewareName) {
+            $objectId = spl_object_id($middlewareName);
             $className = (string) $middlewareName;
             $middlewareDependencies = $this->dependencies->extract($className, $container);
             $middleware = new $className(...$middlewareDependencies);
@@ -141,7 +142,7 @@ final class Router implements RouterInterface
                     $middleware->setUp(...$middlewareName->arguments());
                 }
             }
-            $queue[$className] = $middleware;
+            $queue[$className . $objectId] = $middleware;
         }
         $handle = new RelayHandle($responseFactory, $serverRequest);
         $queue[] = $handle;
