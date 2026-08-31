@@ -217,7 +217,7 @@ final class Route implements RouteInterface
         if (count($parameters) === 0) {
             throw new InvalidArgumentException(
                 (string) message(
-                    "Invalid route` %path% `binding with `%controller%` which doesn't accept any parameter",
+                    "Invalid route `%path%` binding with `%controller%` which doesn't accept any parameter",
                     path: $this->path->__toString(),
                     controller: $endpoint->bind()->controllerName()->__toString(),
                 )
