@@ -47,10 +47,7 @@ final class Route implements RouteInterface
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, limit: 2); // @codeCoverageIgnore
         $callerFunction = $backtrace[1]['function'] ?? '';
         $index = intval($callerFunction === 'Chevere\Router\route');
-        $this->caller = new Caller(
-            $backtrace[$index]['file'], // @phpstan-ignore-line
-            $backtrace[$index]['line'] // @phpstan-ignore-line
-        );
+        $this->caller = Caller::fromArray($backtrace[$index]);
         $this->endpoints = new Endpoints();
     }
 
