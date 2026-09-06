@@ -46,7 +46,9 @@ final class Routes implements RoutesInterface
         $new = clone $this;
         $new->names ??= new Map();
         foreach ($route as $item) {
-            $id = $item->path()->regex()->noDelimiters();
+            $id = $item->path()
+                ->regex()
+                ->noDelimiters();
             $new->assertNoOverflow($id, $item);
             $new->names = $new->names
                 ->withPut($item->name(), $id);
@@ -131,10 +133,13 @@ final class Routes implements RoutesInterface
                     }
                     $collector = $collector->withAppend($middlewareName);
                 }
-                $finalMiddlewares = $endpoint->bind()->middlewares()->{$method}(
-                    ...$collector->getIterator()
-                );
-                $bind = $endpoint->bind()->withMiddlewares($finalMiddlewares);
+                $finalMiddlewares = $endpoint->bind()
+                    ->middlewares()
+                    ->{$method}(
+                        ...$collector->getIterator()
+                    );
+                $bind = $endpoint->bind()
+                    ->withMiddlewares($finalMiddlewares);
                 $finalEndpoint = new Endpoint($endpoint->method(), $bind);
                 $route = $route
                     ->withoutEndpoint($endpoint->method())
@@ -160,7 +165,8 @@ final class Routes implements RoutesInterface
                 code: static::EXCEPTION_CODE_TAKEN_PATH,
                 message: (string) message(
                     'Route %path% has been already taken.',
-                    path: $route->path()->__toString()
+                    path: $route->path()
+                        ->__toString()
                 )
             );
         }

@@ -51,7 +51,9 @@ final class Index implements IndexInterface
     public function withRoute(RouteInterface $route, string $group = ''): IndexInterface
     {
         $new = clone $this;
-        $id = $route->path()->regex()->noDelimiters();
+        $id = $route->path()
+            ->regex()
+            ->noDelimiters();
         $identifier = new Identifier($group, $id);
         if ($new->groupsIndex->has($id)) {
             /** @var string $groupName */
@@ -60,7 +62,8 @@ final class Index implements IndexInterface
             throw new OverflowException(
                 (string) message(
                     'Route` %path%` (regex `%id%`) is already bound to group `%group%`',
-                    path: $route->path()->__toString(),
+                    path: $route->path()
+                        ->__toString(),
                     id: $id,
                     group: $groupName
                 )

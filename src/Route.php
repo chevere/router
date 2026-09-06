@@ -79,16 +79,21 @@ final class Route implements RouteInterface
         }
         $new->assertUnique($endpoint);
         $new->assertNoConflict($endpoint);
-        $controllerFqn = $endpoint->bind()->controllerName()->__toString();
+        $controllerFqn = $endpoint->bind()
+            ->controllerName()
+            ->__toString();
         $parameters = $controllerFqn::reflection()->parameters();
         $new->assertVariableBounds($parameters, $controllerFqn);
-        $defaultStringRegex = string()->regex()->noDelimitersNoAnchors();
+        $defaultStringRegex = string()
+            ->regex()
+            ->noDelimitersNoAnchors();
         foreach ($new->path->variables() as $variable) {
             $new->assertEndpoint($endpoint);
             /** @var StringParameterInterface $parameter */
             $parameter = $parameters->get($variable->__toString());
             $parameterVariableRegex = parameterToVariableRegex($parameter);
-            $variableRegexString = $variable->regex()->__toString();
+            $variableRegexString = $variable->regex()
+                ->__toString();
             $variableString = $variable->__toString();
             if ($parameterVariableRegex === null) {
                 throw new InvalidArgumentException(
@@ -110,11 +115,14 @@ final class Route implements RouteInterface
                     (string) message(
                         <<<MESSAGE
                         Variable `%parameter%` matches against `%match%` which is incompatible with the controller regex `%controllerRegex%` defined by `%controller%`
-                        MESSAGE,
+                        MESSAGE
+                        ,
                         parameter: '{' . $variableString . '}',
                         match: $variableRegexString,
                         controllerRegex: $parameterRegexString,
-                        controller: $endpoint->bind()->controllerName()->__toString(),
+                        controller: $endpoint->bind()
+                            ->controllerName()
+                            ->__toString(),
                     )
                 );
             }
@@ -144,7 +152,8 @@ final class Route implements RouteInterface
     {
         $diff = array_diff(
             $parameters->keys(),
-            $this->path->variables()->keys()
+            $this->path->variables()
+                ->keys()
         );
         if ($diff === []) {
             return;
@@ -162,7 +171,8 @@ final class Route implements RouteInterface
 
     private function assertUnique(EndpointInterface $endpoint): void
     {
-        $key = $endpoint->method()->name();
+        $key = $endpoint->method()
+            ->name();
         if ($this->endpoints->has($key)) {
             throw new OverflowException(
                 (string) message(
@@ -178,16 +188,22 @@ final class Route implements RouteInterface
         if (count($this->endpoints()) === 0) {
             return;
         }
-        $firstControllerName = $this->firstEndpoint->bind()->controllerName()->__toString();
+        $firstControllerName = $this->firstEndpoint->bind()
+            ->controllerName()
+            ->__toString();
         $parameters = $firstControllerName::reflection()->parameters();
         /** @var StringParameterInterface $parameter */
         foreach ($parameters as $name => $parameter) {
-            $match = parameterToRegex($parameter)->__toString();
-            $controllerName = $endpoint->bind()->controllerName()->__toString();
+            $match = parameterToRegex($parameter)
+                ->__toString();
+            $controllerName = $endpoint->bind()
+                ->controllerName()
+                ->__toString();
 
             try {
                 $string = $controllerName::reflection()->parameters()->get($name);
-                $controllerRegex = parameterToRegex($string)->__toString();
+                $controllerRegex = parameterToRegex($string)
+                    ->__toString();
             } catch (OutOfBoundsException) {
                 $controllerRegex = '<none>';
             }
@@ -196,12 +212,15 @@ final class Route implements RouteInterface
                     (string) message(
                         <<<MESSAGE
                         Controller parameter `{%parameter%}` first defined at `%firstController%` matches against `%match%` which is incompatible with the match `%controllerRegex%` defined by `%controller%`
-                        MESSAGE,
+                        MESSAGE
+                        ,
                         parameter: $name,
                         match: $match,
                         controllerRegex: $controllerRegex,
                         controller: $controllerName,
-                        firstController: $this->firstEndpoint->bind()->controllerName()->__toString(),
+                        firstController: $this->firstEndpoint->bind()
+                            ->controllerName()
+                            ->__toString(),
                     )
                 );
             }
@@ -210,13 +229,16 @@ final class Route implements RouteInterface
 
     private function assertEndpoint(EndpointInterface $endpoint): void
     {
-        $parameters = $endpoint->bind()->controllerName()->__toString()::reflection()->parameters();
+        $parameters = $endpoint->bind()
+            ->controllerName()
+            ->__toString()::reflection()->parameters();
         if (count($parameters) === 0) {
             throw new InvalidArgumentException(
                 (string) message(
                     "Invalid route `%path%` binding with `%controller%` which doesn't accept any parameter",
                     path: $this->path->__toString(),
-                    controller: $endpoint->bind()->controllerName()->__toString(),
+                    controller: $endpoint->bind()
+                        ->controllerName()->__toString(),
                 )
             );
         }

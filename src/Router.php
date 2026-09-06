@@ -78,7 +78,8 @@ final class Router implements RouterInterface
             $new->addEndpoint($endpoint);
             $new->collector->addRoute(
                 $endpoint->method()::name(),
-                $route->path()->__toString(),
+                $route->path()
+                    ->__toString(),
                 $endpoint->bind(),
             );
         }
@@ -121,7 +122,8 @@ final class Router implements RouterInterface
         $container = $container->with(responseFactory: $responseFactory);
         $routed = $this->dispatcher->dispatch($serverRequest);
         $queue = [];
-        $middlewares = $routed->bind()->middlewares();
+        $middlewares = $routed->bind()
+            ->middlewares();
         foreach ($middlewares as $middlewareName) {
             $objectId = spl_object_id($middlewareName);
             $className = (string) $middlewareName;
@@ -158,16 +160,17 @@ final class Router implements RouterInterface
         if ($callback) {
             $container = $callback($container);
         }
-        $controllerName = $routed->bind()->controllerName();
+        $controllerName = $routed->bind()
+            ->controllerName();
         $controllerNameString = $controllerName->__toString();
         $requestAttribute = requestAttribute($controllerNameString);
         $responseAttribute = responseAttribute($controllerNameString);
-        $controllerStatus = $responseAttribute?->status->success
-            ?? 200;
-        $controllerRequestHeaders = $requestAttribute?->headers->toArray()
-            ?? [];
-        $controllerResponseHeaders = $responseAttribute?->headers->toArray()
-            ?? [];
+        $controllerStatus = $responseAttribute?->status()
+            ->code(0) ?? 200;
+        $controllerRequestHeaders = $requestAttribute?->headers()
+            ->toArray() ?? [];
+        $controllerResponseHeaders = $responseAttribute?->headers()
+            ->toArray() ?? [];
         foreach ($controllerResponseHeaders as $name => $value) {
             $response = $response->withHeader($name, $value);
         }
@@ -209,7 +212,8 @@ final class Router implements RouterInterface
                 (string) message(
                     'No route found for %method% `%uri%`',
                     method: $serverRequest->getMethod(),
-                    uri: $serverRequest->getUri()->getPath(),
+                    uri: $serverRequest->getUri()
+                        ->getPath(),
                 ),
                 404
             );
@@ -249,7 +253,8 @@ final class Router implements RouterInterface
         throw new WithoutEndpointsException(
             (string) message(
                 "Route `%path%` doesn't contain any endpoint.",
-                path: $route->path()->__toString()
+                path: $route->path()
+                    ->__toString()
             )
         );
     }
@@ -258,7 +263,8 @@ final class Router implements RouterInterface
     {
         $this->dependencies = $this->dependencies
             ->withClass($endpoint->bind()->controllerName()->__toString());
-        $middlewares = $endpoint->bind()->middlewares();
+        $middlewares = $endpoint->bind()
+            ->middlewares();
         foreach ($middlewares as $middlewareName) {
             $this->dependencies = $this->dependencies
                 ->withClass($middlewareName->__toString());

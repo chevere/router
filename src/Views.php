@@ -38,7 +38,8 @@ final class Views implements ViewsInterface
         $errors = [];
         foreach ($this->routes as $name => $route) {
             foreach ($route->endpoints() as $endpoint) {
-                $basename = $endpoint->bind()->view();
+                $basename = $endpoint->bind()
+                    ->view();
                 if ($basename === '') {
                     continue;
                 }
@@ -47,10 +48,12 @@ final class Views implements ViewsInterface
                     $errors[] = message(
                         <<<PLAIN
                         View `%baseName%` linked by route `%name%` at %caller% not found for view mapped path at %file%
-                        PLAIN,
+                        PLAIN
+                        ,
                         baseName: $basename,
                         name: $name,
-                        caller: $route->caller()->__toString(),
+                        caller: $route->caller()
+                            ->__toString(),
                         file: $file
                     );
                 }

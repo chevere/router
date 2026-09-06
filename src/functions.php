@@ -72,7 +72,8 @@ function getPath(string $path, string|BindInterface ...$bind): string
     $routePath = new Path($path);
     foreach ($bind as $item) {
         try {
-            $controllerName = controllerName($item)->__toString();
+            $controllerName = controllerName($item)
+                ->__toString();
         } catch (Throwable) {
             continue;
         }
@@ -110,7 +111,8 @@ function getPath(string $path, string|BindInterface ...$bind): string
                 $variableBracket,
                 <<<STRING
                 {{$variable}:{$pattern}}
-                STRING,
+                STRING
+                ,
                 $path
             );
         }
@@ -124,7 +126,8 @@ function parameterToVariableRegex(ParameterInterface $parameter): ?VariableRegex
     $pattern = match (true) {
         $parameter instanceof IntParameterInterface => '\d+',
         $parameter instanceof FloatParameterInterface => '\d*\.?\d*',
-        $parameter instanceof StringParameterInterface => $parameter->regex()->noDelimitersNoAnchors(),
+        $parameter instanceof StringParameterInterface => $parameter->regex()
+            ->noDelimitersNoAnchors(),
         default => null,
     };
     if ($pattern === string()->regex()->noDelimitersNoAnchors()) {

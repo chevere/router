@@ -34,7 +34,8 @@ final class Dispatcher implements DispatcherInterface
     public function dispatch(ServerRequestInterface $request): DispatchInterface
     {
         $method = $request->getMethod();
-        $uri = $request->getUri()->getPath();
+        $uri = $request->getUri()
+            ->getPath();
         $groupCountBased = new GroupCountBased(
             $this->routeCollector->getData()
         );

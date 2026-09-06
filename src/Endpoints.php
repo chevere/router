@@ -29,7 +29,8 @@ final class Endpoints implements EndpointsInterface
         $new = clone $this;
         foreach ($endpoint as $item) {
             $new->map = $new->map->withPut(
-                $item->method()->name(),
+                $item->method()
+                    ->name(),
                 $item,
             );
         }
