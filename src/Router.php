@@ -146,6 +146,7 @@ final class Router implements RouterInterface
             }
             $queue[$className . $objectId] = $middleware;
         }
+        $serverRequest = $serverRequest->withAttribute('arguments', $routed->arguments());
         $handle = new RelayHandle($responseFactory, $serverRequest);
         $queue[] = $handle;
         $relay = new Relay($queue);
