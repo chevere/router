@@ -100,6 +100,11 @@ final class TestControllerSupportedParameters extends Action implements Controll
         );
     }
 
+    public function uploadedFiles(): MapInterface
+    {
+        return new Map();
+    }
+
     public function terminate(ResponseInterface $response): ResponseInterface
     {
         return $response;
