@@ -151,6 +151,7 @@ final class Router implements RouterInterface
         $queue[] = $handle;
         $relay = new Relay($queue);
         $response = $relay->handle($serverRequest);
+        $serverRequest = $handle->request();
         if ($response->getStatusCode() !== 0) {
             return new Routed($response, $routed->bind());
         }
@@ -159,7 +160,7 @@ final class Router implements RouterInterface
             $responseHeaders[$name] = implode(', ', $values);
         }
         if ($callback) {
-            $container = $callback($container);
+            $container = $callback($serverRequest, $container);
         }
         $controllerName = $routed->bind()
             ->controllerName();
