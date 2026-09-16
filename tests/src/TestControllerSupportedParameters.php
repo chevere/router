@@ -61,6 +61,11 @@ final class TestControllerSupportedParameters extends Action implements Controll
         return arrayp();
     }
 
+    public static function acceptProblems(): ArrayParameterInterface
+    {
+        return arrayp();
+    }
+
     public function withServerRequest(ServerRequestInterface $serverRequest): static
     {
         return $this;
@@ -136,5 +141,14 @@ final class TestControllerSupportedParameters extends Action implements Controll
     public function status(): StatusInterface
     {
         return new Status();
+    }
+
+    public function addError(string $pointer, string $detail): void
+    {
+    }
+
+    public function errors(): array
+    {
+        return [];
     }
 }
