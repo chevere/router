@@ -95,7 +95,7 @@ final class RouterDependenciesTest extends TestCase
         $dependencies->parameters()(...$container);
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            '[dependency]: Argument value provided is not of type `Chevere\Router\Path`'
+            '[/dependency]: Argument value provided is not of type `Chevere\Router\Path`'
         );
         $dependencies->parameters()(int: 0, dependency: new Vector());
     }

@@ -25,9 +25,12 @@ use Chevere\Parameter\Interfaces\ArgumentsStringInterface;
 use Chevere\Parameter\Interfaces\ArrayParameterInterface;
 use Chevere\Parameter\Interfaces\ArrayStringParameterInterface;
 use Chevere\Parameter\Interfaces\TypedInterface;
+use Chevere\Standard\Errors;
+use Chevere\Standard\Interfaces\ErrorsInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Throwable;
 use function Chevere\Parameter\arguments;
 use function Chevere\Parameter\arrayp;
 use function Chevere\Parameter\arrayString;
@@ -143,12 +146,12 @@ final class TestControllerSupportedParameters extends Action implements Controll
         return new Status();
     }
 
-    public function addError(string $pointer, string $detail): void
+    public function addError(string $pointer, string|Throwable $detail, string ...$extra): void
     {
     }
 
-    public function errors(): array
+    public function errors(): ErrorsInterface
     {
-        return [];
+        return new Errors();
     }
 }
