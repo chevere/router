@@ -35,7 +35,10 @@ use FastRoute\DataGenerator\GroupCountBased;
 use FastRoute\RouteCollector;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use ReflectionMethod;
 use Relay\Relay;
 use Throwable;
@@ -128,6 +131,7 @@ final class Router implements RouterInterface
             $objectId = spl_object_id($middlewareName);
             $className = (string) $middlewareName;
             $middlewareDependencies = $this->dependencies->extract($className, $container);
+            /** @var MiddlewareInterface $middleware */
             $middleware = new $className(...$middlewareDependencies);
             if (method_exists($middleware, 'setUp')) {
                 $reflection = new ReflectionMethod($middleware, 'setUp');
@@ -144,16 +148,24 @@ final class Router implements RouterInterface
                     $middleware->setUp(...$middlewareName->arguments());
                 }
             }
-            $queue[$className . $objectId] = $middleware;
+            $queue[$className . $objectId] = static function (
+                ServerRequestInterface $request,
+                RequestHandlerInterface $handler,
+            ) use ($middleware, &$lastRequest): ResponseInterface {
+                $lastRequest = $request;
+
+                return $middleware->process($request, $handler);
+            };
         }
         $serverRequest = $serverRequest->withAttribute('arguments', $routed->arguments());
+        $lastRequest = $serverRequest;
         $handle = new RelayHandle($responseFactory, $serverRequest);
         $queue[] = $handle;
         $relay = new Relay($queue);
         $response = $relay->handle($serverRequest);
         $serverRequest = $handle->request();
         if ($response->getStatusCode() !== 0) {
-            return new Routed($response, $routed->bind());
+            return new Routed($lastRequest, $response, $routed->bind());
         }
         $responseHeaders = [];
         foreach ($response->getHeaders() as $name => $values) {
@@ -177,7 +189,7 @@ final class Router implements RouterInterface
             $response = $response->withHeader($name, $value);
         }
         if ($response->hasHeader('Location')) {
-            return new Routed($response, $routed->bind());
+            return new Routed($serverRequest, $response, $routed->bind());
         }
         $request = $handle->request();
         foreach ($controllerRequestHeaders as $name => $value) {
@@ -190,17 +202,19 @@ final class Router implements RouterInterface
         $controller = new $controllerNameString(...$controllerArguments);
 
         try {
-            $controller = $controller->withServerRequest($request);
+            $controller = $controller->withRequest($request);
             if (method_exists($controller, 'setUp')) {
                 $controller->setUp(
                     ...$controllerName->arguments()
                 );
             }
         } catch (Throwable $e) {
-            return (new Routed(
+            return new Routed(
+                $request,
                 $responseFactory->createResponse(400),
                 $routed->bind(),
-            ))->withThrowable($e);
+                throwable: $e,
+            );
         }
         $arguments = castValues(
             $controller::reflection()->parameters(),
@@ -232,17 +246,17 @@ final class Router implements RouterInterface
             $response = $responseFactory->createResponse($code);
             mergeResponseHeaders($response, $controllerResponseHeaders, $responseHeaders);
 
-            return (new Routed($response, $routed->bind()))
-                ->withThrowable($e);
+            return new Routed($request, $response, $routed->bind(), throwable: $e);
         }
 
         $response = $responseFactory->createResponse($controllerStatus);
         mergeResponseHeaders($response, $controllerResponseHeaders, $responseHeaders);
 
         return new Routed(
+            $request,
             $controller->terminate($response),
             $routed->bind(),
-            $controllerReturn
+            return: $controllerReturn
         );
     }
 

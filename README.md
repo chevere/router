@@ -409,19 +409,16 @@ $callback = function (ContainerInterface $container): ContainerInterface {
 
 ### Routed outcome
 
-Use method `hasThrowable()` to tell if routing throws an exception. Use method `throwable()` to access the exception (if any).
+Use method `throwable()` to access the exception (if any).
 
 ```php
-$hasThrowable = $routed->hasThrowable(); // bool
-$throwable = $routed->throwable();
+$throwable = $routed->throwable(); // ?Throwable
 ```
 
 The system is flexible as it enables to define catch-all strategies. For example, you may want to catch `ControllerException` objects and pass-by everything else.
 
 ```php
-if ($routed->hasThrowable()
-    && ! ($routed->throwable() instanceof ControllerException)
-) {
+if (! ($routed->throwable() instanceof ControllerException)) {
     throw $routed->throwable();
 }
 ```

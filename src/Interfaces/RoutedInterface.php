@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Router\Interfaces;
 
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
 /**
@@ -21,19 +22,6 @@ use Throwable;
  */
 interface RoutedInterface
 {
-    /**
-     * Return an instance with the specified $throwable.
-     *
-     * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified $throwable.
-     */
-    public function withThrowable(Throwable $throwable): self;
-
-    /**
-     * Indicates whether the instance has $throwable.
-     */
-    public function hasThrowable(): bool;
-
     /**
      * Provides access to the ResponseInterface instance.
      */
@@ -50,7 +38,14 @@ interface RoutedInterface
     public function return(): mixed;
 
     /**
-     * Provides access to the Throwable instance.
+     * Provides access to the Throwable instance, if it exists.
      */
-    public function throwable(): Throwable;
+    public function throwable(): ?Throwable;
+
+    /**
+     * Provides access to the server request as the middleware queue left it.
+     *
+     * When a middleware returns early, this is the request that middleware received.
+     */
+    public function request(): ServerRequestInterface;
 }

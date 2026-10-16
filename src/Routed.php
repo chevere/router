@@ -16,28 +16,18 @@ namespace Chevere\Router;
 use Chevere\Router\Interfaces\BindInterface;
 use Chevere\Router\Interfaces\RoutedInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
 final class Routed implements RoutedInterface
 {
-    private Throwable $throwable;
-
-    private bool $hasThrowable = false;
-
     public function __construct(
+        private ServerRequestInterface $request,
         private ResponseInterface $response,
         private BindInterface $bind,
         private mixed $return = null,
+        private ?Throwable $throwable = null
     ) {
-    }
-
-    public function withThrowable(Throwable $throwable): RoutedInterface
-    {
-        $new = clone $this;
-        $new->throwable = $throwable;
-        $new->hasThrowable = true;
-
-        return $new;
     }
 
     public function response(): ResponseInterface
@@ -50,18 +40,18 @@ final class Routed implements RoutedInterface
         return $this->bind;
     }
 
-    public function hasThrowable(): bool
-    {
-        return $this->hasThrowable;
-    }
-
     public function return(): mixed
     {
         return $this->return;
     }
 
-    public function throwable(): Throwable
+    public function throwable(): ?Throwable
     {
         return $this->throwable;
+    }
+
+    public function request(): ServerRequestInterface
+    {
+        return $this->request;
     }
 }

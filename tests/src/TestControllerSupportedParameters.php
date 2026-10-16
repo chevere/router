@@ -69,7 +69,7 @@ final class TestControllerSupportedParameters extends Action implements Controll
         return arrayp();
     }
 
-    public function withServerRequest(ServerRequestInterface $serverRequest): static
+    public function withRequest(ServerRequestInterface $request): static
     {
         return $this;
     }

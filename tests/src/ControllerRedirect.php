@@ -1,0 +1,31 @@
+<?php
+
+/*
+ * This file is part of Chevere.
+ *
+ * (c) Rodolfo Berrios <rodolfo@chevere.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+namespace Chevere\Tests\src;
+
+use Chevere\Http\Attributes\Response;
+use Chevere\Http\Controller;
+use Chevere\Http\Header;
+use Chevere\Http\Status;
+
+#[Response(
+    new Status(302),
+    new Header('Location', '/account')
+)]
+final class ControllerRedirect extends Controller
+{
+    public function __invoke(): array
+    {
+        return [];
+    }
+}
