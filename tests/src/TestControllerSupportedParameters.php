@@ -27,6 +27,7 @@ use Chevere\Parameter\Interfaces\ArrayStringParameterInterface;
 use Chevere\Parameter\Interfaces\TypedInterface;
 use Chevere\Standard\Errors;
 use Chevere\Standard\Interfaces\ErrorsInterface;
+use Nyholm\Psr7\ServerRequest;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -72,6 +73,11 @@ final class TestControllerSupportedParameters extends Action implements Controll
     public function withRequest(ServerRequestInterface $request): static
     {
         return $this;
+    }
+
+    public function request(): ServerRequestInterface
+    {
+        return new ServerRequest('GET', '/');
     }
 
     public function query(): ArgumentsStringInterface
