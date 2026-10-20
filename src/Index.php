@@ -19,7 +19,6 @@ use Chevere\Router\Interfaces\IndexInterface;
 use Chevere\Router\Interfaces\RouteInterface;
 use OutOfBoundsException;
 use OverflowException;
-use function Chevere\Message\message;
 
 final class Index implements IndexInterface
 {
@@ -60,12 +59,12 @@ final class Index implements IndexInterface
             $groupName = $new->groupsIndex->get($id);
 
             throw new OverflowException(
-                (string) message(
-                    'Route` %path%` (regex `%id%`) is already bound to group `%group%`',
-                    path: $route->path()
+                sprintf(
+                    'Route` %s` (regex `%s`) is already bound to group `%s`',
+                    $route->path()
                         ->__toString(),
-                    id: $id,
-                    group: $groupName
+                    $id,
+                    $groupName
                 )
             );
         }

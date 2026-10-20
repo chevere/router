@@ -21,7 +21,6 @@ use FastRoute\Dispatcher\GroupCountBased;
 use FastRoute\RouteCollector;
 use LogicException;
 use Psr\Http\Message\ServerRequestInterface;
-use function Chevere\Message\message;
 
 final class Dispatcher implements DispatcherInterface
 {
@@ -46,26 +45,26 @@ final class Dispatcher implements DispatcherInterface
         return match ($formatCode) {
             GroupCountBased::FOUND => new Dispatch($format[1], $format[2]),
             GroupCountBased::NOT_FOUND => throw new NotFoundException(
-                (string) message(
-                    'No route found for %method% `%uri%`',
-                    method: $method,
-                    uri: $uri,
+                sprintf(
+                    'No route found for %s `%s`',
+                    $method,
+                    $uri,
                 ),
                 404
             ),
             GroupCountBased::METHOD_NOT_ALLOWED => throw new MethodNotAllowedException(
-                (string) message(
-                    'Method `%method%` is not in the list of allowed methods: `%allowed%`',
-                    method: $method,
-                    allowed: implode(', ', $format[1]),
+                sprintf(
+                    'Method `%s` is not in the list of allowed methods: `%s`',
+                    $method,
+                    implode(', ', $format[1]),
                 ),
                 405
             ),
             // @codeCoverageIgnoreStart
             default => throw new LogicException(
-                (string) message(
-                    'Unknown dispatcher format code `%code%`',
-                    code: strval($formatCode),
+                sprintf(
+                    'Unknown dispatcher format code `%s`',
+                    strval($formatCode),
                 )
             ),
             // @codeCoverageIgnoreEnd

@@ -21,7 +21,6 @@ use Chevere\Router\Parsers\StrictStd;
 use FastRoute\DataGenerator\GroupCountBased as DataGenerator;
 use LogicException;
 use Throwable;
-use function Chevere\Message\message;
 
 final class Path implements PathInterface
 {
@@ -48,9 +47,9 @@ final class Path implements PathInterface
         } catch (Throwable $e) { // @codeCoverageIgnoreStart
             throw new LogicException(
                 previous: $e,
-                message: (string) message(
-                    'Unable to add route `%path%`',
-                    path: $this->route
+                message: sprintf(
+                    'Unable to add route `%s`',
+                    $this->route
                 )
             );
         }

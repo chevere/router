@@ -44,7 +44,6 @@ use Relay\Relay;
 use Throwable;
 use function Chevere\Http\requestAttribute;
 use function Chevere\Http\responseAttribute;
-use function Chevere\Message\message;
 use function Chevere\Parameter\castValues;
 
 final class Router implements RouterInterface
@@ -225,10 +224,10 @@ final class Router implements RouterInterface
             $arguments = $controller->assertArguments(...$arguments);
         } catch (Throwable $e) {
             throw new NotFoundException(
-                (string) message(
-                    'No route found for %method% `%uri%`',
-                    method: $serverRequest->getMethod(),
-                    uri: $serverRequest->getUri()
+                sprintf(
+                    'No route found for %s `%s`',
+                    $serverRequest->getMethod(),
+                    $serverRequest->getUri()
                         ->getPath(),
                 ),
                 404
@@ -267,9 +266,9 @@ final class Router implements RouterInterface
         }
 
         throw new WithoutEndpointsException(
-            (string) message(
-                "Route `%path%` doesn't contain any endpoint.",
-                path: $route->path()
+            sprintf(
+                "Route `%s` doesn't contain any endpoint.",
+                $route->path()
                     ->__toString()
             )
         );

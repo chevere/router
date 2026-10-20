@@ -15,7 +15,6 @@ namespace Chevere\Router;
 
 use Chevere\Router\Interfaces\IdentifierInterface;
 use InvalidArgumentException;
-use function Chevere\Message\message;
 
 final class Identifier implements IdentifierInterface
 {
@@ -28,17 +27,17 @@ final class Identifier implements IdentifierInterface
     ) {
         if (ctype_space($group)) {
             throw new InvalidArgumentException(
-                (string) message(
-                    'Invalid value provided for `%name%` argument',
-                    name: '$group'
+                sprintf(
+                    'Invalid value provided for `%s` argument',
+                    '$group'
                 )
             );
         }
         if (ctype_space($id) || empty($id)) {
             throw new InvalidArgumentException(
-                (string) message(
-                    'Invalid value provided for `%name%` argument',
-                    name: '$id'
+                sprintf(
+                    'Invalid value provided for `%s` argument',
+                    '$id'
                 )
             );
         }

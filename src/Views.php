@@ -17,7 +17,6 @@ use Chevere\Router\Interfaces\RoutesInterface;
 use Chevere\Router\Interfaces\ViewsInterface;
 use InvalidArgumentException;
 use LogicException;
-use function Chevere\Message\message;
 
 final class Views implements ViewsInterface
 {
@@ -45,16 +44,16 @@ final class Views implements ViewsInterface
                 }
                 $file = "{$dir}/{$basename}";
                 if (! is_file($file)) {
-                    $errors[] = message(
+                    $errors[] = sprintf(
                         <<<PLAIN
-                        View `%baseName%` linked by route `%name%` at %caller% not found for view mapped path at %file%
+                        View `%s` linked by route `%s` at %s not found for view mapped path at %s
                         PLAIN
                         ,
-                        baseName: $basename,
-                        name: $name,
-                        caller: $route->caller()
+                        $basename,
+                        $name,
+                        $route->caller()
                             ->__toString(),
-                        file: $file
+                        $file
                     );
                 }
             }

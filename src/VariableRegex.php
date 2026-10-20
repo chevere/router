@@ -18,7 +18,6 @@ use Chevere\Regex\Regex;
 use Chevere\Router\Interfaces\VariableRegexInterface;
 use InvalidArgumentException;
 use UnexpectedValueException;
-use function Chevere\Message\message;
 
 final class VariableRegex implements VariableRegexInterface
 {
@@ -47,9 +46,9 @@ final class VariableRegex implements VariableRegexInterface
         $string = $this->regex->__toString();
         if (strpos($string, '(') !== false) {
             throw new UnexpectedValueException(
-                (string) message(
-                    'Provided expression `%match%` contains capture groups',
-                    match: $string
+                sprintf(
+                    'Provided expression `%s` contains capture groups',
+                    $string
                 )
             );
         }
@@ -59,19 +58,19 @@ final class VariableRegex implements VariableRegexInterface
     {
         if (str_starts_with($this->string, '^')) {
             throw new InvalidArgumentException(
-                (string) message(
-                    'String `%string%` must omit the starting anchor `%char%`',
-                    string: $this->string,
-                    char: '^'
+                sprintf(
+                    'String `%s` must omit the starting anchor `%s`',
+                    $this->string,
+                    '^'
                 )
             );
         }
         if (str_ends_with($this->string, '$')) {
             throw new InvalidArgumentException(
-                (string) message(
-                    'String `%string%` must omit the ending anchor `%char%`',
-                    string: $this->string,
-                    char: '$'
+                sprintf(
+                    'String `%s` must omit the ending anchor `%s`',
+                    $this->string,
+                    '$'
                 )
             );
         }

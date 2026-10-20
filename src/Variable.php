@@ -16,7 +16,6 @@ namespace Chevere\Router;
 use Chevere\Router\Exceptions\VariableInvalidException;
 use Chevere\Router\Interfaces\VariableInterface;
 use Chevere\Router\Interfaces\VariableRegexInterface;
-use function Chevere\Message\message;
 
 final class Variable implements VariableInterface
 {
@@ -41,9 +40,9 @@ final class Variable implements VariableInterface
     {
         if (! preg_match(VariableInterface::ACCEPT_CHARS_REGEX, $this->name)) {
             throw new VariableInvalidException(
-                (string) message(
-                    'String `%string%` must contain only alphanumeric and underscore characters',
-                    string: $this->name
+                sprintf(
+                    'String `%s` must contain only alphanumeric and underscore characters',
+                    $this->name
                 )
             );
         }

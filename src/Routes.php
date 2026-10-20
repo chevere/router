@@ -24,7 +24,6 @@ use Chevere\Router\Interfaces\RoutesInterface;
 use OutOfBoundsException;
 use OverflowException;
 use function Chevere\Http\middlewares;
-use function Chevere\Message\message;
 
 final class Routes implements RoutesInterface
 {
@@ -154,18 +153,18 @@ final class Routes implements RoutesInterface
         if ($route->name() !== '' && $this->names->has($route->name())) {
             throw new OverflowException(
                 code: static::EXCEPTION_CODE_TAKEN_NAME,
-                message: (string) message(
-                    'Named route %name% has been already taken.',
-                    name: $route->name()
+                message: sprintf(
+                    'Named route %s has been already taken.',
+                    $route->name()
                 )
             );
         }
         if ($this->map->has($path)) {
             throw new OverflowException(
                 code: static::EXCEPTION_CODE_TAKEN_PATH,
-                message: (string) message(
-                    'Route %path% has been already taken.',
-                    path: $route->path()
+                message: sprintf(
+                    'Route %s has been already taken.',
+                    $route->path()
                         ->__toString()
                 )
             );

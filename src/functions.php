@@ -46,7 +46,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Throwable;
 use function Chevere\Http\middlewares;
-use function Chevere\Message\message;
 use function Chevere\Parameter\string;
 
 /**
@@ -89,20 +88,20 @@ function getPath(string $path, string|BindInterface ...$bind): string
                 $parameter = $parameters->get($variable);
             } catch (OutOfBoundsException) {
                 throw new VariableNotFoundException(
-                    (string) message(
-                        'Variable `%variable%` does not exists in controller `%controller%`',
-                        variable: $variableBracket,
-                        controller: $controllerName,
+                    sprintf(
+                        'Variable `%s` does not exists in controller `%s`',
+                        $variableBracket,
+                        $controllerName,
                     )
                 );
             }
             $regex = parameterToVariableRegex($parameter);
             if ($regex === null) {
                 throw new VariableInvalidException(
-                    (string) message(
-                        'Variable `%variable%` is not a `string|int|float` type in controller `%controller%`',
-                        variable: $variableBracket,
-                        controller: $controllerName,
+                    sprintf(
+                        'Variable `%s` is not a `string|int|float` type in controller `%s`',
+                        $variableBracket,
+                        $controllerName,
                     )
                 );
             }
@@ -146,9 +145,9 @@ function parameterToRegex(ParameterInterface $parameter): RegexInterface
         $parameter instanceof FloatParameterInterface => new Regex('/^\d*\.?\d*$/'),
         $parameter instanceof StringParameterInterface => $parameter->regex(),
         default => throw new InvalidArgumentException(
-            (string) message(
-                'Parameter of type `%type%` is not supported for parameter to regex conversion',
-                type: $parameter::class
+            sprintf(
+                'Parameter of type `%s` is not supported for parameter to regex conversion',
+                $parameter::class
             )
         ),
     };
@@ -193,10 +192,10 @@ function route(
         } else {
             if ($item === '') {
                 throw new InvalidArgumentException(
-                    (string) message(
-                        'Binding for `%method%` HTTP method cannot be an empty string for route `%route%`',
-                        method: strval($method),
-                        route: $name,
+                    sprintf(
+                        'Binding for `%s` HTTP method cannot be an empty string for route `%s`',
+                        strval($method),
+                        $name,
                     )
                 );
             }
@@ -217,10 +216,10 @@ function route(
         $method = EndpointInterface::KNOWN_METHODS[$method] ?? null;
         if ($method === null) {
             throw new MethodNotAllowedException(
-                (string) message(
-                    'Unknown HTTP method `%provided%` provided for `%controller%` controller.',
-                    provided: $httpMethod,
-                    controller: $controllerName->__toString(),
+                sprintf(
+                    'Unknown HTTP method `%s` provided for `%s` controller.',
+                    $httpMethod,
+                    $controllerName->__toString(),
                 ),
                 405
             );
@@ -282,9 +281,9 @@ function bind(
 ): BindInterface {
     if ($view === '') {
         throw new InvalidArgumentException(
-            (string) message(
-                'Argument `view` provided is empty for controller `%controller%`',
-                controller: $controller
+            sprintf(
+                'Argument `view` provided is empty for controller `%s`',
+                $controller
             )
         );
     }
@@ -300,10 +299,10 @@ function bind(
             $middlewares[] = new MiddlewareName($name);
         } catch (Throwable) {
             throw new MiddlewareNotFoundException(
-                (string) message(
-                    'Middleware `%middleware%` not found for controller `%controller%`',
-                    middleware: $name,
-                    controller: $controller
+                sprintf(
+                    'Middleware `%s` not found for controller `%s`',
+                    $name,
+                    $controller
                 )
             );
         }
@@ -313,9 +312,9 @@ function bind(
         $controllerName = new ControllerName($controller);
     } catch (Throwable) {
         throw new ControllerNotFoundException(
-            (string) message(
-                'Controller `%controller%` not found',
-                controller: $controller
+            sprintf(
+                'Controller `%s` not found',
+                $controller
             )
         );
     }
@@ -351,10 +350,10 @@ function headless(
             $middlewares[] = new MiddlewareName($value);
         } catch (Throwable) {
             throw new MiddlewareNotFoundException(
-                (string) message(
-                    'Middleware `%middleware%` not found for controller `%controller%`',
-                    middleware: $value,
-                    controller: $controller
+                sprintf(
+                    'Middleware `%s` not found for controller `%s`',
+                    $value,
+                    $controller
                 )
             );
         }
@@ -377,9 +376,9 @@ function controllerName(BindInterface|string $item): ControllerNameInterface
             return new ControllerName($item);
         } catch (Throwable) {
             throw new ControllerNotFoundException(
-                (string) message(
-                    'Controller `%controller%` not found',
-                    controller: $item
+                sprintf(
+                    'Controller `%s` not found',
+                    $item
                 )
             );
         }
